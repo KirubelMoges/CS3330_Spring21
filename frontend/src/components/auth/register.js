@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Form, Button, Container } from 'react-bootstrap';
 import { useHistory, Link } from 'react-router-dom';
 import { api } from '../../api';
 import { UserContext } from '../../common/context';
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -16,7 +16,7 @@ const Login = () => {
   }
 
   function handleSubmit(e) {
-    const res = api.login(email, password);
+    const res = api.register(email, password);
     if (res.email || res.password) {
       setErrors(res);
     } else {
@@ -37,12 +37,12 @@ const Login = () => {
   return (
     <Container className="p-3">
       <div>
-        <h1 className="display-4">Login</h1>
+        <h1 className="display-4">Register</h1>
         <p className="text-sm">
-          Don't have an account? <Link to="/register">Register</Link>
+          Already have an account? <Link to="/login">Login</Link>
         </p>
         <Form onSubmit={handleSubmit}>
-          <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
           <Form.Group size="md" controlId="email">
             <Form.Label>Email</Form.Label>
             <Form.Control
@@ -50,7 +50,6 @@ const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              isInvalid={errors.email !== undefined}
             />
           </Form.Group>
           <Form.Group size="lg" controlId="password">
@@ -59,7 +58,6 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              isInvalid={errors.password !== undefined}
             />
           </Form.Group>
           <Button block size="lg" type="submit" disabled={!validate()}>
@@ -71,4 +69,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
