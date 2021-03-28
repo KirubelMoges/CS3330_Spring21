@@ -165,9 +165,8 @@ module.exports = function routes(app, logger) {
             })
           } else {
             console.log(rows.length)
+            //if the user exists
             if(rows.length > 0){
-              console.log("change")
-              // if there is no issue obtaining a connection, execute query and release connection
               connection.query(sql2, function (err, rows, fields) {
                 connection.release();
                 if (err) {
@@ -177,10 +176,12 @@ module.exports = function routes(app, logger) {
                     "error": "Error obtaining values"
                   })
                 } else {
+                  //returns 2 if the password is wrong
                   res.status(200).json({"status" : rows.length > 0 ? 0 : 2});
                 }
               });
             }
+            //if the user doesn't exist
             else{
               res.status(200).json({"status" : 1});
             }
