@@ -1,5 +1,7 @@
-const { off } = require('./db');
+const secret = 'covidPlannerDB';
 const pool = require('./db')
+const crypto = require('crypto');
+const { json } = require('body-parser');
 
 module.exports = function routes(app, logger) {
   // GET /
@@ -115,8 +117,9 @@ module.exports = function routes(app, logger) {
         let exposure = req.body["exposure"];
         let jobTitle = req.body["jobTitle"];
         let officeId = req.body["officeId"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
         let insert = [
-          [firstName, lastName, userEmail, userPassword, exposure, jobTitle, officeId, ]
+          [firstName, lastName, userEmail, hash, exposure, jobTitle, officeId, ]
         ];
         let sql = 'INSERT INTO users(firstName, lastName, userEmail, userPassword, exposure, jobTitle, officeId) VALUES ?';
         console.log(sql);
@@ -153,9 +156,6 @@ module.exports = function routes(app, logger) {
         let userEmail = req.query["userEmail"];
         let userPassword = req.body["userPassword"];
         let sql1 = 'SELECT userId FROM users WHERE userEmail =\'' + userEmail + '\'';
-        let sql2 = 'SELECT userId FROM users WHERE userEmail =\'' + userEmail + '\' AND ' + 'userPassword = \'' + userPassword + '\'';
-        console.log(sql1, sql2)
-        let validEmail = false;
         connection.query(sql1, function (err, rows, fields) {
           if (err) {
             logger.error("Error while fetching values: \n", err);
@@ -167,8 +167,14 @@ module.exports = function routes(app, logger) {
             console.log(rows.length)
             //if the user exists
             if(rows.length > 0){
+              const hash = crypto.createHmac('sha256', secret)
+                            .update(userPassword)
+                            .digest('hex');
+              console.log(hash)
+              let sql2 = 'SELECT userId FROM users WHERE userEmail =\'' + userEmail + '\' AND ' + 'userPassword = \'' + hash + '\'';
               connection.query(sql2, function (err, rows, fields) {
                 connection.release();
+
                 if (err) {
                   logger.error("Error while fetching values: \n", err);
                   res.status(400).json({
@@ -188,6 +194,7 @@ module.exports = function routes(app, logger) {
           }
         });     
       }
+
     });
     
   });
@@ -220,6 +227,84 @@ module.exports = function routes(app, logger) {
           }
         });
       }
+    });
+  });
+
+  // PUT /api/changePassword
+  //change user password
+  app.put('/api/changePassword', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+
+        //query values
+
+        let userEmail = req.query["userEmail"];
+        let previousPassword = req.body["previousPassword"];
+        let newPassword = req.body["newPassword"];
+        let sql1 = 'SELECT userId FROM users WHERE userEmail =\'' + userEmail + '\'';
+
+        connection.query(sql1, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else {
+            console.log(rows.length)
+            //if the user exists
+            if(rows.length > 0){
+              const hash = crypto.createHmac('sha256', secret).update(previousPassword).digest('hex');
+
+              let sql2 = 'SELECT userId FROM users WHERE userEmail =\'' + userEmail + '\' AND ' + 'userPassword = \'' + hash + '\'';
+              connection.query(sql2, function (err, rows, fields) {
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else {
+                  if(rows.length > 0){
+                    const hash2 = crypto.createHmac('sha256', secret).update(newPassword).digest('hex');
+
+                    let sql3 = "UPDATE users SET userPassword = '"+ hash2 +"' WHERE userEmail = '"+ userEmail +"' AND userPassword = '" + hash + "';";
+                    connection.query(sql3, function (err, rows, fields) {
+                      if (err) {
+                        logger.error("Error while fetching values: \n", err);
+                        res.status(400).json({
+                          "data": [],
+                          "error": "Error obtaining values"
+                        })
+                      } else {
+                        //changed!
+                        res.status(200).json({"status" : 0});
+                      }
+                    });
+                  }
+                  else{
+                    //returns 2 if the password is wrong
+                    res.status(200).json({"status" : 2});
+                    res.end();
+                  }
+                }
+              });
+            }
+            //if the user doesn't exist
+            else{
+              res.status(200).json({"status" : 1});
+              res.end();
+            }
+          }
+        }); 
+      }
+      connection.release();
+
     });
   });
 
@@ -296,13 +381,20 @@ module.exports = function routes(app, logger) {
     // get all office information
   app.get('/api/offices', (req, res) => {
     // obtain a connection from our pool of connections
-    pool.getConnection(function (err, connection){
+    pool.getConnection(async function (err, connection){
       if(err){
         // if there is an issue obtaining a connection, release the connection instance and log the error
         logger.error('Problem obtaining MySQL connection',err)
         res.status(400).send('Problem obtaining MySQL connection'); 
       } else {
         let sql = 'SELECT * FROM offices';
+        let crypto;
+        try {
+          crypto = await import('crypto');
+        } catch (err) {
+          console.log('crypto support is disabled!');
+        }
+        
         // if there is no issue obtaining a connection, execute query and release connection
         connection.query(sql, function (err, rows, fields) {
           connection.release();
