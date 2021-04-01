@@ -1,51 +1,20 @@
 import { useContext, useEffect, useState } from 'react';
-import { Button, Container, Row } from 'react-bootstrap';
-import { Link, useHistory } from 'react-router-dom';
-import { api } from '../../api';
+import { Container } from 'react-bootstrap';
 import { UserContext } from '../../common/context';
+import Header from '../header';
+import LandingPage from '../landing';
 
 const LoggedInView = () => {
-  const [userContext, setUserContext] = useContext(UserContext);
-  const history = useHistory();
-  function logoutButton() {
-    api.logout();
-    setUserContext({});
-    history.push('/login');
-  }
+  const [userContext] = useContext(UserContext);
 
   return (
-    <Container>
-      <h1 className="display-3 text-center">Home Page</h1>
-      <h3 className="text-md-center">Current user: {userContext.username}</h3>
-      <Row className="d-flex justify-content-around">
-        <Button onClick={logoutButton}>Logout</Button>
-      </Row>
-    </Container>
-  );
-};
-
-const LoggedOutView = () => {
-  const history = useHistory();
-  function login() {
-    history.push('/login');
-  }
-  function register() {
-    history.push('/register');
-  }
-
-  return (
-    <Container className="p-3">
-      <Row className="justify-content-center">
-        <div>
-          <Button className="m-3" onClick={login}>
-            Login
-          </Button>
-          <Button className="m-3" onClick={register}>
-            Register
-          </Button>
-        </div>
-      </Row>
-    </Container>
+    <div>
+      <Header />
+      <Container>
+        <h1 className="display-3 text-center">Home Page</h1>
+        <h3 className="text-md-center">Current user: {userContext.username}</h3>
+      </Container>
+    </div>
   );
 };
 
@@ -57,7 +26,7 @@ const HomePage = () => {
     setLoggedIn(Object.keys(userContext).length !== 0);
   }, [userContext, loggedIn, setLoggedIn]);
 
-  return loggedIn ? <LoggedInView /> : <LoggedOutView />;
+  return loggedIn ? <LoggedInView /> : <LandingPage />;
 };
 
 export default HomePage;
