@@ -14,7 +14,7 @@ const LandingPage = () => {
             software.
           </h4>
         </div>
-        <section className="text-center my-5">
+        <section className="text-center my-5" id="testimonials">
           <h2 className="h1-responsive font-weight-bold mt-5">Testimonials</h2>
           <p className="dark-grey-text w-responsive mx-auto mb-3">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, error amet numquam iure

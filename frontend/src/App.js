@@ -8,6 +8,7 @@ import { UserContext } from './common/context';
 
 const App = () => {
   const [context, setContext] = useState(api.currentUser());
+
   return (
     <UserContext.Provider value={[context, setContext]}>
       <Router>
