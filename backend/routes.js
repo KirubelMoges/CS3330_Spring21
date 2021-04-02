@@ -414,4 +414,159 @@ module.exports = function routes(app, logger) {
     });
     
   });
+
+  // post /api/clockin
+  // clock-in feature returns 0 when clock in is successful, returns 1 when user has not clockout of previous shift
+  app.post('/api/clockin', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let sql2 = 'INSERT INTO clocking(clockIn, clockInType, userId, roomId) VALUES ?';
+        let clockIn = req.body["clockIn"];
+        let clockInType = req.body["clockInType"];
+        let userId = req.body["userId"];
+        let roomId = req.body["roomId"];
+        let values = [
+          [clockIn, clockInType, userId, roomId]
+        ];
+        let sql = 'SELECT clockOut FROM clocking WHERE clockOut IS NULL AND userId=' + userId  + " ORDER BY clockIn";
+
+        let crypto;
+        try {
+          crypto = await import('crypto');
+        } catch (err) {
+          console.log('crypto support is disabled!');
+        }
+        
+        // if there is no issue obtaining a connection, execute query and release connection
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else {
+            if(rows.length == 0){
+              connection.query(sql2, [values], function (err, rows, fields) {
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else {
+                  res.status(200).json({
+                    "status": 0
+                  });
+                }
+              });
+            }
+            else{
+              res.status(200).json({
+                "status": 1
+              });
+            }
+
+          }
+        });
+      }
+    });
+    
+  });
+
+  // put /api/clockout
+  //update clock-out feature returns 0 when clock out is successful, returns 1 when user has not clockin of current shift
+  app.put('/api/clockout', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let clockOut = req.body["clockOut"];
+        let clockOutType = req.body["clockOutType"];
+        let userId = req.body["userId"];
+        let roomId = req.body["roomId"];
+
+        let sql = 'SELECT clockId FROM clocking WHERE clockOut IS NULL AND userId=' + userId  + " ORDER BY clockIn";
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else {
+            if(rows.length > 0 ){
+              
+              let sql2 = "UPDATE clocking SET clockOut='" + clockOut + "', clockOutType='"+clockOutType+"' WHERE clockId=" + rows[0]["clockId"];
+
+              connection.query(sql2, function (err, rows, fields) {
+                // if there is no issue obtaining a connection, execute query and release connection
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else {
+                  res.status(200).json({
+                    "status": 0
+                  });
+                }
+              });
+            }
+            else{
+              res.status(200).json({
+                "status": 1
+              });
+            }
+
+          }
+        });
+      }
+    });
+    
+  });
+
+  // GET /api/clockout
+  //clock-out feature returns 0 when clock out is successful, returns 1 when user has not clockin of current shift
+  app.get('/api/clockInStats', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userId = req.query["userId"];
+
+        let sql = 'SELECT * FROM clocking WHERE userId=' + userId  + " ORDER BY clockIn";
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            res.status(200).json({
+              "data": rows
+            })
+          }
+        });
+      }
+    });
+    
+  });
 }
