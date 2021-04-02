@@ -539,7 +539,7 @@ module.exports = function routes(app, logger) {
   });
 
   // GET /api/clockout
-  //clock-out feature returns 0 when clock out is successful, returns 1 when user has not clockin of current shift
+  //returns data about user's clockIn and clockOut records
   app.get('/api/clockInStats', (req, res) => {
     // obtain a connection from our pool of connections
     pool.getConnection(async function (err, connection){
