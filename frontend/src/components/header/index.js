@@ -9,7 +9,7 @@ const Header = () => {
 
   return (
     <Navbar className="mr-auto" expand="lg">
-      <Navbar.Brand href="/">Sitename</Navbar.Brand>
+      <Navbar.Brand href="/">Covid Workplace Planning Tool</Navbar.Brand>
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
