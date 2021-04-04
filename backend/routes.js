@@ -538,7 +538,7 @@ module.exports = function routes(app, logger) {
     
   });
 
-  // GET /api/clockout
+  // GET /api/clockInStats
   //returns data about user's clockIn and clockOut records
   app.get('/api/clockInStats', (req, res) => {
     // obtain a connection from our pool of connections
@@ -549,8 +549,132 @@ module.exports = function routes(app, logger) {
         res.status(400).send('Problem obtaining MySQL connection'); 
       } else {
         let userId = req.query["userId"];
+        let userPassword = req.body["userPassword"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //does credential check and gets the necessary information to be returned back to the user
+        let sql = 'SELECT c.clockIn, c.clockOut, c.clockInType, c.clockOutType, c.roomId FROM clocking as c INNER JOIN users as u ON c.userId = u.userId WHERE u.userId=' + userId  + " AND u.userPassword = '"+hash+"' ORDER BY clockIn";
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            res.status(200).json({
+              "data": rows
+            })
+          }
+        });
+      }
+    });
+    
+  });
 
-        let sql = 'SELECT * FROM clocking WHERE userId=' + userId  + " ORDER BY clockIn";
+  // POST /api/requestClockChange
+  //sends inbox message to employees boss
+  app.post('/api/requestClockChange', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let clockId = req.query["clockId"];
+        let newClockIn = req.body["newClockIn"];
+        let newClockOut = req.body["newClockOut"];
+        let newClockInType = req.body["newClockInType"];
+        let newClockOutType = req.body["newClockOutType"];
+        let sendDate = req.body["sendDate"];
+        let userId;
+        //checks credentials, and retrieves information about specific clock instance
+        let sql = "SELECT u.reportsTo, u.userId, c.clockIn, c.clockOut, c.clockInType, c.clockOutType, c.roomId FROM users as u INNER JOIN clocking as c ON c.userId = u.userId WHERE u.userEmail='"+userEmail+"' AND c.clockId=" + clockId;
+        console.log(sql)
+        let reportsTo = null;
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            console.log(rows);
+            if(rows.length > 0){
+              reportsTo = rows[0]["reportsTo"];
+              userId = rows[0]["userId"]; 
+              //check if there is a reports to and creates message if employee has boss
+              if(reportsTo){
+                let tempObj = {};
+                if(newClockIn)
+                  tempObj["clockIn"] = newClockIn;
+                if(newClockOut)
+                  tempObj["clockOut"] = newClockOut;
+                if(newClockInType)
+                  tempObj["clockInType"] = newClockInType;
+                if(newClockOutType)
+                  tempObj["clockOutType"] = newClockOutType;
+                let content = "Employee " + userId + " ("+userEmail+")" + " has requested a time change: \n";
+                for(const property in tempObj)
+                  content += ("\t" + property + ": " + "\n")
+                console.log(content)
+                //creates message and adds additional data for future functionality for the boss approving the request with a few clicks
+                let message = {"content" : content, "data" : {"type": "dateChangeRequest", "changes" : tempObj }}
+                let values = [[userId, reportsTo, "SCHEDULE CHANGE", sendDate, JSON.stringify(message)]]
+                sql = "INSERT INTO inbox(senderId, recipientId, subject, sendDate, message) VALUES ?";
+                connection.query(sql, [values], function (err, rows, fields) {
+                  connection.release();
+                  if (err) {
+                    logger.error("Error while fetching values: \n", err);
+                    res.status(400).json({
+                      "data": [],
+                      "error": "Error obtaining values"
+                    })
+                  } else { 
+                    //if all is well return 0
+                    res.status(200).json({
+                      "status": 0
+                    })
+                  }
+                });
+              }
+              else{
+                //if all user has no boss return 2
+                res.status(200).json({
+                  "status": 2
+                })
+              }
+              
+            }
+          }  
+        });
+
+
+        
+
+      }
+    });
+    
+  });
+
+  // GET /api/clockRequests
+  //returns the requests for clock in/out changes to the Office Manager
+  app.get('/api/clockRequests', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userId = req.body["userId"];
+        let userPassword = req.body["userPassword"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT i.messageId, i.subject, i.message, i.sendDate, i.senderId FROM inbox as i INNER JOIN users as u ON i.recipientId = u.userId WHERE u.userPassword=\'' + hash  + "' AND i.recipientId = '"+userId+"' ORDER BY i.sendDate";
         
         connection.query(sql, function (err, rows, fields) {
           if (err) {
