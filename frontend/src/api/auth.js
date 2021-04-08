@@ -8,7 +8,7 @@ export const login = (email, password) => {
     errors.email = 'No user with the provided email';
     return errors;
   } else if (user.password === password) {
-    sessionStorage.setItem('user', JSON.stringify({ username: email }));
+    sessionStorage.setItem('user', JSON.stringify({ username: email, role: user.role }));
   } else {
     errors.password = 'Invalid Password.';
     return errors;
@@ -23,8 +23,8 @@ export const register = (email, password) => {
     errors.email = 'Email already used.';
     return errors;
   } else {
-    users.push({ email: email, password: password });
-    sessionStorage.setItem('user', JSON.stringify({ username: email }));
+    users.push({ email: email, password: password, role: 'employee' });
+    sessionStorage.setItem('user', JSON.stringify({ username: email, role: 'employee' }));
   }
   return errors;
 };
@@ -40,6 +40,6 @@ export const currentUser = () => {
 };
 
 const users = [
-  { email: 'walln@smu.edu', password: '123' },
-  { email: 'test@test.com', password: '123' }
+  { email: 'walln@smu.edu', password: '123', role: 'employee' },
+  { email: 'test@test.com', password: '123', role: 'manager' }
 ];

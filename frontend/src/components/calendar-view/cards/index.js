@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import EmployeesModal from './modals/employees';
+import ManagerRoomsModal from './modals/manager-room';
 
 import RoomsModal from './modals/rooms';
 import StatsModal from './modals/stats';
@@ -70,6 +72,50 @@ export const TimeCard = () => {
         </div>
       </div>
       <TimeStatsModal handleClose={handleTimeStatsClose} show={isTimeStatsModalShowing} />
+    </div>
+  );
+};
+
+export const ManagerControls = (props) => {
+  const [isEmployeesModalShowing, setIsEmployeesModalShowing] = useState(false);
+  const handleEmployeesClose = () => setIsEmployeesModalShowing(false);
+  const handleEmployeesOpen = () => setIsEmployeesModalShowing(true);
+
+  const [isRoomsModalShowing, setIsRoomsModalShowing] = useState(false);
+  const handleRoomsClose = () => setIsRoomsModalShowing(false);
+  const handleRoomsOpen = () => setIsRoomsModalShowing(true);
+
+  return (
+    <div className="roomcard shadow ">
+      <div className="card clock-card">
+        <div className="card-body">
+          <h5 className="card-title">Manager Controls</h5>
+          <p className="card-text">Manage your workplace and people.</p>
+
+          <div className="d-flex flex-row justify-content-center">
+            <div className="d-flex flex-column">
+              <button onClick={handleRoomsOpen} className="btn btn-success mb-2">
+                View Rooms
+              </button>
+              <button onClick={handleEmployeesOpen} className="btn btn-danger mb-2">
+                View Employees
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <EmployeesModal
+        handleClose={handleEmployeesClose}
+        show={isEmployeesModalShowing}
+        employees={props.employees}
+        events={props.events}
+      />
+      <ManagerRoomsModal
+        handleClose={handleRoomsClose}
+        show={isRoomsModalShowing}
+        rooms={props.rooms}
+        events={props.events}
+      />
     </div>
   );
 };

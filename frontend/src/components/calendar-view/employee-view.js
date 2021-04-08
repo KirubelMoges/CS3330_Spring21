@@ -1,4 +1,5 @@
-import './employee.css';
+import './styles/employee.css';
+import './styles/calendar.css';
 import React, { useState } from 'react';
 import { getDays } from './utils';
 import { RoomCard, TimeCard } from './cards';

@@ -1,0 +1,15 @@
+.timecard {
+  position: absolute;
+  top: 30vh;
+  right: 3rem;
+}
+
+.clock-card {
+  width: 18rem;
+}
+
+.roomcard {
+  position: absolute;
+  top: 30vh;
+  left: 3rem;
+}
