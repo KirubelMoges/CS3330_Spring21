@@ -14,8 +14,14 @@ router.post('/addRoom', async (req,res) => {
           } else
           {
             let name = req.body['name'];
+            let capacity = req.body['capacity'];
+            let lastCleaned = req.body['lastCleaned'] || null;
+            let availability = req.body['availability'] || 1;
+            let cleaned = req.body['cleaned'] || 1;
+            let beingCleaned = req.body['beingCleaned'] || 0;
+            let cleanedBy = req.body['cleanedBy'] || 0;
             // if there is no issue obtaining a connection, execute query
-            connection.query('INSERT INTO rooms (name) value(?)',name, (err, rows, fields) => {
+            connection.query('INSERT INTO rooms (capacity,lastCleaned,availability,cleaned,beingCleaned,cleanedBy,name) value(?,?,?,?,?,?,?)',[capacity,lastCleaned,availability,cleaned,beingCleaned,cleanedBy,name], (err, rows, fields) => {
               if (err) {
                 logger.error("Error while adding room \n", err);
                 res.status(400).json({
