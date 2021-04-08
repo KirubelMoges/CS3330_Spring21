@@ -2,6 +2,7 @@ const secret = 'covidPlannerDB';
 const pool = require('./db')
 const crypto = require('crypto');
 const { json } = require('body-parser');
+const manager = require('./routes/manager');
 
 module.exports = function routes(app, logger) {
   // GET /
@@ -414,4 +415,6 @@ module.exports = function routes(app, logger) {
     });
     
   });
+
+  app.use('/api/manager',manager);
 }
