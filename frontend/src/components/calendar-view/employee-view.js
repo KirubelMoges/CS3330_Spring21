@@ -1,46 +1,24 @@
 import './employee.css';
-
-function getDaysInMonth(month, year) {
-  var date = new Date(year, month, 1);
-  var days = [];
-  while (date.getMonth() === month) {
-    days.push(new Date(date));
-    date.setDate(date.getDate() + 1);
-  }
-  //get first day of the month
-  // if it is not a sunday append the days from the month prior
-  const firstDay = days[0];
-  const weekday = firstDay.getDay();
-  if (weekday === 0) {
-    return days;
-  }
-
-  // The first day is not a sunday
-  const numberOfDaysToAdd = weekday;
-  const newMonth = month > 0 ? month - 1 : 12;
-  const newYear = month > 0 ? year : year - 1;
-  const newDays = getDaysInLastMonth(newMonth, newYear, numberOfDaysToAdd);
-  console.log('New Days', newDays);
-  days = newDays.concat(days);
-
-  return days.splice(0, 28);
-}
-
-function getDaysInLastMonth(month, year, numberOfDays) {
-  var date = new Date(year, month, 1);
-  var days = [];
-  while (date.getMonth() === month) {
-    days.push(new Date(date));
-    date.setDate(date.getDate() + 1);
-  }
-
-  return days.slice(-numberOfDays);
-}
+import React, { useState } from 'react';
+import { getDays } from './utils';
+import { RoomCard, TimeCard } from './cards';
+import { Modal } from 'react-bootstrap';
 
 const EmployeeView = () => {
-  var d = new Date();
-  const days = getDaysInMonth(d.getMonth(), d.getFullYear());
-  console.log(days);
+  const days = getDays(new Date());
+
+  const [isScheduleShowing, setIsScheduleShowing] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const handleOpenSchedule = (date) => {
+    setSelectedDate(date);
+    setIsScheduleShowing(true);
+  };
+  const handleCloseSchedule = () => setIsScheduleShowing(false);
+
+  const handleReserve = (day) => {
+    console.log(day);
+    handleCloseSchedule();
+  };
 
   return (
     <div className="container pb-5">
@@ -62,7 +40,7 @@ const EmployeeView = () => {
         <ol className="days list-unstyled">
           {days.map((day) => {
             return (
-              <li key={day}>
+              <li key={day} onClick={() => handleOpenSchedule(day)}>
                 <div className="date">{day.getDate()}</div>
                 {(day.getDate() < 2 || day.getDate() === 11) && (
                   <div className="event bg-primary">There is an event today in room 2001</div>
@@ -72,52 +50,36 @@ const EmployeeView = () => {
           })}
         </ol>
       </div>
-      <div className="timecard shadow ">
-        <div className="card clock-card">
-          <div className="card-body">
-            <h5 className="card-title">My Time</h5>
-            <p className="card-text">Manage your time status, and view your time breakdown.</p>
-
-            <div className="d-flex flex-row justify-content-center">
-              <div className="d-flex flex-column">
-                <a href="#" className="btn btn-success mb-2">
-                  Clock In
-                </a>
-                <a href="#" className="btn btn-danger mb-2">
-                  Clock Out
-                </a>
-                <a href="#" className="btn btn-primary mb-2">
-                  Lunch Break
-                </a>
-                <a href="#" className="btn btn-info">
-                  View Stats
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="roomcard shadow">
-        <div className="card clock-card">
-          <div className="card-body">
-            <h5 className="card-title">Rooms</h5>
-            <p className="card-text">
-              Create meetings, reserve rooms, and checkout the covid status of the office.
-            </p>
-            <div className="d-flex flex-row justify-content-center">
-              <div className="d-flex flex-column">
-                <a href="#" className="btn btn-primary mb-2">
-                  View Rooms
-                </a>
-                <a href="#" className="btn btn-info">
-                  Covid Stats
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TimeCard />
+      <RoomCard />
+      <ScheduleModal
+        show={isScheduleShowing}
+        handleClose={handleCloseSchedule}
+        date={selectedDate}
+        handleReserve={handleReserve}
+      />
     </div>
+  );
+};
+
+const ScheduleModal = (props) => {
+  return (
+    <Modal show={props.show} onHide={props.handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Schedule your room.</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>Selected Date: {props.date.toDateString()}</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <button className="btn btn-success" onClick={() => props.handleReserve(props.date)}>
+          Reserve
+        </button>
+        <button className="btn btn-danger" onClick={props.handleClose}>
+          Cancel
+        </button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
