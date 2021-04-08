@@ -1,9 +1,7 @@
 const secret = 'covidPlannerDB';
-const pool = require('./db');
+const pool = require('./db')
 const crypto = require('crypto');
 const { json } = require('body-parser');
-const manager = require('./routes/manager');
-
 
 module.exports = function routes(app, logger) {
   // GET /
@@ -109,16 +107,16 @@ module.exports = function routes(app, logger) {
     pool.getConnection(function (err, connection){
       if(err){
         // if there is an issue obtaining a connection, release the connection instance and log the error
-        logger.error('Problem obtaining MySQL connection | /api/createUser',err)
+        logger.error('Problem obtaining MySQL connection',err)
         res.status(400).send('Problem obtaining MySQL connection'); 
       } else {
         let firstName = req.body["firstName"];
         let lastName = req.body["lastName"];
         let userEmail = req.body["userEmail"];
         let userPassword = req.body["userPassword"];
-        let exposure = req.body["exposure"] || 0;
-        let jobTitle = req.body["jobTitle"] || "employee";
-        let officeId = req.body["officeId"] || 0;
+        let exposure = req.body["exposure"];
+        let jobTitle = req.body["jobTitle"];
+        let officeId = req.body["officeId"];
         const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
         let insert = [
           [firstName, lastName, userEmail, hash, exposure, jobTitle, officeId, ]
@@ -132,8 +130,7 @@ module.exports = function routes(app, logger) {
             logger.error("Error while fetching values: \n", err);
             res.status(400).json({
               "data": [],
-              "error": "Error obtaining values",
-              "err" : err
+              "error": "Error obtaining values"
             })
           } else {
             res.status(200).json({
@@ -384,7 +381,6 @@ module.exports = function routes(app, logger) {
     // get all office information
   app.get('/api/offices', (req, res) => {
     // obtain a connection from our pool of connections
-    console.log("INSIDE Offices...");
     pool.getConnection(async function (err, connection){
       if(err){
         // if there is an issue obtaining a connection, release the connection instance and log the error
@@ -416,7 +412,6 @@ module.exports = function routes(app, logger) {
         });
       }
     });
+    
   });
-
-  app.use('/api/manager', manager);
 }
