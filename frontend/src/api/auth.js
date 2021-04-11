@@ -1,42 +1,12 @@
-export const login = (email, password) => {
-  const errors = {};
-  console.log('Looking for user with email:', email);
-  const user = users.find((user) => user.email === email);
-  console.log('User:', user);
-
-  if (user === undefined) {
-    errors.email = 'No user with the provided email';
-    return errors;
-  } else if (user.password === password) {
-    sessionStorage.setItem('user', JSON.stringify({ username: email, role: user.role }));
-  } else {
-    errors.password = 'Invalid Password.';
-    return errors;
-  }
-  return errors;
-};
-
-export const register = (email, password) => {
-  const errors = {};
-  const user = users.find((user) => user.email === email);
-  if (user) {
-    errors.email = 'Email already used.';
-    return errors;
-  } else {
-    users.push({ email: email, password: password, role: 'employee' });
-    sessionStorage.setItem('user', JSON.stringify({ username: email, role: 'employee' }));
-  }
-  return errors;
-};
-
 export const logout = () => {
   sessionStorage.removeItem('user');
 };
 
 export const currentUser = () => {
   const user = sessionStorage.getItem('user');
-  if (user) return JSON.parse(user);
-  return {};
+  if (!user) return {};
+  console.log('USER', JSON.parse(user));
+  return JSON.parse(user);
 };
 
 const users = [

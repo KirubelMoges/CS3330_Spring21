@@ -62,7 +62,7 @@ const ManageEventsModal = (props) => {
           <p>As a manager you control what events can happen.</p>
           {events.map((event, idx) => {
             console.log('Event Room', event.room);
-            if (event.room == props.room) {
+            if (event.room === props.room) {
               return (
                 <div className="d-flex flex-row justify-content-between py-1" key={idx}>
                   <p>
