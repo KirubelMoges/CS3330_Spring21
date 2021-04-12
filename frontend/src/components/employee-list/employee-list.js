@@ -1,9 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Form, Button, Container } from 'react-bootstrap';
-import { useHistory, Link } from 'react-router-dom';
-import { api } from '../../api';
-import { UserContext } from '../../common/context';
-import axios from 'axios';
+import React from 'react';
 import Header from '../header';
 
 const EmployeeList = () => {
