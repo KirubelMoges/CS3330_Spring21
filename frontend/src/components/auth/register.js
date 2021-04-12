@@ -51,7 +51,7 @@ const Register = () => {
 
   return (
     <div>
-      <Header />
+    <Header />
     <Container className="p-3">
       <div>
         <h1 className="display-4">Register</h1>
