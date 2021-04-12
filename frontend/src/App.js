@@ -8,6 +8,7 @@ import { UserContext } from './common/context';
 import CalendarView from './components/calendar-view';
 import RouteGuard from './components/routeGuard';
 import EmployeeList from './components/employee-list/employee-list';
+import About from './components/header/about';
 
 const App = () => {
   const [context, setContext] = useState(api.currentUser());
@@ -19,6 +20,7 @@ const App = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
+        <Route exact path="/about" component={About} />
         <RouteGuard exact path="/home" component={CalendarView} />
       </Router>
     </UserContext.Provider>
