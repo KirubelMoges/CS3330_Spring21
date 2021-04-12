@@ -60,7 +60,7 @@ const Login = () => {
 
   return (
     <div>
-      <Header />
+    <Header />
     <Container className="p-3">
       <div>
         <h1 className="display-4">Login</h1>
