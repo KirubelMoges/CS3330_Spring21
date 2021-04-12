@@ -4,6 +4,7 @@ import { useHistory, Link } from 'react-router-dom';
 import { api } from '../../api';
 import { UserContext } from '../../common/context';
 import axios from 'axios';
+import Header from '../header';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -49,6 +50,8 @@ const Register = () => {
   });
 
   return (
+    <div>
+      <Header />
     <Container className="p-3">
       <div>
         <h1 className="display-4">Register</h1>
@@ -105,6 +108,7 @@ const Register = () => {
         </Form>
       </div>
     </Container>
+    </div>
   );
 };
 

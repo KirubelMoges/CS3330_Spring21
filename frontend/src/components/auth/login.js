@@ -4,6 +4,7 @@ import { useHistory, Link } from 'react-router-dom';
 import { api } from '../../api';
 import { UserContext } from '../../common/context';
 import axios from 'axios';
+import Header from '../header';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -58,6 +59,8 @@ const Login = () => {
   });
 
   return (
+    <div>
+      <Header />
     <Container className="p-3">
       <div>
         <h1 className="display-4">Login</h1>
@@ -91,6 +94,7 @@ const Login = () => {
         </Form>
       </div>
     </Container>
+    </div>
   );
 };
 
