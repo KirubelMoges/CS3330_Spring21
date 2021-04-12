@@ -14,6 +14,7 @@ const Header = () => {
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link href="/about">About</Nav.Link>
+          <Nav.Link href="/employees">Employees</Nav.Link>
         </Nav>
         {loggedIn ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>
