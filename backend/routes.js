@@ -2,6 +2,7 @@ const secret = 'covidPlannerDB';
 const pool = require('./db')
 const crypto = require('crypto');
 const { json } = require('body-parser');
+const manager = require('./routes/manager');
 
 module.exports = function routes(app, logger) {
   // GET /
@@ -619,7 +620,7 @@ module.exports = function routes(app, logger) {
                   tempObj["clockOutType"] = newClockOutType;
                 let content = "Employee " + userId + " ("+userEmail+")" + " has requested a time change: \n";
                 for(const property in tempObj)
-                  content += ("\t" + property + ": " + "\n")
+                  content += ("\t" + property + ": " + tempObj[property] + "\n")
                 console.log(content)
                 //creates message and adds additional data for future functionality for the boss approving the request with a few clicks
                 let message = {"content" : content, "data" : {"type": "dateChangeRequest", "changes" : tempObj }}
@@ -856,4 +857,362 @@ module.exports = function routes(app, logger) {
     
   });
 
+  // GET /api/availableConferencesGivenCapacity
+  //returns all the available Conference rooms that is >= a certain capacity
+  app.get('/api/availableConferencesGivenCapacity', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let capacity = req.body["capacity"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              sql = 'SELECT r.* FROM rooms as r INNER JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity - c.roomCount) >= '+capacity+' AND roomType = 2';
+              connection.query(sql, function (err, rows, fields) {
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  res.status(200).json({
+                    "data": rows
+                  })
+                }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": "1"
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  // GET /api/availableRegularGivenCapacity
+  //returns all the available Conference rooms that is >= a certain capacity
+  app.get('/api/availableRegularGivenCapacity', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let capacity = req.body["capacity"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              sql = 'SELECT r.* FROM rooms as r INNER JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity - c.roomCount) >= '+capacity+' AND roomType = 1';
+              connection.query(sql, function (err, rows, fields) {
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //success
+                  res.status(200).json({
+                    "data": rows
+                  })
+                }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  // GET /api/reservation
+  //delete reservation
+  app.delete('/api/reservation', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let reservationId = req.query["reservationId"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              sql = 'DELETE FROM reservations WHERE reservationId=' + reservationId;
+              connection.query(sql, function (err, rows, fields) {
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //success
+                  res.status(200).json({
+                    "status" : 0
+                  })
+                }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  
+
+  // POST /api/reservation 
+  //add new reservation, USE ORIGINAL REQUESTS AND ACCEPTANCES WITH THIS ROUTE
+  app.post('/api/reservation', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let roomId = req.query["roomId"];
+        let clockIn = req.body["dateIn"];
+        let clockOut = req.body["dateOut"];
+        let additionalUsers = req.body["additionalUsers"] ? req.body["additionalUsers"] : [];
+        let sendDate = req.body["sendDate"] ? req.body["sendDate"] : null;
+
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              let userId = rows[0]["userId"];
+              let values = [
+                [roomId, clockIn, clockOut, userId]
+              ];
+              
+              //Add the reservation made by the one who makes the meeting
+              
+              sql = 'INSERT INTO reservations(roomId, dateIn, dateOut, userId) VALUES ?';
+              connection.query(sql, [values], function (err, rows, fields) {
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //if the original meeting creators add any addition attendee
+                  if(additionalUsers.length > 0){
+                    //get all the userIds of the additionalUsers
+                    sql = 'SELECT userId, userEmail FROM users WHERE userEmail IN (?)';
+                    let individualUserIds = {};
+                    connection.query(sql, additionalUsers, function (err, rows, fields) {
+                      if (err) {
+                        logger.error("Error while fetching values: \n", err);
+                        res.status(400).json({
+                          "data": [],
+                          "error": "Error obtaining values"
+                        })
+                      } else { 
+                        //success
+                        //sends the additional users an invitation in their inbox
+                        for(const userInfo of rows)
+                          individualUserIds[userInfo["userId"]] = userInfo["userEmail"];
+                        console.log(rows)
+                        let tempObj = {};
+                        if(clockIn)
+                          tempObj["clockIn"] = clockIn;
+                        if(clockOut)
+                          tempObj["clockOut"] = clockOut;
+                        if(roomId)
+                          tempObj["roomId"] = roomId;
+                        tempObj["additionalUsers"] = null;
+                        let content = "Employee " + userId + " ("+userEmail+")" + " has invited you to a meeting in room "+roomId+" from "+clockIn+" to "+clockOut+" \n";
+                        console.log(content)
+                        //creates message and adds additional data for future functionality for the boss approving the request with a few clicks
+                        let message = {"content" : content, "data" : {"type": "meetingInvitation", "details" : tempObj }}
+                        values = [];
+                        for(const property in individualUserIds)
+                          values.push([userId, property, "NEW INVITE", sendDate,  JSON.stringify(message)]);
+                        sql = "INSERT INTO inbox(senderId, recipientId, subject, sendDate, message) VALUES ?";
+                        connection.query(sql, [values], function (err, rows, fields) {
+                          connection.release();
+                          if (err) {
+                            logger.error("Error while fetching values: \n", err);
+                            res.status(400).json({
+                              "data": [],
+                              "error": "Error obtaining values"
+                            })
+                          } else { 
+                            //if all is well return 0
+                            res.status(200).json({
+                              "status": 0
+                            })
+                          }
+                        });
+                      }
+                    });
+                  }
+                  else{
+                    //if meeting creator doesn't add additional attendees then return success
+                    res.status(200).json({
+                      "status": 0
+                    })
+                  }
+                }
+              });
+                   
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  // POST /api/reservation
+  //add new reservation for invitee
+  app.post('/api/acceptReservation', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let roomId = req.query["roomId"];
+        let clockIn = req.body["clockIn"];
+        let clockOut = req.body["clockOut"];
+
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              let userId = row[0]["userId"];
+              let values = [
+                [roomId, clockIn, clockOut, userId]
+              ];
+              //add reservation 
+              sql = 'INSERT INTO reservations(roomId, clockIn, clockOut, userId) VALUES ?';
+              connection.query(sql, [values], function (err, rows, fields) {
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //success
+                  res.status(200).json({
+                    "status": 0
+                  })
+                }
+              });
+              
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  
+
+  app.use('/api/manager',manager);
 }
