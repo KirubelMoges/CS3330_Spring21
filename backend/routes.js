@@ -857,61 +857,6 @@ module.exports = function routes(app, logger) {
     
   });
 
-  // GET /api/availableConferencesGivenCapacity
-  //returns all the available Conference rooms that is >= a certain capacity
-  app.get('/api/availableConferencesGivenCapacity', (req, res) => {
-    // obtain a connection from our pool of connections
-    pool.getConnection(async function (err, connection){
-      if(err){
-        // if there is an issue obtaining a connection, release the connection instance and log the error
-        logger.error('Problem obtaining MySQL connection',err)
-        res.status(400).send('Problem obtaining MySQL connection'); 
-      } else {
-        let userEmail = req.body["userEmail"];
-        let userPassword = req.body["userPassword"];
-        let capacity = req.body["capacity"];
-        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
-        //credential check and returns back all requests with the necessary information needed to approve or deny the request
-        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
-        
-        connection.query(sql, function (err, rows, fields) {
-          if (err) {
-            logger.error("Error while fetching values: \n", err);
-            res.status(400).json({
-              "data": [],
-              "error": "Error obtaining values"
-            })
-          } else { 
-            if(rows.length > 0){
-              sql = 'SELECT r.* FROM rooms as r INNER JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity - c.roomCount) >= '+capacity+' AND roomType = 2';
-              connection.query(sql, function (err, rows, fields) {
-                connection.release();
-                if (err) {
-                  logger.error("Error while fetching values: \n", err);
-                  res.status(400).json({
-                    "data": [],
-                    "error": "Error obtaining values"
-                  })
-                } else { 
-                  res.status(200).json({
-                    "data": rows
-                  })
-                }
-              });
-            }
-            else{
-              //not logged in or incorrect credentials
-              res.status(200).json({
-                "status": "1"
-              })
-            }
-          }
-        });
-      }
-    });
-    
-  });
-
   // GET /api/availableRegularGivenCapacity
   //returns all the available Conference rooms that is >= a certain capacity
   app.get('/api/availableRegularGivenCapacity', (req, res) => {
@@ -968,9 +913,9 @@ module.exports = function routes(app, logger) {
     
   });
 
-  // GET /api/reservation
-  //delete reservation
-  app.delete('/api/reservation', (req, res) => {
+    // GET /api/availableConferencesGivenCapacity
+  //returns all the available Conference rooms that is >= a certain capacity
+  app.get('/api/availableConferencesGivenCapacity', (req, res) => {
     // obtain a connection from our pool of connections
     pool.getConnection(async function (err, connection){
       if(err){
@@ -980,7 +925,8 @@ module.exports = function routes(app, logger) {
       } else {
         let userEmail = req.body["userEmail"];
         let userPassword = req.body["userPassword"];
-        let reservationId = req.query["reservationId"];
+        let capacity = req.body["capacity"];
+        let dateTime = req.body["dateTime"];
         const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
         //credential check and returns back all requests with the necessary information needed to approve or deny the request
         let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
@@ -994,7 +940,76 @@ module.exports = function routes(app, logger) {
             })
           } else { 
             if(rows.length > 0){
-              sql = 'DELETE FROM reservations WHERE reservationId=' + reservationId;
+                sql = 'SELECT (r.capacity - '+
+                'CASE '+ 
+                    'WHEN r2.amount IS NOT NULL '+
+                        'THEN r2.amount ' +
+                    'ELSE 0 ' +
+                'END ' +   
+                ') as difference, r.roomId  FROM rooms r LEFT JOIN (SELECT COUNT(*) as amount, roomId FROM reservations WHERE dateIn <= \''+dateTime+'\' AND dateOut >= \''+ dateTime +'\' GROUP BY roomId ) r2 ON r.roomId = r2.roomId WHERE r.roomType = 2 AND (r.capacity - '+
+                'CASE '+
+                    'WHEN r2.amount IS NOT NULL '+
+                        'THEN r2.amount '+
+                    'ELSE 0 '+
+                'END '+    
+                ') >= '+capacity;     
+                console.log(sql)     
+                connection.query(sql, function (err, rows, fields) {
+                  connection.release();
+                  if (err) {
+                    logger.error("Error while fetching values: \n", err);
+                    res.status(400).json({
+                      "data": [],
+                      "error": "Error obtaining values"
+                    })
+                  } else { 
+                    res.status(200).json({
+                      "data": rows
+                    })
+                  }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": "1"
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  // GET /api/availableRegularGivenCapacity
+  //returns all the available Conference rooms that is >= a certain capacity
+  app.get('/api/availableRegularGivenCapacity', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let capacity = req.body["capacity"];
+        let dateTime = req.body["dateTime"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              sql = 'SELECT r.* FROM rooms as r INNER JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity - c.roomCount) >= '+capacity+' AND roomType = 1';
               connection.query(sql, function (err, rows, fields) {
                 connection.release();
                 if (err) {
@@ -1006,8 +1021,103 @@ module.exports = function routes(app, logger) {
                 } else { 
                   //success
                   res.status(200).json({
-                    "status" : 0
+                    "data": rows
                   })
+                }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  // GET /api/reservation
+  //delete reservation
+  app.delete('/api/reservation', (req, res) => {
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        let reservationId = req.query["reservationId"];
+        let dateIn = req.body["dateIn"];
+        let dateOut = req.body["dateOut"];
+        let roomId = req.body["roomId"];
+
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              //Gets the reservationId of the original meeting creator
+              sql = 'SELECT MIN(reservationId) as minId FROM reservations WHERE dateIn=\''+dateIn + '\' AND dateOut=\'' + dateOut + '\' AND roomId=' + roomId + ' GROUP BY dateIn, dateOut, roomId';
+              connection.query(sql, function (err, rows, fields) {
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //If user deleting is not the original creator of the meeting
+                  if(rows[0]["minId"] == reservationId){
+                    sql = 'DELETE FROM reservations WHERE dateIn=\''+dateIn + '\' AND dateOut=\'' + dateOut + '\' AND roomId=' + roomId;
+                    connection.query(sql, function (err, rows, fields) {
+                      if (err) {
+                        logger.error("Error while fetching values: \n", err);
+                        res.status(400).json({
+                          "data": [],
+                          "error": "Error obtaining values"
+                        })
+                      } else { 
+                        //success
+                        res.status(200).json({
+                          "status": 0
+                        })
+      
+                      }
+                    });
+                  }
+                  else{
+                    //If user deleting is not original creator of the meeting
+                    sql = 'DELETE FROM reservations WHERE reservationId=' + reservationId;
+                    connection.query(sql, function (err, rows, fields) {
+                      if (err) {
+                        logger.error("Error while fetching values: \n", err);
+                        res.status(400).json({
+                          "data": [],
+                          "error": "Error obtaining values"
+                        })
+                      } else { 
+                        //success
+                        res.status(200).json({
+                          "status": 0
+                        })
+      
+                      }
+                    });
+                  }
+
                 }
               });
             }
