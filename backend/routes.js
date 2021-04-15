@@ -3,6 +3,8 @@ const pool = require('./db')
 const crypto = require('crypto');
 const { json } = require('body-parser');
 const manager = require('./routes/manager');
+const employee = require('./routes/employee');
+const custodian = require('./routes/custodian');
 
 module.exports = function routes(app, logger) {
   // GET /
@@ -17,7 +19,7 @@ module.exports = function routes(app, logger) {
       if (err){
         console.log(connection);
         // if there is an issue obtaining a connection, release the connection instance and log the error
-        logger.error('Problem obtaining MySQL connection', err)
+        logger.error('Problem obtaining MySQL connection', err);
         res.status(400).send('Problem obtaining MySQL connection'); 
       } else {
         // if there is no issue obtaining a connection, execute query
@@ -417,4 +419,6 @@ module.exports = function routes(app, logger) {
   });
 
   app.use('/api/manager',manager);
+  app.use('/api/employee',employee);
+  app.use('/api/custodian',custodian);
 }
