@@ -2,11 +2,13 @@ const secret = 'covidPlannerDB';
 const pool = require('./db')
 const crypto = require('crypto');
 const { json } = require('body-parser');
+let cookieParser = require('cookie-parser');
 const manager = require('./routes/manager');
 const employee = require('./routes/employee');
 const custodian = require('./routes/custodian');
-
 module.exports = function routes(app, logger) {
+  app.use(cookieParser());
+
   // GET /
   app.get('/', (req, res) => {
     res.status(200).send('Go to 0.0.0.0:3000.');
