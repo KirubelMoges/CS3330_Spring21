@@ -195,7 +195,7 @@ router.put('/setRoomToUncleaned', (req,res) => {
 
           if(roomId)
           {
-            connection.query('UPDATE rooms SET cleaned = (0) WHERE roomId = (?)',roomId, (err, rows, fields) => {
+            connection.query('UPDATE rooms SET cleaned = 0 WHERE roomId = (?)',roomId, (err, rows, fields) => {
               if (err) {
                 logger.error("Error while deleting room \n", err);
                 res.status(400).json({
@@ -211,7 +211,7 @@ router.put('/setRoomToUncleaned', (req,res) => {
           }
           else if(name)
           {
-            connection.query('UPDATE rooms SET cleaned = (0) WHERE name = (?)',name, (err, rows, fields) => {
+            connection.query('UPDATE rooms SET cleaned = 0 WHERE name = (?)',name, (err, rows, fields) => {
               if (err) {
                 logger.error("Error while deleting room \n", err);
                 res.status(400).json({
@@ -241,11 +241,12 @@ router.put('/setRoomToCleaned', (req,res) => {
         {
           let roomId = req.body["roomId"];
           let name = req.body["name"];
+          let lastCleaned = req.body['lastCleaned']
           // if there is no issue obtaining a connection, execute query
 
           if(roomId)
           {
-            connection.query('UPDATE rooms SET cleaned = (1) WHERE roomId = (?)',roomId, (err, rows, fields) => {
+            connection.query('UPDATE rooms SET cleaned = 1 , lastCleaned = (?) WHERE roomId = (?)',[lastCleaned,roomId], (err, rows, fields) => {
               if (err) {
                 logger.error("Error while deleting room \n", err);
                 res.status(400).json({
@@ -261,7 +262,7 @@ router.put('/setRoomToCleaned', (req,res) => {
           }
           else if(name)
           {
-            connection.query('UPDATE rooms SET cleaned = (1) WHERE name = (?)',name, (err, rows, fields) => {
+            connection.query('UPDATE rooms SET cleaned = 1 , lastCleaned = (?) WHERE name = (?)',[lastCleaned,name], (err, rows, fields) => {
               if (err) {
                 logger.error("Error while deleting room \n", err);
                 res.status(400).json({
@@ -509,7 +510,7 @@ router.post('/addCovidContact', async (req,res) => {
           let userIdB = req.body['userIdB'];
           connection.query('INSERT INTO covidContacts (userIdA,userIdB) values(?,?)',[userIdA,userIdB], (err, rows, fields) => {
             if (err) {
-              logger.error("Error while getting reservations room \n", err);
+              logger.error("Error while adding covid contacts \n", err);
               res.status(400).json({
                 "data": [],
                 "error": "Error obtaining values"
@@ -538,7 +539,7 @@ router.get('/getAllPeopleInContactWithUserId', (req,res) => {
           let userId = req.body['userId'];
           connection.query('SELECT * [except userPassword] FROM users WHERE userId IN (SELECT DISTINCT userIdB FROM covidContacts WHERE userIdA = (?))',userId,(err, rows, fields) => {
             if (err) {
-              logger.error("Error while getting reservations room \n", err);
+              logger.error("Error while getting covid contacts \n", err);
               res.status(400).json({
                 "data": [],
                 "error": "Error obtaining values"
