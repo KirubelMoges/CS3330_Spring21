@@ -105,12 +105,12 @@ module.exports = function routes(app, logger) {
 
   // POST /api/createUser
   //sign in api to create new user
-  app.post('/api/createUser', (req, res) => {
+  app.post('/api/createUser', async (req, res) => {
     // obtain a connection from our pool of connections
     pool.getConnection(function (err, connection){
       if(err){
         // if there is an issue obtaining a connection, release the connection instance and log the error
-        logger.error('Problem obtaining MySQL connection',err)
+        //logger.error('Problem obtaining MySQL connection',err)
         res.status(400).send('Problem obtaining MySQL connection'); 
       } else {
         let firstName = req.body["firstName"];
