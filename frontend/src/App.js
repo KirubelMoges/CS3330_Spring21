@@ -5,18 +5,28 @@ import { Route, BrowserRouter as Router } from 'react-router-dom';
 import React, { useState } from 'react';
 import { api } from './api';
 import { UserContext } from './common/context';
+import CalendarView from './components/calendar-view';
+import RouteGuard from './components/routeGuard';
+import EmployeeList from './components/employee-list/employee-list';
+import About from './components/header/about';
 
 const App = () => {
   const [context, setContext] = useState(api.currentUser());
+
   return (
     <UserContext.Provider value={[context, setContext]}>
       <Router>
         <Route exact path="/" component={HomePage} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
+        <Route exact path="/employees" component={EmployeeList} />
+        <Route exact path="/about" component={About} />
+        <RouteGuard exact path="/home" component={CalendarView} />
       </Router>
     </UserContext.Provider>
   );
 };
+
+// This is for a demo
 
 export default App;

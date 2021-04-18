@@ -189,4 +189,116 @@ router.get('/getReservationsDuringMonthAndYear', (req,res) => {
     });
   });
 
+  // GET /api/getMyInbox
+  //returns all the messages directed to user
+  router.get('/api/getMyInbox', (req, res) => {
+
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              sql = 'SELECT * FROM inbox WHERE recipientId = ' + row[0]["userId"];
+              connection.query(sql, function (err, rows, fields) {
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //success
+                  res.status(200).json({
+                    "data": rows
+                  })
+                }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
+  // GET /api/getMySentMessages
+  //returns all the messages sent by user
+  router.get('/api/getMySentMessages', (req, res) => {
+
+    // obtain a connection from our pool of connections
+    pool.getConnection(async function (err, connection){
+      if(err){
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection',err)
+        res.status(400).send('Problem obtaining MySQL connection'); 
+      } else {
+        let userEmail = req.body["userEmail"];
+        let userPassword = req.body["userPassword"];
+        const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
+        //credential check and returns back all requests with the necessary information needed to approve or deny the request
+        let sql = 'SELECT userId FROM users WHERE userEmail = \'' + userEmail + '\' AND userPassword=\'' + hash + '\'';
+        
+        connection.query(sql, function (err, rows, fields) {
+          if (err) {
+            logger.error("Error while fetching values: \n", err);
+            res.status(400).json({
+              "data": [],
+              "error": "Error obtaining values"
+            })
+          } else { 
+            if(rows.length > 0){
+              sql = 'SELECT * FROM inbox WHERE senderId = ' + row[0]["userId"];
+              connection.query(sql, function (err, rows, fields) {
+                connection.release();
+                if (err) {
+                  logger.error("Error while fetching values: \n", err);
+                  res.status(400).json({
+                    "data": [],
+                    "error": "Error obtaining values"
+                  })
+                } else { 
+                  //success
+                  res.status(200).json({
+                    "data": rows
+                  })
+                }
+              });
+            }
+            else{
+              //not logged in or incorrect credentials
+              res.status(200).json({
+                "status": 1
+              })
+            }
+          }
+        });
+      }
+    });
+    
+  });
+
   module.exports = router;

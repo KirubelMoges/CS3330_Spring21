@@ -1,8 +1,11 @@
 DB Tables: https://docs.google.com/spreadsheets/d/1kAu49J_6XO-SJMbrhZWXbzpYziG7Qeiyy1pI8hg5ASU/edit#gid=1324044481
+
 Team 2 User Stories: https://docs.google.com/spreadsheets/d/1K9yoKtaM4JCL_o4YzQmCWlrwJgBlrUlTxD732gCnlV0/edit#gid=0
+
 Team 2 Product Outline: https://docs.google.com/spreadsheets/d/1UB4wIJn1Z5s70YRL1bDDBAcoPp_WpkSGMH-WMltDqGs/edit#gid=0
 
 Our User Stories: https://docs.google.com/spreadsheets/d/1oMhXzxIixfbWv573KbImYsvEC9BqRdw6IDesA2LCQfA/edit#gid=0
+
 Our Product Outline: https://docs.google.com/spreadsheets/d/1BL9PjIBdDzkQLP8sSxZI7a5F0_L0GMvdrN6-xtyARXU/edit#gid=2013133979
 
 # Getting Started with Create React App
