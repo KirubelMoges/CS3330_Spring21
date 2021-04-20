@@ -158,11 +158,6 @@ module.exports = function routes(app, logger) {
                     error: 'Error obtaining values'
                   });
                 } else {
-                  let users = {
-                    email : userEmail,
-                    pxcd : hash
-                  }
-                  res.cookie(cookieName, users);
                   res.status(200).json({
                     data: rows
                   });
@@ -184,7 +179,6 @@ module.exports = function routes(app, logger) {
   // GET /api/login
   //authentification route, returns 0 if successful login, 1 if user doesn't exist, and 2 if incorrect password
   app.get('/api/login', async (req, res) => {
-    console.log(req.cookies)
 
     // obtain a connection from our pool of connections
     pool.getConnection(async function (err, connection) {
@@ -303,20 +297,6 @@ module.exports = function routes(app, logger) {
         let previousPassword = req.body['previousPassword'];
         let newPassword = req.body['newPassword'];
         let sql1 = "SELECT userId FROM users WHERE userEmail ='" + userEmail + "'";
-
-        if(cookieName in req.cookies){
-          if(req.cookies[cookieName]["email"] == userEmail && req.cookies[cookieName]["pxcd"] == previousPassword){
-
-          }
-          else{
-            //bad credentials
-            res.status(200).json({ status: 2 });
-          }
-        }
-        else{
-          //if the user doesn't exist
-            res.status(200).json({ status: 1 });
-        }
 
         connection.query(sql1, function (err, rows, fields) {
           if (err) {
