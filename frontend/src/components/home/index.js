@@ -1,21 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
 import { UserContext } from '../../common/context';
-import Header from '../header';
 import LandingPage from '../landing';
+import CalendarView from '../calendar-view';
 
 const LoggedInView = () => {
-  const [userContext] = useContext(UserContext);
-
-  return (
-    <div>
-      <Header />
-      <Container>
-        <h1 className="display-3 text-center">Home Page</h1>
-        <h3 className="text-md-center">Current user: {userContext.username}</h3>
-      </Container>
-    </div>
-  );
+  return <CalendarView />;
 };
 
 const HomePage = () => {
