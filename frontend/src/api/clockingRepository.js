@@ -40,7 +40,7 @@ export class ClockRepository {
     const { data, status } = await axios.post(URL + '/api/clockin', {
       userId,
       roomId,
-      clockIn: time,
+      clockIn: new Date(time),
       clockInType
     });
 
@@ -62,7 +62,7 @@ export class ClockRepository {
    * @param {DateTime} time - The time the user is clocking out at
    * @param {number} roomId - The id of the room the user is clocking out of
    * @param {string} clockInType - The type of the clock out
-   * @returns {Object} - The errors of the request
+   * @returns {[Object, Object]} - Data, error tuple
    */
   async clockOut(userId, time, roomId, clockInType = '') {
     const errors = { success: false };
@@ -82,7 +82,7 @@ export class ClockRepository {
       errors.reason = 'Still clocked out, clock in before clocking out.';
     } else errors.success = true;
 
-    return errors;
+    return [data, errors];
   }
 
   /**
