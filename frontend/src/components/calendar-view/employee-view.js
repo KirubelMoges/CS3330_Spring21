@@ -1,14 +1,25 @@
 import './styles/employee.css';
 import './styles/calendar.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getDays } from './utils';
 import { RoomCard, TimeCard } from './cards';
 import { Modal, Form } from 'react-bootstrap';
 
 const EmployeeView = () => {
-  const days = getDays(new Date());
-
+  const [days, setDays] = useState(getDays(new Date()));
   const rooms = [1, 2, 3, 4, 5];
+
+  const [month, setMonth] = useState();
+  const [year, setYear] = useState();
+
+  const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+  useEffect(() => {
+    if (!month || !year) {
+      setMonth(days[Math.floor(days.length / 2)].getMonth() + 1);
+      setYear(days[0].getFullYear() + 1);
+    }
+  }, [month, setMonth, year, setYear, days]);
 
   const [isScheduleShowing, setIsScheduleShowing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -23,11 +34,34 @@ const EmployeeView = () => {
     handleCloseSchedule();
   };
 
+  const sendMonthChangeRequest = () => {};
+
   return (
     <div className="container pb-5">
       <div className="calendar shadow bg-white p-5">
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center justify-content-between">
           <h2 className="month font-weight-bold mb-0 text-uppercase">April 2021</h2>
+          <Form>
+            <Form.Group controlId="calendar.selectMonth">
+              <Form.Label>Month</Form.Label>
+              <Form.Control as="select" onChange={(e) => setMonth(e.target.value)} value={month}>
+                {months.map((month, index) => (
+                  <option key={index}>{month}</option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="calendar.selectYear">
+              <Form.Label>Year</Form.Label>
+              <Form.Control
+                type="number"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <button className="btn btn-primary" onClick={() => sendMonthChangeRequest()}>
+              Change Month
+            </button>
+          </Form>
         </div>
         <p className="font-italic text-muted mb-5">No events today.</p>
         <ol className="day-names list-unstyled mb-0">
