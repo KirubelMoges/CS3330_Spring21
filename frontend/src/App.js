@@ -3,15 +3,14 @@ import Login from './components/auth/login';
 import Register from './components/auth/register';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import React, { useState } from 'react';
-import { api } from './api';
 import { UserContext } from './common/context';
-import CalendarView from './components/calendar-view';
-import RouteGuard from './components/routeGuard';
 import EmployeeList from './components/employee-list/employee-list';
 import About from './components/header/about';
+import { UserRepository } from './api/userRepository';
 
 const App = () => {
-  const [context, setContext] = useState(api.currentUser());
+  const userRepository = new UserRepository();
+  const [context, setContext] = useState(userRepository.currentUser());
 
   return (
     <UserContext.Provider value={[context, setContext]}>
@@ -21,12 +20,9 @@ const App = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
         <Route exact path="/about" component={About} />
-        <RouteGuard exact path="/home" component={CalendarView} />
       </Router>
     </UserContext.Provider>
   );
 };
-
-// This is for a demo
 
 export default App;

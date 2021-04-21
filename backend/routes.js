@@ -12,7 +12,6 @@ const reservations = require('./routes/reservations');
 const rooms = require('./routes/rooms');
 
 module.exports = function routes(app, logger) {
-
   // GET /
   app.get('/', (req, res) => {
     res.status(200).send('Go to 0.0.0.0:3000.');
@@ -26,7 +25,7 @@ module.exports = function routes(app, logger) {
         console.log(connection);
         // if there is an issue obtaining a connection, release the connection instance and log the error
         logger.error('Problem obtaining MySQL connection', err);
-        res.status(400).send('Problem obtaining MySQL connection'); 
+        res.status(400).send('Problem obtaining MySQL connection');
       } else {
         // if there is no issue obtaining a connection, execute query
         connection.query('drop table if exists test_table', function (err, rows, fields) {
@@ -122,7 +121,7 @@ module.exports = function routes(app, logger) {
       if (err) {
         // if there is an issue obtaining a connection, release the connection instance and log the error
         //logger.error('Problem obtaining MySQL connection',err)
-        res.status(400).send('Problem obtaining MySQL connection'); 
+        res.status(400).send('Problem obtaining MySQL connection');
       } else {
         let firstName = req.body['firstName'];
         let lastName = req.body['lastName'];
@@ -138,13 +137,13 @@ module.exports = function routes(app, logger) {
 
         connection.query(sql1, function (err, rows, fields) {
           if (err) {
-            logger.error("Error while fetching values: \n", err);
+            logger.error('Error while fetching values: \n', err);
             res.status(400).json({
-              "data": [],
-              "error": "Error obtaining values"
-            })
-          } else { 
-            if(rows.length == 0){
+              data: [],
+              error: 'Error obtaining values'
+            });
+          } else {
+            if (rows.length == 0) {
               let sql =
                 'INSERT INTO users(firstName, lastName, userEmail, userPassword, exposure, jobTitle, officeId) VALUES ?';
               console.log(sql);
@@ -159,20 +158,19 @@ module.exports = function routes(app, logger) {
                   });
                 } else {
                   let users = {
-                    email : userEmail,
-                    pxcd : hash
-                  }
+                    email: userEmail,
+                    pxcd: hash
+                  };
                   res.cookie(cookieName, users);
                   res.status(200).json({
                     data: rows
                   });
                 }
               });
-            }
-            else{
+            } else {
               //user already exists
               res.status(400).json({
-                "status" : 1
+                status: 1
               });
             }
           }
@@ -184,7 +182,7 @@ module.exports = function routes(app, logger) {
   // GET /api/login
   //authentification route, returns 0 if successful login, 1 if user doesn't exist, and 2 if incorrect password
   app.get('/api/login', async (req, res) => {
-    console.log(req.cookies)
+    console.log(req.cookies);
 
     // obtain a connection from our pool of connections
     pool.getConnection(async function (err, connection) {
@@ -237,9 +235,9 @@ module.exports = function routes(app, logger) {
                         }
                       : { status: 2 };
                   let users = {
-                    email : userEmail,
-                    pxcd : hash
-                  }
+                    email: userEmail,
+                    pxcd: hash
+                  };
                   res.status(200).json(response);
                 }
               });
@@ -304,18 +302,18 @@ module.exports = function routes(app, logger) {
         let newPassword = req.body['newPassword'];
         let sql1 = "SELECT userId FROM users WHERE userEmail ='" + userEmail + "'";
 
-        if(cookieName in req.cookies){
-          if(req.cookies[cookieName]["email"] == userEmail && req.cookies[cookieName]["pxcd"] == previousPassword){
-
-          }
-          else{
+        if (cookieName in req.cookies) {
+          if (
+            req.cookies[cookieName]['email'] == userEmail &&
+            req.cookies[cookieName]['pxcd'] == previousPassword
+          ) {
+          } else {
             //bad credentials
             res.status(200).json({ status: 2 });
           }
-        }
-        else{
+        } else {
           //if the user doesn't exist
-            res.status(200).json({ status: 1 });
+          res.status(200).json({ status: 1 });
         }
 
         connection.query(sql1, function (err, rows, fields) {
@@ -394,7 +392,6 @@ module.exports = function routes(app, logger) {
       connection.release();
     });
   });
- 
 
   app.use('/api/manager', manager);
   app.use('/api/manager', manager);
@@ -404,5 +401,4 @@ module.exports = function routes(app, logger) {
   app.use('/api', clocking);
   app.use('/api', reservations);
   app.use('/api', rooms);
-
 };
