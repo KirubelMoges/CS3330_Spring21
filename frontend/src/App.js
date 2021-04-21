@@ -7,6 +7,7 @@ import { UserContext } from './common/context';
 import EmployeeList from './components/employee-list/employee-list';
 import About from './components/header/about';
 import { UserRepository } from './api/userRepository';
+import RoomView from './components/room-view/room-view';
 
 const App = () => {
   const userRepository = new UserRepository();
@@ -20,6 +21,7 @@ const App = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
         <Route exact path="/about" component={About} />
+        <Route exact path="/rooms" component={RoomView} />
       </Router>
     </UserContext.Provider>
   );

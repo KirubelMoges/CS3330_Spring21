@@ -14,6 +14,7 @@ const Header = () => {
         <Nav className="mr-auto">
           <Nav.Link href="/about">About</Nav.Link>
           <Nav.Link href="/employees">Employees</Nav.Link>
+          <Nav.Link href="/rooms">Rooms</Nav.Link>
         </Nav>
         {userRepository.loggedIn() ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>

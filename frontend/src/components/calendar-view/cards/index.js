@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState } from 'react';
 import EmployeesModal from './modals/employees';
 import ManagerRoomsModal from './modals/manager-room';
-
+import { Link, Redirect } from 'react-router-dom';
 import RoomsModal from './modals/rooms';
 import StatsModal from './modals/stats';
 import TimeStatsModal from './modals/time-stats';
@@ -26,9 +26,9 @@ export const RoomCard = () => {
           </p>
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button className="btn btn-primary mb-2" onClick={handleRoomsOpen}>
+              <Link to="/rooms" className="btn btn-primary mb-2" >
                 View Rooms
-              </button>
+              </Link>
               <button onClick={handleStatsOpen} className="btn btn-info">
                 Covid Stats
               </button>
@@ -36,7 +36,7 @@ export const RoomCard = () => {
           </div>
         </div>
       </div>
-      <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} />
+      {/* <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} /> */}
       <StatsModal handleClose={handleStatsClose} show={isStatsModalShowing} />
     </div>
   );
