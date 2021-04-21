@@ -6,13 +6,12 @@ export class ClockRepository {
    * Attempt to get a user's clocking information
    * @param {string} userEmail - The email of a user requesting their clock data
    * @param {string} userPassword - The password of a user requesting their clock data
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async getClockData(userEmail, userPassword) {
     const errors = { success: false };
     const { data, status } = await axios.get(URL + '/api/clockData', {
-      userEmail,
-      userPassword
+      params: { userEmail, userPassword }
     });
 
     if (status >= 201) {
@@ -94,7 +93,7 @@ export class ClockRepository {
    * @param {string} newClockInType - The new start type
    * @param {string} newClockOutType - The new end type
    * @param {DateTime} sendDate - The timestamp of the request
-   * @returns {Object} - The errors and status of the request
+   * @returns {Promise<Object>} - The errors and status of the request
    */
   async requestClockChange(
     userEmail,
@@ -106,15 +105,23 @@ export class ClockRepository {
     sendDate
   ) {
     const errors = { success: false };
-    const { data, status } = await axios.put(URL + '/api/requestClockChange', {
-      userEmail,
-      clockId,
-      newClockIn: newClockInTime,
-      newClockOut: newClockOutTime,
-      newClockInType,
-      newClockOutType,
-      sendDate
-    });
+    const { data, status } = await axios.post(
+      URL + '/api/requestClockChange',
+      {
+        userEmail,
+
+        newClockIn: newClockInTime,
+        newClockOut: newClockOutTime,
+        newClockInType,
+        newClockOutType,
+        sendDate
+      },
+      {
+        params: {
+          clockId: clockId
+        }
+      }
+    );
 
     if (status >= 201) {
       console.log(data);
