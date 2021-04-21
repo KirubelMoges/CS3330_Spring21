@@ -37,9 +37,8 @@ export class MessageRepository {
    */
   async getAllRecievedEmployeeMessages(userId) {
     const errors = { success: false };
-    const { data, status } = await axios({
-      url: URL + '/api/EmployeeMessages',
-      data: { recipientID: userId }
+    const { data, status } = await axios.get(URL + '/api/EmployeeMessages', {
+      params: { recipientID: userId }
     });
 
     if (status >= 201) errors.request = 'Bad Request';
@@ -55,10 +54,7 @@ export class MessageRepository {
    */
   async searchMessages(keyword) {
     const errors = { success: false };
-    const { data, status } = await axios({
-      url: URL + '/api/searchMessages',
-      data: { keyword }
-    });
+    const { data, status } = await axios.get(URL + '/api/searchMessages', { params: { keyword } });
 
     if (status >= 201) errors.request = 'Bad Request';
     else errors.success = true;

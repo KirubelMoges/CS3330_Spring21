@@ -17,9 +17,7 @@ export class ClockRepository {
     if (status >= 201) {
       console.log(data);
       errors.request = 'Bad Request';
-    }
-
-    if (data.status === 1) {
+    } else if (data.status === 1) {
       errors.reason = 'Still clocked in, clock out before clocking in.';
     } else errors.success = true;
 
@@ -46,9 +44,7 @@ export class ClockRepository {
     if (status >= 201) {
       console.log(data);
       errors.request = 'Bad Request';
-    }
-
-    if (data.status === 1) {
+    } else if (data.status === 1) {
       errors.reason = 'Still clocked in, clock out before clocking in.';
     } else errors.success = true;
 
@@ -75,9 +71,7 @@ export class ClockRepository {
     if (status >= 201) {
       console.log(data);
       errors.request = 'Bad Request';
-    }
-
-    if (data.status === 1) {
+    } else if (data.status === 1) {
       errors.reason = 'Still clocked out, clock in before clocking out.';
     } else errors.success = true;
 
@@ -126,9 +120,7 @@ export class ClockRepository {
     if (status >= 201) {
       console.log(data);
       errors.request = 'Bad Request';
-    }
-
-    if (data.staus === 2) {
+    } else if (data.status === 2) {
       errors.reason = 'User does not have a boss';
     } else errors.success = true;
 
@@ -182,9 +174,7 @@ export class ClockRepository {
     if (status >= 200) {
       console.log(data);
       errors.request = 'Bad Request';
-    }
-
-    if (data.status === 1) errors.reason = 'Incorrect credentials';
+    } else if (data.status === 1) errors.reason = 'Incorrect credentials';
     else errors.success = true;
 
     return [data, errors];
@@ -210,9 +200,7 @@ export class ClockRepository {
     if (status >= 200) {
       console.log(data);
       errors.request = 'Bad Request';
-    }
-
-    if (data.status === 1) errors.reason = 'Incorrect credentials';
+    } else if (data.status === 1) errors.reason = 'Incorrect credentials';
     else errors.success = true;
 
     return [data, errors];

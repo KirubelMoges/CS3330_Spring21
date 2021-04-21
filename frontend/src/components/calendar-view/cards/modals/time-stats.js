@@ -30,8 +30,6 @@ const TimeStatsModal = (props) => {
           }
         });
     }
-
-    console.log(timeData);
   }, [timeData, setTimeData]);
 
   const constructDate = (hour, minute) => {
@@ -78,7 +76,6 @@ const TimeStatsModal = (props) => {
         new Date()
       )
       .then((res) => {
-        console.log(res);
         setIsLoading(false);
         if (res.success === false) {
           setError(res.reason);
