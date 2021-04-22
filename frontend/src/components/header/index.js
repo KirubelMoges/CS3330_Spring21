@@ -1,19 +1,21 @@
-import { Navbar, Nav } from 'react-bootstrap';
-import { useContext } from 'react';
-import { UserContext } from '../../common/context';
-import { UserRepository } from '../../api/userRepository';
+import { Navbar, Nav } from "react-bootstrap";
+import { useContext } from "react";
+import { UserContext } from "../../common/context";
+import { UserRepository } from "../../api/userRepository";
 
 const Header = () => {
   const userRepository = new UserRepository();
 
   return (
-    <Navbar className="mr-auto" expand="lg">
+    <Navbar className="mr-auto bg-light mb-2" expand="lg">
       <Navbar.Brand href="/">Covid Workplace Planning Tool</Navbar.Brand>
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link href="/about">About</Nav.Link>
           <Nav.Link href="/employees">Employees</Nav.Link>
+          <Nav.Link href="/rooms">Rooms</Nav.Link>
+          <Nav.Link href="/covid">Covid Cases</Nav.Link>
         </Nav>
         {userRepository.loggedIn() ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>

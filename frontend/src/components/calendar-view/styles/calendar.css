@@ -1,6 +1,6 @@
 .clearfix::after,
 .calendar ol::after {
-  content: '.';
+  content: ".";
   display: block;
   height: 0;
   clear: both;
