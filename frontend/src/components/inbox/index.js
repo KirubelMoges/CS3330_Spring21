@@ -14,7 +14,7 @@ const Inbox = () => {
         setAllEmployeeMessages(res);
       });
     }
-  }, [a]);
+  }, [allEmployeeMessages]);
 
   return (
     <div className="container">
@@ -23,7 +23,7 @@ const Inbox = () => {
         allEmployeeMessages.map((message, index) => {
           return <div key={index}>message.content</div>;
         })}
-      {a && <Table></Table>}
+      {allEmployeeMessages && <Table></Table>}
     </div>
   );
 };
