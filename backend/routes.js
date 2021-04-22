@@ -10,6 +10,7 @@ const office = require('./routes/office');
 const clocking = require('./routes/clocking');
 const reservations = require('./routes/reservations');
 const rooms = require('./routes/rooms');
+const messages = require('./routes/message');
 
 module.exports = function routes(app, logger) {
   // GET /
@@ -401,4 +402,5 @@ module.exports = function routes(app, logger) {
   app.use('/api', clocking);
   app.use('/api', reservations);
   app.use('/api', rooms);
+  app.use(messages);
 };

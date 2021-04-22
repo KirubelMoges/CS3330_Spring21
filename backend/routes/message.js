@@ -1,3 +1,13 @@
+const express = require('express');
+
+const app = express.Router();
+
+const pool = require('../db');
+
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+
 //GET
 // api/messages
 //As the manager get list of messages that have been previously sent
@@ -188,3 +198,5 @@ app.post('/api/postMessage', (req, res) => {
     }
   });
 });
+
+module.exports = app;
