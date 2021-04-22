@@ -4,6 +4,7 @@ import ManagerRoomsModal from "./modals/manager-room";
 import { Link, Redirect } from "react-router-dom";
 import RoomsModal from "./modals/rooms";
 import ReportCovidModal from "./modals/report-covid";
+import ReportContactModal from "./modals/report-contact";
 import StatsModal from "./modals/stats";
 import TimeStatsModal from "./modals/time-stats";
 import { ClockInModal, ClockOutModal } from "./modals/clock-in";
@@ -15,6 +16,13 @@ export const CovidCard = () => {
   );
   const handleReportCovidClose = () => setIsReportCovidModalShowing(false);
   const handleReportCovidOpen = () => setIsReportCovidModalShowing(true);
+
+  const [
+    isReportContactModalShowing,
+    setIsReportContactModalShowing,
+  ] = useState(false);
+  const handleReportContactClose = () => setIsReportContactModalShowing(false);
+  const handleReportContactOpen = () => setIsReportContactModalShowing(true);
 
   const userRepository = new UserRepository();
 
@@ -40,8 +48,8 @@ export const CovidCard = () => {
 
               {hasCovid ? (
                 <button
-                  className="btn btn-warning"
-                  onClick={handleReportCovidOpen}
+                  className="btn btn-warning text-light"
+                  onClick={handleReportContactOpen}
                 >
                   Report Contact
                 </button>
@@ -61,6 +69,10 @@ export const CovidCard = () => {
         handleClose={handleReportCovidClose}
         show={isReportCovidModalShowing}
         reportCovid={covidReported}
+      />
+      <ReportContactModal
+        handleClose={handleReportContactClose}
+        show={isReportContactModalShowing}
       />
     </div>
   );
@@ -116,7 +128,7 @@ export const TimeCard = () => {
   const handleClockOutOpen = () => setIsClockOutModalShowing(true);
 
   return (
-    <div className="timecard shadow ">
+    <div className="timecard shadow">
       <div className="card clock-card">
         <div className="card-body">
           <h5 className="card-title">My Time</h5>
