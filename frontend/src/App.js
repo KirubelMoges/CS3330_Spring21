@@ -7,6 +7,7 @@ import { UserContext } from './common/context';
 import EmployeeList from './components/employee-list/employee-list';
 import About from './components/header/about';
 import { UserRepository } from './api/userRepository';
+import Inbox from './components/inbox';
 import RoomView from './components/room-view/room-view';
 import CovidView from './components/covid-view/covid-view';
 
@@ -22,6 +23,7 @@ const App = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
         <Route exact path="/about" component={About} />
+        <Route exact path="/inbox" component={Inbox} />
         <Route exact path="/rooms" component={RoomView} />
         <Route exact path="/covid" component={CovidView} />
       </Router>
