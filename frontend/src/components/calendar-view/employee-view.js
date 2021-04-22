@@ -1,13 +1,13 @@
-import "./styles/employee.css";
-import "./styles/calendar.css";
-import React, { useEffect, useState } from "react";
-import { getDays } from "./utils";
-import { CovidCard, RoomCard, TimeCard } from "./cards";
-import { Modal, Form } from "react-bootstrap";
-import { RoomsRepository } from "../../api/roomsRepository";
-import { UserRepository } from "../../api/userRepository";
-import { ReservationsRepository } from "../../api/reservationsRepository";
-import { EmployeeRepository } from "../../api/employeeRepository";
+import './styles/employee.css';
+import './styles/calendar.css';
+import React, { useEffect, useState } from 'react';
+import { getDays } from './utils';
+import { CovidCard, RoomCard, TimeCard } from './cards';
+import { Modal, Form } from 'react-bootstrap';
+import { RoomsRepository } from '../../api/roomsRepository';
+import { UserRepository } from '../../api/userRepository';
+import { ReservationsRepository } from '../../api/reservationsRepository';
+import { EmployeeRepository } from '../../api/employeeRepository';
 
 const RenderReservations = (props) => {
   const date = props.date;
@@ -44,20 +44,36 @@ const RenderReservations = (props) => {
 };
 
 const EmployeeView = () => {
-  const days = getDays(new Date());
+  const [days, setDays] = useState();
+  const [rooms, setRooms] = useState(undefined);
+
+  const [month, setMonth] = useState(4);
+  const [year, setYear] = useState(2021);
+
+  const [schedules, setSchedules] = useState(undefined);
+  const [reservations, setReservations] = useState(undefined);
+
+  const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
   useEffect(() => {
+    if (!days) {
+      setDays(getDays(new Date()));
+    }
+
+    if (!month || !year) {
+      setMonth(days[Math.floor(days.length / 2)].getMonth() + 1);
+      setYear(days[0].getFullYear() + 1);
+    }
+
     if (!rooms) {
       const roomsRepository = new RoomsRepository();
       const userRepository = new UserRepository();
 
       roomsRepository
-        .getRooms(
-          userRepository.currentUser().username,
-          userRepository.currentUser().password
-        )
+        .getRooms(userRepository.currentUser().username, userRepository.currentUser().password)
         .then((res) => {
           if (res[1].success === false) {
-            alert("Failed to get rooms, contact a manager!");
+            alert('Failed to get rooms, contact a manager!');
           } else {
             setRooms(res[0].data);
           }
@@ -67,7 +83,7 @@ const EmployeeView = () => {
     if (!schedules) {
       const employeeRepo = new EmployeeRepository();
       employeeRepo.getSchedules(month, year).then((res) => {
-        console.log("Schedules:", res);
+        console.log('Schedules:', res);
         setSchedules(res);
       });
     }
@@ -75,7 +91,7 @@ const EmployeeView = () => {
     if (!reservations) {
       const employeeRepo = new EmployeeRepository();
       employeeRepo.getReservations(month - 1, year).then((res) => {
-        console.log("Reservations:", res);
+        console.log('Reservations:', res);
         setReservations(res);
       });
     }
@@ -99,8 +115,7 @@ const EmployeeView = () => {
         day,
         userRepo.currentUser().userId,
         userRepo.currentUser().role
-      )
-      .then((res) => {
+      )      .then((res) => {
         if (res[1].success == true) {
           const newR = {
             reservationId: res[0].data.insertId,
@@ -116,6 +131,15 @@ const EmployeeView = () => {
         }
       });
     handleCloseSchedule();
+  };
+
+  const sendMonthChangeRequest = async () => {
+    setReservations(undefined);
+    setSchedules(undefined);
+    const day = new Date();
+    day.setMonth(month);
+    day.setFullYear(year);
+    setDays(getDays(day));
   };
 
   return (
@@ -212,11 +236,13 @@ const ScheduleModal = (props) => {
   );
   const [disabled] = useState(rooms.length === 0 ? true : false);
 
+  console.log(rooms);
   return (
     <Modal show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Schedule your room.</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         {disabled && (
           <p className="text-danger">No rooms currently available.</p>
@@ -241,13 +267,16 @@ const ScheduleModal = (props) => {
           </>
         )}
       </Modal.Body>
+
       <Modal.Footer>
-        <button
-          className="btn btn-success"
-          onClick={() => props.handleReserve(props.date, selectedRoom)}
-        >
-          Reserve
-        </button>
+        {!disabled && (
+          <button
+            className="btn btn-success"
+            onClick={() => props.handleReserve(props.date, selectedRoom ?? 1)}
+          >
+            Reserve
+          </button>
+        )}
         <button className="btn btn-danger" onClick={props.handleClose}>
           Cancel
         </button>

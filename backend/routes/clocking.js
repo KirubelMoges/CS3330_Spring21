@@ -15,9 +15,9 @@ router.get('/clockData', (req, res) => {
       logger.error('Problem obtaining MySQL connection', err);
       res.status(400).send('Problem obtaining MySQL connection');
     } else {
-      let userEmail = req.body['userEmail'];
-      let userPassword = req.body['userPassword'];
-      let capacity = req.body['capacity'];
+      let userEmail = req.query['userEmail'];
+      let userPassword = req.query['userPassword'];
+      let capacity = req.query['capacity'];
       const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
       //credential check and returns back all requests with the necessary information needed to approve or deny the request
       let sql =
