@@ -4,9 +4,9 @@ import { URL, UserTypes } from '../utils/constants';
 export class EmployeeRepository {
   /**
    * Get reservations for a certain month and year
-   * @param {number?} month - The month
-   * @param {number?} year - The year
-   * @returns {[Object, Object]} - Data, error tuple
+   * @param {number} month - The month
+   * @param {number} year - The year
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async getReservations(month, year) {
     const errors = { success: false };
@@ -25,7 +25,7 @@ export class EmployeeRepository {
    * Get schedules for a certain month and year
    * @param {number} month - The month
    * @param {*} year - The year
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async getSchedules(month, year) {
     const errors = { success: false };
@@ -46,17 +46,15 @@ export class EmployeeRepository {
    * @param {DateTime} dateOut - The end date
    * @param {number} userId - The reserver's room
    * @param {string} creatorType - The reserver's role
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async createReservation(roomId, dateIn, dateOut, userId, creatorType = UserTypes.employee) {
     const errors = { success: false };
-    const { data, status } = await axios.post(URL + '/api/employee/reservation', {
-      roomId,
-      dateIn,
-      dateOut,
-      userId,
-      creatorType
-    });
+    const { data, status } = await axios.post(
+      URL + '/api/employee/reservation',
+      {},
+      { params: { roomId, dateIn, dateOut, userId, creatorType } }
+    );
 
     if (status >= 201) errors.request = 'Bad Request';
     else errors.success = true;
@@ -67,7 +65,7 @@ export class EmployeeRepository {
   /**
    * Delete a reservation
    * @param {number} reservationId - The id of the reservation
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async deleteReservation(reservationId) {
     const errors = { success: false };
@@ -86,13 +84,13 @@ export class EmployeeRepository {
    * @param {number} firstId - The id of the first person
    * @param {number} secondId - The id of the second person
    * @param {string} comment - Comments about the incident
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async reportContact(firstId, secondId, comment) {
     const errors = { success: false };
     const { data, status } = await axios.post(URL + '/api/employee/covidContact', {
       userIdA: firstId,
-      userIdB,
+      userIdB: secondId,
       secondId,
       comment: comment
     });
@@ -106,7 +104,7 @@ export class EmployeeRepository {
   /**
    * Get all people who have come in contact with a person
    * @param {number} userId - The id of the person to get their contact information
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async getContacts(userId) {
     const errors = { success: false };

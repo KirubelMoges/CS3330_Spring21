@@ -115,7 +115,7 @@ export class UserRepository {
   /**
    *
    * @param {number} id - The id of the user to query
-   * @returns {Object} - The errors of the request
+   * @returns {Promise<Object>} - The errors of the request
    */
   async getMoreUserInformationById(id) {
     const errors = { success: false };

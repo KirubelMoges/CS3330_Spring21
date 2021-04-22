@@ -10,10 +10,10 @@ const LoggedInView = () => {
 const HomePage = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(async () => {
+  useEffect(() => {
     const userRepository = new UserRepository();
-    const getUser = async () => {
-      await userRepository.getMoreUserInformationById(userRepository.currentUser().userId);
+    const getUser = () => {
+      userRepository.getMoreUserInformationById(userRepository.currentUser().userId).then(() => {});
     };
     const isLoggedIn = userRepository.loggedIn();
     if (isLoggedIn && !userRepository.currentUser().officeId) getUser();
