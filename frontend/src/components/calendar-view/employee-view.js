@@ -2,7 +2,7 @@ import './styles/employee.css';
 import './styles/calendar.css';
 import React, { useEffect, useState } from 'react';
 import { getDays } from './utils';
-import { RoomCard, TimeCard } from './cards';
+import { CovidCard, RoomCard, TimeCard } from './cards';
 import { Modal, Form } from 'react-bootstrap';
 import { RoomsRepository } from '../../api/roomsRepository';
 import { UserRepository } from '../../api/userRepository';
@@ -132,7 +132,7 @@ const EmployeeView = () => {
   };
 
   return (
-    <div className="container pb-5">
+    <div className="container pb-5 flex-row">
       <div className="calendar shadow bg-white p-5">
         <div className="d-flex align-items-center justify-content-between">
           <h2 className="month font-weight-bold mb-0 text-uppercase">April 2021</h2>
@@ -192,6 +192,7 @@ const EmployeeView = () => {
       </div>
       <TimeCard />
       <RoomCard />
+      <CovidCard />
       <ScheduleModal
         show={isScheduleShowing}
         handleClose={handleCloseSchedule}

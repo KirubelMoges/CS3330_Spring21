@@ -1,11 +1,70 @@
-import React, {useState } from 'react';
-import EmployeesModal from './modals/employees';
-import ManagerRoomsModal from './modals/manager-room';
-import { Link, Redirect } from 'react-router-dom';
-import RoomsModal from './modals/rooms';
-import StatsModal from './modals/stats';
-import TimeStatsModal from './modals/time-stats';
-import { ClockInModal, ClockOutModal } from './modals/clock-in';
+import React, { useState } from "react";
+import EmployeesModal from "./modals/employees";
+import ManagerRoomsModal from "./modals/manager-room";
+import { Link, Redirect } from "react-router-dom";
+import RoomsModal from "./modals/rooms";
+import ReportCovidModal from "./modals/report-covid";
+import StatsModal from "./modals/stats";
+import TimeStatsModal from "./modals/time-stats";
+import { ClockInModal, ClockOutModal } from "./modals/clock-in";
+import { UserRepository } from "../../../api/userRepository";
+
+export const CovidCard = () => {
+  const [isReportCovidModalShowing, setIsReportCovidModalShowing] = useState(
+    false
+  );
+  const handleReportCovidClose = () => setIsReportCovidModalShowing(false);
+  const handleReportCovidOpen = () => setIsReportCovidModalShowing(true);
+
+  const userRepository = new UserRepository();
+
+  const [hasCovid, setHasCovid] = useState(
+    userRepository.currentUser().status == 0 ? false : true
+  );
+
+  const covidReported = () => setHasCovid(true);
+
+  return (
+    <div className="covidcard shadow">
+      <div className="card clock-card">
+        <div className="card-body">
+          <h5 className="card-title">COVID-19</h5>
+          <p className="card-text">
+            Report Covid, view employees with Covid, and Report Contact.
+          </p>
+          <div className="d-flex flex-row justify-content-center">
+            <div className="d-flex flex-column">
+              <Link to="/rooms" className="btn btn-primary mb-2">
+                View Covid Cases
+              </Link>
+
+              {hasCovid ? (
+                <button
+                  className="btn btn-warning"
+                  onClick={handleReportCovidOpen}
+                >
+                  Report Contact
+                </button>
+              ) : (
+                <button
+                  className="btn btn-danger mb-2"
+                  onClick={handleReportCovidOpen}
+                >
+                  Report Covid
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <ReportCovidModal
+        handleClose={handleReportCovidClose}
+        show={isReportCovidModalShowing}
+        reportCovid={covidReported}
+      />
+    </div>
+  );
+};
 
 export const RoomCard = () => {
   const [isRoomsModalShowing, setIsRoomsModalShowing] = useState(false);
@@ -22,11 +81,12 @@ export const RoomCard = () => {
         <div className="card-body">
           <h5 className="card-title">Rooms</h5>
           <p className="card-text">
-            Create meetings, reserve rooms, and checkout the covid status of the office.
+            Create meetings, reserve rooms, and checkout the covid status of the
+            office.
           </p>
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <Link to="/rooms" className="btn btn-primary mb-2" >
+              <Link to="/rooms" className="btn btn-primary mb-2">
                 View Rooms
               </Link>
               <button onClick={handleStatsOpen} className="btn btn-info">
@@ -60,14 +120,22 @@ export const TimeCard = () => {
       <div className="card clock-card">
         <div className="card-body">
           <h5 className="card-title">My Time</h5>
-          <p className="card-text">Manage your time status, and view your time breakdown.</p>
+          <p className="card-text">
+            Manage your time status, and view your time breakdown.
+          </p>
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button onClick={handleClockInOpen} className="btn btn-success mb-2">
+              <button
+                onClick={handleClockInOpen}
+                className="btn btn-success mb-2"
+              >
                 Clock In
               </button>
-              <button onClick={handleClockOutOpen} className="btn btn-danger mb-2">
+              <button
+                onClick={handleClockOutOpen}
+                className="btn btn-danger mb-2"
+              >
                 Clock Out
               </button>
               {/* <button onClick={() => alert('Lunch Time!')} className="btn btn-primary mb-2">
@@ -80,9 +148,18 @@ export const TimeCard = () => {
           </div>
         </div>
       </div>
-      <TimeStatsModal handleClose={handleTimeStatsClose} show={isTimeStatsModalShowing} />
-      <ClockInModal handleClose={handleClockInClose} show={isClockInModalShowing} />
-      <ClockOutModal handleClose={handleClockOutClose} show={isClockOutModalShowing} />
+      <TimeStatsModal
+        handleClose={handleTimeStatsClose}
+        show={isTimeStatsModalShowing}
+      />
+      <ClockInModal
+        handleClose={handleClockInClose}
+        show={isClockInModalShowing}
+      />
+      <ClockOutModal
+        handleClose={handleClockOutClose}
+        show={isClockOutModalShowing}
+      />
     </div>
   );
 };
@@ -105,10 +182,16 @@ export const ManagerControls = (props) => {
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button onClick={handleRoomsOpen} className="btn btn-success mb-2">
+              <button
+                onClick={handleRoomsOpen}
+                className="btn btn-success mb-2"
+              >
                 View Rooms
               </button>
-              <button onClick={handleEmployeesOpen} className="btn btn-danger mb-2">
+              <button
+                onClick={handleEmployeesOpen}
+                className="btn btn-danger mb-2"
+              >
                 View Employees
               </button>
             </div>
