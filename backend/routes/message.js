@@ -20,7 +20,7 @@ app.get('/api/messages', (req, res) => {
       res.status(400).send('Problem obtaining MySQL connection');
     } else {
       let sql =
-        'SELECT u.firstname, u.lastname, i.subject, i.message FROM inbox i LEFT JOIN users u ON i.senderId = u.userId';
+        'SELECT u.firstname, u.lastname, i.subject, i.message, i.messageId FROM inbox i LEFT JOIN users u ON i.senderId = u.userId';
       let crypto;
       try {
         crypto = await import('crypto');

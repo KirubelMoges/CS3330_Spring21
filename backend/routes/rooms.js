@@ -17,7 +17,7 @@ router.post('/rooms', (req, res) => {
     } else {
       let userEmail = req.body['userEmail'];
       let userPassword = req.body['userPassword'];
-      let roomId = req.body['roomId'];
+      let roomCode = req.body['roomCode'];
       let roomType = req.body['roomType'];
       let capacity = req.body['capacity'];
       let currentEmployees = 0;
@@ -33,7 +33,7 @@ router.post('/rooms', (req, res) => {
         hash +
         "'";
       let values = [
-        [roomId, roomType, capacity, currentEmployees, availability, cleaned, beingCleaned]
+        [roomCode, roomType, capacity, currentEmployees, availability, cleaned, beingCleaned]
       ];
       connection.query(sql, function (err, rows, fields) {
         if (err) {
@@ -46,7 +46,7 @@ router.post('/rooms', (req, res) => {
           if (rows.length > 0) {
             if (rows[0]['jobTitle']) {
               sql =
-                'INSERT INTO rooms(roomId, roomType, capacity, currentEmployees, availability, cleaned, beingCleaned) VALUES ?';
+                'INSERT INTO rooms(roomCode, roomType, capacity, currentEmployees, availability, cleaned, beingCleaned) VALUES ?';
               connection.query(sql, [values], function (err, rows, fields) {
                 connection.release();
                 if (err) {
@@ -87,6 +87,7 @@ router.get('/rooms', (req, res) => {
     } else {
       let userEmail = req.query['userEmail'];
       let userPassword = req.query['userPassword'];
+      let officeId = req.query["officeId"];
       const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
       //credential check and returns back all requests with the necessary information needed to approve or deny the request
       let sql =
@@ -105,7 +106,7 @@ router.get('/rooms', (req, res) => {
           });
         } else {
           if (rows.length > 0) {
-            sql = 'SELECT * FROM rooms';
+            sql = `SELECT * FROM rooms WHERE officeId = ${officeId}`;
             connection.query(sql, function (err, rows, fields) {
               connection.release();
               if (err) {

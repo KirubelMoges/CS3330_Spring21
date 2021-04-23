@@ -36,7 +36,7 @@ router.get('/clockData', (req, res) => {
           });
         } else {
           if (rows.length > 0) {
-            sql = 'SELECT * FROM clocking WHERE userId = ' + rows[0]['userId'];
+            sql = `SELECT c.*, r.roomType, r.capacity, r.roomCode FROM clocking as c INNER JOIN rooms as r ON c.roomId = r.roomId WHERE c.userId = ${rows[0]['userId']}`;
             connection.query(sql, function (err, rows, fields) {
               connection.release();
               if (err) {
@@ -74,13 +74,11 @@ router.post('/clockin', (req, res) => {
       logger.error('Problem obtaining MySQL connection', err);
       res.status(400).send('Problem obtaining MySQL connection');
     } else {
-      let sql2 = 'INSERT INTO clocking(clockIn, clockInType, userId, roomId) VALUES ?';
       let clockIn = req.body['clockIn'];
       let clockInType = req.body['clockInType'];
       let userId = req.body['userId'];
-      let roomId = req.body['roomId'];
-      let values = [[clockIn, clockInType, userId, roomId]];
-      console.log(values);
+      let roomCode = req.body['roomCode'];
+      let officeId = req.body['officeId'];
       let sql =
         'SELECT clockOut FROM clocking WHERE clockOut IS NULL AND userId=' +
         userId +
@@ -102,26 +100,50 @@ router.post('/clockin', (req, res) => {
             error: 'Error obtaining values'
           });
         } else {
-          if (rows.length == 0) {
-            connection.query(sql2, [values], function (err, rows, fields) {
-              connection.release();
-              if (err) {
-                logger.error('Error while fetching values: \n', err);
-                res.status(400).json({
-                  data: [],
-                  error: 'Error obtaining values'
+            if (rows.length == 0) {
+                sql = `SELECT roomId from rooms WHERE roomCode = ${roomCode} AND officeId = ${officeId}`
+                connection.query(sql, function (err, rows, fields) {
+                    if (err) {
+                    logger.error('Error while fetching values: \n', err);
+                    res.status(400).json({
+                        data: [],
+                        error: 'Error obtaining values'
+                    });
+                    } else {
+                        if (rows.length > 0) {
+                            let roomId = rows[0]["roomId"];
+                            let sql2 = 'INSERT INTO clocking(clockIn, clockInType, userId, roomId, officeId) VALUES ?';
+                            let values = [[clockIn, clockInType, userId, roomId, officeId]];
+                            connection.query(sql2, [values], function (err, rows, fields) {
+                                connection.release();
+                                if (err) {
+                                    logger.error('Error while fetching values: \n', err);
+                                    res.status(400).json({
+                                    data: [],
+                                    error: 'Error obtaining values'
+                                    });
+                                } else {
+                                    res.status(200).json({
+                                    status: 0
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            //room doesn't exist in office
+                            res.status(200).json({
+                                status: 2
+                            });
+                        }
+                    }
                 });
-              } else {
+            }
+            else {
+                //user is already clocked in
                 res.status(200).json({
-                  status: 0
+                    status: 1
                 });
-              }
-            });
-          } else {
-            res.status(200).json({
-              status: 1
-            });
-          }
+            }
         }
       });
     }
@@ -141,7 +163,6 @@ router.put('/clockout', (req, res) => {
       let clockOut = req.body['clockOut'];
       let clockOutType = req.body['clockOutType'];
       let userId = req.body['userId'];
-      let roomId = req.body['roomId'];
 
       let sql =
         'SELECT clockId FROM clocking WHERE clockOut IS NULL AND userId=' +
@@ -210,11 +231,7 @@ router.post('/requestClockChange', (req, res) => {
       let sendDate = req.body['sendDate'];
       let userId;
       //checks credentials, and retrieves information about specific clock instance
-      let sql =
-        "SELECT u.reportsTo, u.userId, c.clockIn, c.clockOut, c.clockInType, c.clockOutType, c.roomId FROM users as u INNER JOIN clocking as c ON c.userId = u.userId WHERE u.userEmail='" +
-        userEmail +
-        "' AND c.clockId=" +
-        clockId;
+      let sql = `SELECT u.reportsTo, u.userId, c.clockIn, c.clockOut, c.clockInType, c.clockOutType, c.roomId FROM users as u INNER JOIN clocking as c ON c.userId = u.userId WHERE u.userEmail='${userEmail}' AND c.clockId=clockId`;
       console.log(sql);
       let reportsTo = null;
       connection.query(sql, function (err, rows, fields) {
@@ -330,6 +347,7 @@ router.get('/availableRegularGivenCapacity', (req, res) => {
       let userEmail = req.body['userEmail'];
       let userPassword = req.body['userPassword'];
       let capacity = req.body['capacity'];
+      let officeId = req.body['officeId'];
       const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
       //credential check and returns back all requests with the necessary information needed to approve or deny the request
       let sql =
@@ -348,7 +366,7 @@ router.get('/availableRegularGivenCapacity', (req, res) => {
           });
         } else {
           if (rows.length > 0) {
-            sql = `SELECT r.* FROM rooms as r LEFT JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity -  (CASE WHEN c.roomCount IS NOT NULL THEN c.roomCount ELSE 0 END)) >= ${capacity} AND roomType < 2`;
+            sql = `SELECT r.* FROM rooms as r LEFT JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity -  (CASE WHEN c.roomCount IS NOT NULL THEN c.roomCount ELSE 0 END)) >= ${capacity} AND roomType < 2 AND officeId = ${officeId}`;
             connection.query(sql, function (err, rows, fields) {
               connection.release();
               if (err) {
@@ -377,7 +395,7 @@ router.get('/availableRegularGivenCapacity', (req, res) => {
 });
 // GET /api/availableRegularRoom
 //returns all the available generalRooms
-router.get('/availableRegularRoom', (req, res) => {
+router.get('/availableRegularRooms', (req, res) => {
   // obtain a connection from our pool of connections
   pool.getConnection(async function (err, connection) {
     if (err) {
@@ -387,6 +405,7 @@ router.get('/availableRegularRoom', (req, res) => {
     } else {
       let userEmail = req.body['userEmail'];
       let userPassword = req.body['userPassword'];
+      let officeId = req.body['officeId'];
       const hash = crypto.createHmac('sha256', secret).update(userPassword).digest('hex');
       //credential check and returns back all requests with the necessary information needed to approve or deny the request
       let sql =
@@ -405,7 +424,7 @@ router.get('/availableRegularRoom', (req, res) => {
           });
         } else {
           if (rows.length > 0) {
-            sql = `SELECT r.* FROM rooms as r LEFT JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity -  (CASE WHEN c.roomCount IS NOT NULL THEN c.roomCount ELSE 0 END)) > 0 AND roomType < 2`;
+            sql = `SELECT r.* FROM rooms as r LEFT JOIN (SELECT roomId, count(*) as roomCount FROM clocking WHERE clockin IS NOT NULL AND clockOut IS NULL GROUP BY roomId) as c ON r.roomId = c.roomId WHERE (r.capacity -  (CASE WHEN c.roomCount IS NOT NULL THEN c.roomCount ELSE 0 END)) > 0 AND roomType < 2 AND officeId = ${officeId}`;
             connection.query(sql, function (err, rows, fields) {
               connection.release();
               if (err) {

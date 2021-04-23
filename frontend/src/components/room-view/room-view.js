@@ -16,7 +16,6 @@ const RoomView = () => {
         .then((data) => {
           if (data[1].success === true) {
             setRooms(data[0].data);
-            console.log(data[0]);
           } else {
             setRooms([]);
           }
