@@ -10,10 +10,10 @@ const CalendarView = () => {
   const status = currentUserStatus === 'manager' ? 'MANAGER' : 'EMPLOYEE';
 
   return (
-    <div>
+    <>
       <Header />
       {status === 'EMPLOYEE' ? <EmployeeView /> : <ManagerView />}
-    </div>
+    </>
   );
 };
 

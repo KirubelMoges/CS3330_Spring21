@@ -1,36 +1,83 @@
-import React from 'react';
-import Header from '../header';
+import React, { useState, useEffect } from "react";
+import Header from "../header";
 
 const EmployeeList = () => {
+  const [users, setUsers] = useState([
+    { username: "test1", userId: 1, exposure: false, covidStatus: 0 },
+    { username: "test2", userId: 2, exposure: true, covidStatus: 0 },
+    { username: "test3", userId: 3, exposure: true, covidStatus: 0 },
+    { username: "test4", userId: 4, exposure: false, covidStatus: 1 },
+  ]);
 
-  const employees = ['Nick', 'Logan', 'Caesar', 'Blake', 'Elias', 'Kirubel', 'Seun', 'Tim'];
-
-    return (
-      <div>
+  return (
+    <div>
       <Header />
       <div class="container mb-4">
-        <div class = "container row">
-          <h3 class="mb-2">There are {employees.length} employees currently working.</h3>
-        </div>
-          {
-            !employees.length && <li className="list-group-item bg-light">There are no employees! Hire More</li>
-          }
-          {
-            employees.map((x) => 
-                <div class="card mb-3">
-                    <div class="card-header">
-                        {x}
-                    </div>
-                    <div class="card-body">
-                      {/*I just added this button for me to see how it could look as well as maybe thinking of future functionality*/}
-                      <button class="btn btn-primary" type="button">Hire</button>
-                    </div>
-                </div>
-            )
-          }
+        <table className="table table-striped">
+          <thead className="border-top-0">
+            <tr>
+              <th className="h3 table-success">Available Employees</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {users &&
+              users.map((user) => {
+                return (
+                  user.covidStatus == 0 &&
+                  user.exposure == false && (
+                    <tr key={user.userId}>
+                      <td>{user.username}</td>
+                    </tr>
+                  )
+                );
+              })}
+          </tbody>
+        </table>
+        <table className="table table-striped">
+          <thead className="border-top-0">
+            <tr>
+              <th className="h3 table-warning">Contact-Traced Employees</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {users &&
+              users.map((user) => {
+                return (
+                  user.covidStatus == 0 &&
+                  user.exposure == true && (
+                    <tr key={user.userId}>
+                      <td>{user.username}</td>
+                    </tr>
+                  )
+                );
+              })}
+          </tbody>
+        </table>
+        <table className="table table-striped">
+          <thead className="border-top-0">
+            <tr>
+              <th className="h3 table-danger">Employees with COVID-19</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {users &&
+              users.map((user) => {
+                return (
+                  user.covidStatus == 1 && (
+                    <tr key={user.userId}>
+                      <td>{user.username}</td>
+                    </tr>
+                  )
+                );
+              })}
+          </tbody>
+        </table>
       </div>
-      </div>
-    );
+    </div>
+  );
 };
-  
+
 export default EmployeeList;

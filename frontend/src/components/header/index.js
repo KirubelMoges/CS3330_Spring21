@@ -1,22 +1,23 @@
-import { Navbar, Nav } from 'react-bootstrap';
-import { useContext, useState } from 'react';
-import { UserContext } from '../../common/context';
-import { api } from '../../api';
+import { Navbar, Nav } from "react-bootstrap";
+import { useContext } from "react";
+import { UserContext } from "../../common/context";
+import { UserRepository } from "../../api/userRepository";
 
 const Header = () => {
-  const [userContext] = useContext(UserContext);
-  const [loggedIn] = useState(Object.keys(userContext).length !== 0);
+  const userRepository = new UserRepository();
 
   return (
-    <Navbar className="mr-auto" expand="lg">
+    <Navbar className="mr-auto bg-light mb-2" expand="lg">
       <Navbar.Brand href="/">Covid Workplace Planning Tool</Navbar.Brand>
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link href="/about">About</Nav.Link>
           <Nav.Link href="/employees">Employees</Nav.Link>
+          <Nav.Link href="/rooms">Rooms</Nav.Link>
+          <Nav.Link href="/covid">Covid Cases</Nav.Link>
         </Nav>
-        {loggedIn ? <LoggedInVariant /> : <LoggedOutVariant />}
+        {userRepository.loggedIn() ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>
     </Navbar>
   );
@@ -37,8 +38,9 @@ const LoggedOutVariant = () => {
 
 const LoggedInVariant = () => {
   const [, setUserContext] = useContext(UserContext);
+  const userRepository = new UserRepository();
   function logoutButton() {
-    api.logout();
+    userRepository.logout();
     setUserContext({});
   }
 
