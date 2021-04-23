@@ -1,10 +1,82 @@
-import React, { useState } from 'react';
-import EmployeesModal from './modals/employees';
-import ManagerRoomsModal from './modals/manager-room';
+import React, { useState } from "react";
+import EmployeesModal from "./modals/employees";
+import ManagerRoomsModal from "./modals/manager-room";
+import { Link, Redirect } from "react-router-dom";
+import RoomsModal from "./modals/rooms";
+import ReportCovidModal from "./modals/report-covid";
+import ReportContactModal from "./modals/report-contact";
+import StatsModal from "./modals/stats";
+import TimeStatsModal from "./modals/time-stats";
+import { ClockInModal, ClockOutModal } from "./modals/clock-in";
+import { UserRepository } from "../../../api/userRepository";
 
-import RoomsModal from './modals/rooms';
-import StatsModal from './modals/stats';
-import TimeStatsModal from './modals/time-stats';
+export const CovidCard = () => {
+  const [isReportCovidModalShowing, setIsReportCovidModalShowing] = useState(
+    false
+  );
+  const handleReportCovidClose = () => setIsReportCovidModalShowing(false);
+  const handleReportCovidOpen = () => setIsReportCovidModalShowing(true);
+
+  const [
+    isReportContactModalShowing,
+    setIsReportContactModalShowing,
+  ] = useState(false);
+  const handleReportContactClose = () => setIsReportContactModalShowing(false);
+  const handleReportContactOpen = () => setIsReportContactModalShowing(true);
+
+  const userRepository = new UserRepository();
+
+  const [hasCovid, setHasCovid] = useState(
+    userRepository.currentUser().status == 0 ? false : true
+  );
+
+  const covidReported = () => setHasCovid(true);
+
+  return (
+    <div className="covidcard shadow">
+      <div className="card clock-card">
+        <div className="card-body">
+          <h5 className="card-title">COVID-19</h5>
+          <p className="card-text">
+            Report Covid, view employees with Covid, and Report Contact.
+          </p>
+          <div className="d-flex flex-row justify-content-center">
+            <div className="d-flex flex-column">
+              <Link to="/rooms" className="btn btn-primary mb-2">
+                View Covid Cases
+              </Link>
+
+              {hasCovid ? (
+                <button
+                  className="btn btn-warning text-light"
+                  onClick={handleReportContactOpen}
+                >
+                  Report Contact
+                </button>
+              ) : (
+                <button
+                  className="btn btn-danger mb-2"
+                  onClick={handleReportCovidOpen}
+                >
+                  Report Covid
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <ReportCovidModal
+        handleClose={handleReportCovidClose}
+        show={isReportCovidModalShowing}
+        reportCovid={covidReported}
+      />
+      <ReportContactModal
+        handleClose={handleReportContactClose}
+        show={isReportContactModalShowing}
+      />
+    </div>
+  );
+};
 
 export const RoomCard = () => {
   const [isRoomsModalShowing, setIsRoomsModalShowing] = useState(false);
@@ -21,13 +93,14 @@ export const RoomCard = () => {
         <div className="card-body">
           <h5 className="card-title">Rooms</h5>
           <p className="card-text">
-            Create meetings, reserve rooms, and checkout the covid status of the office.
+            Create meetings, reserve rooms, and checkout the covid status of the
+            office.
           </p>
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button className="btn btn-primary mb-2" onClick={handleRoomsOpen}>
+              <Link to="/rooms" className="btn btn-primary mb-2">
                 View Rooms
-              </button>
+              </Link>
               <button onClick={handleStatsOpen} className="btn btn-info">
                 Covid Stats
               </button>
@@ -35,7 +108,7 @@ export const RoomCard = () => {
           </div>
         </div>
       </div>
-      <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} />
+      {/* <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} /> */}
       <StatsModal handleClose={handleStatsClose} show={isStatsModalShowing} />
     </div>
   );
@@ -46,24 +119,40 @@ export const TimeCard = () => {
   const handleTimeStatsClose = () => setIsTimeStatsModalShowing(false);
   const handleTimeStatsOpen = () => setIsTimeStatsModalShowing(true);
 
+  const [isClockInModalShowing, setIsClockInModalShowing] = useState(false);
+  const handleClockInClose = () => setIsClockInModalShowing(false);
+  const handleClockInOpen = () => setIsClockInModalShowing(true);
+
+  const [isClockOutModalShowing, setIsClockOutModalShowing] = useState(false);
+  const handleClockOutClose = () => setIsClockOutModalShowing(false);
+  const handleClockOutOpen = () => setIsClockOutModalShowing(true);
+
   return (
-    <div className="timecard shadow ">
+    <div className="timecard shadow">
       <div className="card clock-card">
         <div className="card-body">
           <h5 className="card-title">My Time</h5>
-          <p className="card-text">Manage your time status, and view your time breakdown.</p>
+          <p className="card-text">
+            Manage your time status, and view your time breakdown.
+          </p>
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button onClick={() => alert('Clocked In!')} className="btn btn-success mb-2">
+              <button
+                onClick={handleClockInOpen}
+                className="btn btn-success mb-2"
+              >
                 Clock In
               </button>
-              <button onClick={() => alert('Clocked Out!')} className="btn btn-danger mb-2">
+              <button
+                onClick={handleClockOutOpen}
+                className="btn btn-danger mb-2"
+              >
                 Clock Out
               </button>
-              <button onClick={() => alert('Lunch Time!')} className="btn btn-primary mb-2">
+              {/* <button onClick={() => alert('Lunch Time!')} className="btn btn-primary mb-2">
                 Lunch Break
-              </button>
+              </button> */}
               <button onClick={handleTimeStatsOpen} className="btn btn-info">
                 View Stats
               </button>
@@ -71,7 +160,18 @@ export const TimeCard = () => {
           </div>
         </div>
       </div>
-      <TimeStatsModal handleClose={handleTimeStatsClose} show={isTimeStatsModalShowing} />
+      <TimeStatsModal
+        handleClose={handleTimeStatsClose}
+        show={isTimeStatsModalShowing}
+      />
+      <ClockInModal
+        handleClose={handleClockInClose}
+        show={isClockInModalShowing}
+      />
+      <ClockOutModal
+        handleClose={handleClockOutClose}
+        show={isClockOutModalShowing}
+      />
     </div>
   );
 };
@@ -94,10 +194,16 @@ export const ManagerControls = (props) => {
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button onClick={handleRoomsOpen} className="btn btn-success mb-2">
+              <button
+                onClick={handleRoomsOpen}
+                className="btn btn-success mb-2"
+              >
                 View Rooms
               </button>
-              <button onClick={handleEmployeesOpen} className="btn btn-danger mb-2">
+              <button
+                onClick={handleEmployeesOpen}
+                className="btn btn-danger mb-2"
+              >
                 View Employees
               </button>
             </div>

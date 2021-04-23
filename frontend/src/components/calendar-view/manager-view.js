@@ -31,6 +31,18 @@ const ManagerView = () => {
       <div className="calendar shadow bg-white p-5">
         <div className="d-flex align-items-center">
           <h2 className="month font-weight-bold mb-0 text-uppercase">April 2021</h2>
+          <Form>
+            <Form.Group controlId="calendar.selectMonth">
+              <Form.Label>Month</Form.Label>
+              <Form.Control as="select">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </Form.Control>
+            </Form.Group>
+          </Form>
         </div>
         <p className="font-italic text-muted mb-5">No events today.</p>
         <ol className="day-names list-unstyled mb-0">

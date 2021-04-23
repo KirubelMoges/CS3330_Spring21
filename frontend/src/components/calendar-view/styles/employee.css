@@ -1,5 +1,5 @@
 .timecard {
-  position: absolute;
+  /* position: absolute; */
   top: 30vh;
   right: 3rem;
 }
@@ -9,7 +9,13 @@
 }
 
 .roomcard {
-  position: absolute;
+  /* position: absolute; */
   top: 30vh;
+  left: 3rem;
+}
+
+.covidcard {
+  /* position: absolute; */
+  top: 70vh;
   left: 3rem;
 }

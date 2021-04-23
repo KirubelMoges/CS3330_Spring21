@@ -617,4 +617,106 @@ router.get('/getAllPeopleInContactWithUserId', (req,res) => {
   });
 });
 
+router.put('/editCovidStatus', (req,res) => {
+  pool.getConnection((err,connection) => {
+      if (err){
+          console.log(connection);
+          // if there is an issue obtaining a connection, release the connection instance and log the error
+          logger.error('Problem obtaining MySQL connection', err)
+          res.status(400).send('Problem obtaining MySQL connection'); 
+        } else
+        {
+          // if there is no issue obtaining a connection, execute query
+          let userId = req.query['userId'];
+          let covidStatus = req.query['covidStatus'];
+          if(covidStatus == 1 || covidStatus == 0)
+          {
+            connection.query('UPDATE users SET covidStatus = (?) WHERE userId = (?)',[covidStatus,userId],(err, rows, fields) => {
+              if (err) {
+                logger.error("Error while updating covidStatus \n", err);
+                res.status(400).json({
+                  "data": [],
+                  "error": "Error obtaining values"
+                })
+              } else {
+                res.status(200).json({
+                  "data": rows
+                });
+              }
+            });
+          }
+          else
+          {
+            res.status(400).send('Error with given covidStatus'); 
+          }
+        }
+        connection.release();
+  });
+});
+
+router.put('/editJobTitle', (req,res) => {
+  pool.getConnection((err,connection) => {
+      if (err){
+          console.log(connection);
+          // if there is an issue obtaining a connection, release the connection instance and log the error
+          logger.error('Problem obtaining MySQL connection', err)
+          res.status(400).send('Problem obtaining MySQL connection'); 
+        } else
+        {
+          // if there is no issue obtaining a connection, execute query
+          let userId = req.query['userId'];
+          let jobTitle = req.query['jobTitle'];
+          if(jobTitle === 'employee' || jobTitle === 'manager' || jobTitle === 'custodian')
+          {
+            connection.query('UPDATE users SET jobTitle = (?) WHERE userId = (?)',[jobTitle,userId],(err, rows, fields) => {
+              if (err) {
+                logger.error("Error while updating covidStatus \n", err);
+                res.status(400).json({
+                  "data": [],
+                  "error": "Error obtaining values"
+                })
+              } else {
+                res.status(200).json({
+                  "data": rows
+                });
+              }
+            });
+          }
+          else
+          {
+            res.status(400).send('Error with given jobTitle'); 
+          }
+        }
+        connection.release();
+  });
+});
+
+router.get('/getAllUsers', (req,res) => {
+  pool.getConnection((err,connection) => {
+      if (err){
+          console.log(connection);
+          // if there is an issue obtaining a connection, release the connection instance and log the error
+          logger.error('Problem obtaining MySQL connection', err)
+          res.status(400).send('Problem obtaining MySQL connection'); 
+        } else
+        {
+          // if there is no issue obtaining a connection, execute query
+          connection.query('SELECT * FROM users',(err, rows, fields) => {
+            if (err) {
+              logger.error("Error while updating covidStatus \n", err);
+              res.status(400).json({
+                "data": [],
+                "error": "Error obtaining values"
+              })
+            } else {
+              res.status(200).json({
+                "data": rows
+              });
+            }
+          });
+        }
+        connection.release();
+  });
+});
+
 module.exports = router;
