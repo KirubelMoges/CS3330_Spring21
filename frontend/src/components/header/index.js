@@ -1,7 +1,7 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { useContext } from "react";
-import { UserContext } from "../../common/context";
-import { UserRepository } from "../../api/userRepository";
+import { Navbar, Nav } from 'react-bootstrap';
+import { useContext } from 'react';
+import { UserContext } from '../../common/context';
+import { UserRepository } from '../../api/userRepository';
 
 const Header = () => {
   const userRepository = new UserRepository();
@@ -16,6 +16,7 @@ const Header = () => {
           <Nav.Link href="/employees">Employees</Nav.Link>
           <Nav.Link href="/rooms">Rooms</Nav.Link>
           <Nav.Link href="/covid">Covid Cases</Nav.Link>
+          <Nav.Link href="/inbox">Inbox</Nav.Link>
         </Nav>
         {userRepository.loggedIn() ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>

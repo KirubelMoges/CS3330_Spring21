@@ -11,7 +11,9 @@ const Inbox = () => {
     if (!allEmployeeMessages) {
       messagesRepository.getAllEmployeeMessages().then((res) => {
         console.log('MESSAGES', res);
-        setAllEmployeeMessages(res);
+        if (res[1].success === true) {
+          setAllEmployeeMessages(res[0].data);
+        } else setAllEmployeeMessages([]);
       });
     }
   }, [allEmployeeMessages]);
@@ -21,7 +23,7 @@ const Inbox = () => {
       {/* Use a table here..... */}
       {allEmployeeMessages &&
         allEmployeeMessages.map((message, index) => {
-          return <div key={index}>message.content</div>;
+          return <div key={index}>{message.message}</div>;
         })}
       {allEmployeeMessages && <Table></Table>}
     </div>
