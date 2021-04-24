@@ -4,7 +4,17 @@ import { getDays } from './utils';
 import './styles/calendar.css';
 import './styles/manager.css';
 import { ManagerControls } from './cards';
+import Calendar from './calendar';
+
 const ManagerView = () => {
+  return (
+    <>
+      <Calendar manager />
+    </>
+  );
+};
+
+const OldManagerView = () => {
   const days = getDays(new Date());
 
   const employees = ['Nick', 'Logan', 'Caesar', 'Blake', 'Elias', 'Kirubel', 'Seun', 'Tim'];

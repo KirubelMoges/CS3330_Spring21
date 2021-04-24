@@ -162,11 +162,11 @@ export class UserRepository {
 
   /**
    * Get an array of all users
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async getAllUsers() {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + '/getAllUsers', {});
+    const { data, status } = await axios.get(URL + '/api/manager/getAllUsers', {});
 
     if (status >= 201) errors.request = 'Bad Request';
     else errors.success = true;

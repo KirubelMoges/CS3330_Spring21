@@ -24,8 +24,7 @@ const HomePage = () => {
     setLoggedIn(isLoggedIn);
   }, [loggedIn, setLoggedIn]);
 
-  // return loggedIn ? <LoggedInView /> : <LandingPage />;
-  return <Calendar />;
+  return loggedIn ? <LoggedInView /> : <LandingPage />;
 };
 
 export default HomePage;
