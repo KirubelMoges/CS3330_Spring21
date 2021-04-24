@@ -6,6 +6,8 @@ import { RoomsRepository } from '../../api/roomsRepository';
 import { UserRepository } from '../../api/userRepository';
 import { EmployeeRepository } from '../../api/employeeRepository';
 import { ManagerRepository } from '../../api/managerRepository';
+import { ManagerControls, TimeCard, RoomCard, CovidCard } from './cards';
+import { UserTypes } from '../../utils/constants';
 
 const CalendarHeader = (props) => {
   const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -134,6 +136,7 @@ const CalendarDay = (props) => {
             <a
               className="event d-block p-1 pl-2 pr-2 mb-1 rounded text-truncate small bg-success text-white"
               title="Test Event 3"
+              style={{ pointerEvents: 'none' }}
             >
               And {reservationsToday.length - 1} other(s).
             </a>
@@ -170,7 +173,7 @@ const Calendar = (props) => {
   const [reservations, setReservations] = useState(undefined);
   const [employees, setEmployees] = useState(undefined);
 
-  const manager = props.manager ?? false;
+  const [manager, setManager] = useState(props.manager);
 
   const changeMonth = (m, y) => {
     const newStart = new Date(y, m - 1, 1);
@@ -237,6 +240,11 @@ const Calendar = (props) => {
   };
 
   useEffect(() => {
+    if (manager === undefined) {
+      const userRepository = new UserRepository();
+      setManager(userRepository.currentUser().role === UserTypes.manager ? true : false);
+    }
+
     if (!dates) {
       setDates(getCalendarDays(new Date()));
     }
@@ -384,6 +392,15 @@ const Calendar = (props) => {
             }
           })}
         </div>
+        {employees && rooms && reservations && manager ? (
+          <ManagerControls employees={employees} rooms={rooms} events={reservations} />
+        ) : (
+          <div className="row">
+            <TimeCard className="col-md-4" />
+            <RoomCard className="col-md-4" />
+            <CovidCard className="col-md-4" />
+          </div>
+        )}
       </div>
     </>
   );

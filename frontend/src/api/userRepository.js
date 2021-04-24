@@ -56,7 +56,7 @@ export class UserRepository {
           'user',
           JSON.stringify({
             username: email,
-            role: data.jobTitle ?? UserTypes.employee,
+            role: data.jobTitle ?? null,
             userId: data.userId,
             officeId: data.officeId ?? null,
             password: password,
@@ -117,7 +117,7 @@ export class UserRepository {
    * @param {number} id - The id of the user to query
    * @returns {Promise<[Object, Object]>} - Data, error Tuple
    */
-  async getMoreUserInformationById(id) {
+  async getMoreUserInformationById(id, updateCurrentUser = false) {
     const errors = { success: false };
     const { data, status } = await axios.get(URL + '/api/user', {
       params: { userId: id }
@@ -125,19 +125,21 @@ export class UserRepository {
 
     if (status >= 201) errors.request = 'Bad Request';
     else {
-      sessionStorage.setItem(
-        'user',
-        JSON.stringify({
-          ...this.currentUser(),
-          jobTitle: data.data[0].jobTitle,
-          role: data.data[0].jobTitle,
-          officeId: data.data[0].officeId,
-          reportsTo: data.data[0].reportsTo,
-          exposure: data.data[0].exposure,
-          covidStatus: data.data[0].covidStatus,
-          scheduleId: data.data[0].scheduleId
-        })
-      );
+      if (updateCurrentUser) {
+        sessionStorage.setItem(
+          'user',
+          JSON.stringify({
+            ...this.currentUser(),
+            jobTitle: data.data[0].jobTitle,
+            role: data.data[0].jobTitle,
+            officeId: data.data[0].officeId,
+            reportsTo: data.data[0].reportsTo,
+            exposure: data.data[0].exposure,
+            covidStatus: data.data[0].covidStatus,
+            scheduleId: data.data[0].scheduleId
+          })
+        );
+      }
       errors.success = true;
     }
     return [data.data, errors];
