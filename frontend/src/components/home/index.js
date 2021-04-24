@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import LandingPage from '../landing';
 import CalendarView from '../calendar-view';
 import { UserRepository } from '../../api/userRepository';
+import Calendar from '../calendar-view/calendar';
 
 const LoggedInView = () => {
   return <CalendarView />;
@@ -23,7 +24,8 @@ const HomePage = () => {
     setLoggedIn(isLoggedIn);
   }, [loggedIn, setLoggedIn]);
 
-  return loggedIn ? <LoggedInView /> : <LandingPage />;
+  // return loggedIn ? <LoggedInView /> : <LandingPage />;
+  return <Calendar />;
 };
 
 export default HomePage;
