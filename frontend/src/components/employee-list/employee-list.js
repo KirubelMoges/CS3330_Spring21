@@ -4,21 +4,20 @@ import { UserRepository } from "../../api/userRepository";
 import { useHistory } from 'react-router-dom';
 
 const EmployeeList = () => {
-  
   const [users, setUsers] = useState(undefined);
   const history = useHistory();
 
   useEffect(() => {
-    const userRepository = new UserRepository(); 
+    const userRepository = new UserRepository();
     if (users === undefined) {
       userRepository.getAllUsers().then((data) => {
-        if(data[1].success === true) {
+        if (data[1].success === true) {
           setUsers(data[0].data);
           console.log(data);
         } else {
           setUsers([]);
         }
-      })
+      });
     }
   });
 
@@ -38,15 +37,19 @@ const EmployeeList = () => {
           <tbody>
             {users &&
               users.map((user) => {
+
+                console.log(user);
                 return (
-                  user.status == 0 ||
-                  user.exposure == false && 
-                  (
+                  user.covidStatus != 1 &&
+                  user.exposure == false && (
+                    // Need to reimplement the checks
                     <tr key={user.userId}>
                       <td>
                         <span className='text-muted'>{user.userId}</span>  
                         <span className='fs-1'>{' ' + user.firstName + ' ' + user.lastName}</span>
                         <a className='btn btn-info float-right' onClick={() => history.push('/profile/' + user.userId)}>See Profile</a>
+                        
+
                       </td>
                     </tr>
                   )
@@ -67,14 +70,16 @@ const EmployeeList = () => {
             {users &&
               users.map((user) => {
                 return (
-                  user.status == 0 &&
-                  user.exposure == true && 
-                  (
+
+                  user.covidStatus != 1 &&
+                  user.exposure == true && (
                     <tr key={user.userId}>
                       <td>
+                        <td>
                         <span className='text-muted'>{user.userId}</span>  
                         <span className='fs-1'>{' ' + user.firstName + ' ' + user.lastName}</span>
                         <a className='btn btn-info float-right' onClick={() => history.push('/profile/' + user.userId)}>See Profile</a>
+
                       </td>
                     </tr>
                   )
@@ -94,12 +99,13 @@ const EmployeeList = () => {
             {users &&
               users.map((user) => {
                 return (
-                  user.status == 1 && (
+                  user.covidStatus == 1 && (
                     <tr key={user.userId}>
                       <td>
                         <span className='text-muted'>{user.userId}</span>  
                         <span className='fs-1'>{' ' + user.firstName + ' ' + user.lastName}</span>
                         <a className='btn btn-info float-right' onClick={() => history.push('/profile/' + user.userId)}>See Profile</a>
+
                       </td>
                     </tr>
                   )

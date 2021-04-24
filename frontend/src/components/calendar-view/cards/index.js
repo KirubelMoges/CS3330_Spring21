@@ -9,6 +9,7 @@ import StatsModal from "./modals/stats";
 import TimeStatsModal from "./modals/time-stats";
 import { ClockInModal, ClockOutModal } from "./modals/clock-in";
 import { UserRepository } from "../../../api/userRepository";
+import { EmployeeRepository } from "../../../api/employeeRepository";
 
 export const CovidCard = () => {
   const [isReportCovidModalShowing, setIsReportCovidModalShowing] = useState(
@@ -27,10 +28,27 @@ export const CovidCard = () => {
   const userRepository = new UserRepository();
 
   const [hasCovid, setHasCovid] = useState(
-    userRepository.currentUser().status == 0 ? false : true
+    userRepository.currentUser().covidStatus == 1 ? true : false
   );
 
-  const covidReported = () => setHasCovid(true);
+  const covidReported = () => {
+    setHasCovid(true);
+    userRepository
+      .editCovidStatus(userRepository.currentUser().userId, 1)
+      .then();
+  };
+
+  const contactReported = (reportedUser) => {
+    const employeeRepository = new EmployeeRepository();
+    console.log({ reportedUser });
+    employeeRepository
+      .reportContact(
+        userRepository.currentUser().userId,
+        reportedUser.userId,
+        ""
+      )
+      .then();
+  };
 
   return (
     <div className="covidcard shadow">
@@ -73,6 +91,7 @@ export const CovidCard = () => {
       <ReportContactModal
         handleClose={handleReportContactClose}
         show={isReportContactModalShowing}
+        reportContact={contactReported}
       />
     </div>
   );

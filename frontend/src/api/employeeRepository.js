@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { URL, UserTypes } from '../utils/constants';
+import axios from "axios";
+import { URL, UserTypes } from "../utils/constants";
 
 export class EmployeeRepository {
   /**
@@ -11,11 +11,11 @@ export class EmployeeRepository {
   async getReservations(month, year) {
     const errors = { success: false };
     const { data, status } = await axios.get(
-      URL + '/api/employee/getReservationsDuringMonthAndYear',
+      URL + "/api/employee/getReservationsDuringMonthAndYear",
       { params: { month: month, year: year } }
     );
 
-    if (status >= 201) errors.request = 'Bad Request';
+    if (status >= 201) errors.request = "Bad Request";
     else errors.success = true;
 
     return [data, errors];
@@ -29,11 +29,14 @@ export class EmployeeRepository {
    */
   async getSchedules(month, year) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + '/api/employee/getSchedulesDuringMonthAndYear', {
-      params: { month: month, year: year }
-    });
+    const { data, status } = await axios.get(
+      URL + "/api/employee/getSchedulesDuringMonthAndYear",
+      {
+        params: { month: month, year: year },
+      }
+    );
 
-    if (status >= 201) errors.request = 'Bad Request';
+    if (status >= 201) errors.request = "Bad Request";
     else errors.success = true;
 
     return [data, errors];
@@ -48,15 +51,21 @@ export class EmployeeRepository {
    * @param {string} creatorType - The reserver's role
    * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
-  async createReservation(roomId, dateIn, dateOut, userId, creatorType = UserTypes.employee) {
+  async createReservation(
+    roomId,
+    dateIn,
+    dateOut,
+    userId,
+    creatorType = UserTypes.employee
+  ) {
     const errors = { success: false };
     const { data, status } = await axios.post(
-      URL + '/api/employee/reservation',
+      URL + "/api/employee/reservation",
       {},
       { params: { roomId, dateIn, dateOut, userId, creatorType } }
     );
 
-    if (status >= 201) errors.request = 'Bad Request';
+    if (status >= 201) errors.request = "Bad Request";
     else errors.success = true;
 
     return [data, errors];
@@ -69,11 +78,14 @@ export class EmployeeRepository {
    */
   async deleteReservation(reservationId) {
     const errors = { success: false };
-    const { data, status } = await axios.delete(URL + '/api/employee/reservation', {
-      params: { reservationId: reservationId }
-    });
+    const { data, status } = await axios.delete(
+      URL + "/api/employee/reservation",
+      {
+        params: { reservationId: reservationId },
+      }
+    );
 
-    if (status >= 201) errors.request = 'Bad Request';
+    if (status >= 201) errors.request = "Bad Request";
     else errors.success = true;
 
     return [data, errors];
@@ -88,14 +100,13 @@ export class EmployeeRepository {
    */
   async reportContact(firstId, secondId, comment) {
     const errors = { success: false };
-    const { data, status } = await axios.post(URL + '/api/employee/covidContact', {
-      userIdA: firstId,
-      userIdB: secondId,
-      secondId,
-      comment: comment
-    });
+    const { data, status } = await axios.post(
+      URL + "/api/employee/covidContact",
+      {},
+      { params: { userIdA: firstId, userIdB: secondId, comment: comment } }
+    );
 
-    if (status >= 201) errors.request = 'Bad Request';
+    if (status >= 201) errors.request = "Bad Request";
     else errors.success = true;
 
     return [data, errors];
@@ -109,13 +120,13 @@ export class EmployeeRepository {
   async getContacts(userId) {
     const errors = { success: false };
     const { data, status } = await axios.get(
-      URL + '/api/employee/getAllPeopleInContactWithUserId',
+      URL + "/api/employee/getAllPeopleInContactWithUserId",
       {
-        params: { userId: userId }
+        params: { userId: userId },
       }
     );
 
-    if (status >= 201) errors.request = 'Bad Request';
+    if (status >= 201) errors.request = "Bad Request";
     else errors.success = true;
 
     return [data, errors];
