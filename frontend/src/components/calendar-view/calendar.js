@@ -233,6 +233,7 @@ const Calendar = (props) => {
             }
           ]);
           handleCloseManagerSchedule();
+          handleCloseEmployeeSchedule();
         } else {
           alert('Failed to reserve room');
         }
