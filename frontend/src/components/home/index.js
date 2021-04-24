@@ -9,14 +9,17 @@ const LoggedInView = () => {
 
 const HomePage = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-
   useEffect(() => {
     const userRepository = new UserRepository();
     const getUser = () => {
       userRepository.getMoreUserInformationById(userRepository.currentUser().userId).then(() => {});
     };
     const isLoggedIn = userRepository.loggedIn();
-    if (isLoggedIn && !userRepository.currentUser().officeId) getUser();
+    if (
+      (isLoggedIn && !userRepository.currentUser().officeId) ||
+      !userRepository.currentUser().covidStatus
+    )
+      getUser();
     setLoggedIn(isLoggedIn);
   }, [loggedIn, setLoggedIn]);
 

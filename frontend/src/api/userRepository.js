@@ -56,7 +56,7 @@ export class UserRepository {
           'user',
           JSON.stringify({
             username: email,
-            role: 'employee',
+            role: data.jobTitle ?? UserTypes.employee,
             userId: data.userId,
             officeId: data.officeId ?? null,
             password: password,
@@ -100,7 +100,7 @@ export class UserRepository {
         'user',
         JSON.stringify({
           username: email,
-          role: 'employee',
+          role: jobTitle,
           userId: data.data.insertId,
           officeId: officeId,
           password: password,
@@ -115,7 +115,7 @@ export class UserRepository {
   /**
    *
    * @param {number} id - The id of the user to query
-   * @returns {Promise<Object>} - The errors of the request
+   * @returns {Promise<[Object, Object]>} - Data, error Tuple
    */
   async getMoreUserInformationById(id) {
     const errors = { success: false };
@@ -130,6 +130,7 @@ export class UserRepository {
         JSON.stringify({
           ...this.currentUser(),
           jobTitle: data.data[0].jobTitle,
+          role: data.data[0].jobTitle,
           officeId: data.data[0].officeId,
           reportsTo: data.data[0].reportsTo,
           exposure: data.data[0].exposure,
@@ -139,7 +140,7 @@ export class UserRepository {
       );
       errors.success = true;
     }
-    return errors;
+    return [data.data, errors];
   }
 
   /**
