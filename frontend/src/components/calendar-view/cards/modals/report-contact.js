@@ -11,6 +11,15 @@ const ReportContactModal = (props) => {
     if (users === undefined) {
       userRepository.getAllUsers().then((data) => {
         if (data[1].success === true) {
+          setSelectedUser(
+            data[0].data[0].firstName +
+              " " +
+              data[0].data[0].lastName +
+              " " +
+              "-" +
+              " " +
+              data[0].data[0].userEmail
+          );
           setUsers(data[0].data);
           console.log(data);
         } else {

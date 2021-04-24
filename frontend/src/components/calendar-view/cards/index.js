@@ -47,7 +47,9 @@ export const CovidCard = () => {
         reportedUser.userId,
         ""
       )
-      .then();
+      .then(() => {
+        employeeRepository.setExposure(reportedUser.userId).then();
+      });
   };
 
   return (
