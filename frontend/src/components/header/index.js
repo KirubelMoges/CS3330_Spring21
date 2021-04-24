@@ -2,6 +2,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 import { useContext } from 'react';
 import { UserContext } from '../../common/context';
 import { UserRepository } from '../../api/userRepository';
+import { useHistory } from 'react-router';
 
 const Header = () => {
   const userRepository = new UserRepository();
@@ -40,9 +41,11 @@ const LoggedOutVariant = () => {
 const LoggedInVariant = () => {
   const [, setUserContext] = useContext(UserContext);
   const userRepository = new UserRepository();
+  const history = useHistory();
   function logoutButton() {
     userRepository.logout();
     setUserContext({});
+    history.push('/login');
   }
 
   return (

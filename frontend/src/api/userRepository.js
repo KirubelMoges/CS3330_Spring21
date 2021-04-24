@@ -1,5 +1,5 @@
-import { URL, UserTypes } from "../utils/constants";
-import axios from "axios";
+import { URL, UserTypes } from '../utils/constants';
+import axios from 'axios';
 
 export class UserRepository {
   /**
@@ -7,7 +7,7 @@ export class UserRepository {
    * @returns {Object} - The current user signed in
    */
   currentUser() {
-    const user = sessionStorage.getItem("user");
+    const user = sessionStorage.getItem('user');
     if (!user) return {};
     return JSON.parse(user);
   }
@@ -24,7 +24,7 @@ export class UserRepository {
    * Logout the user and delete session information
    */
   logout() {
-    sessionStorage.removeItem("user");
+    sessionStorage.removeItem('user');
   }
 
   /**
@@ -35,32 +35,32 @@ export class UserRepository {
    */
   async login(email, password) {
     const errors = {};
-    const { data, status } = await axios.get(URL + "/api/login", {
-      params: { userEmail: email, userPassword: password },
+    const { data, status } = await axios.get(URL + '/api/login', {
+      params: { userEmail: email, userPassword: password }
     });
 
-    if (status > 204) errors.request = "Bad Request";
+    if (status > 204) errors.request = 'Bad Request';
 
     switch (data.status) {
       case 1:
-        errors.email = "There is no user with this email";
+        errors.email = 'There is no user with this email';
         errors.success = false;
         break;
       case 2:
-        errors.password = "Incorrect password";
+        errors.password = 'Incorrect password';
         errors.success = false;
         break;
 
       default:
         sessionStorage.setItem(
-          "user",
+          'user',
           JSON.stringify({
             username: email,
-            role: "employee",
+            role: data.jobTitle ?? null,
             userId: data.userId,
             officeId: data.officeId ?? null,
             password: password,
-            status: data.status ?? 0,
+            status: data.status ?? 0
           })
         );
         errors.success = true;
@@ -79,39 +79,32 @@ export class UserRepository {
    * @param {string} jobTitle - The user's role
    * @returns {Object} - The errors of the register request
    */
-  async register(
-    email,
-    password,
-    firstName,
-    lastName,
-    officeId,
-    jobTitle = UserTypes.employee
-  ) {
+  async register(email, password, firstName, lastName, officeId, jobTitle = UserTypes.employee) {
     const errors = { success: false };
 
-    const { data, status } = await axios.post(URL + "/api/createUser", {
+    const { data, status } = await axios.post(URL + '/api/createUser', {
       firstName,
       lastName,
       userEmail: email,
       userPassword: password,
       exposure: false,
       jobTitle,
-      officeId,
+      officeId
     });
 
-    if (data.status && data.status === 1) errors.email = "Email already used";
+    if (data.status && data.status === 1) errors.email = 'Email already used';
 
     if (status <= 201) {
       errors.success = true;
       sessionStorage.setItem(
-        "user",
+        'user',
         JSON.stringify({
           username: email,
-          role: "employee",
+          role: jobTitle,
           userId: data.data.insertId,
           officeId: officeId,
           password: password,
-          status: 0,
+          status: 0
         })
       );
     }
@@ -122,31 +115,34 @@ export class UserRepository {
   /**
    *
    * @param {number} id - The id of the user to query
-   * @returns {Promise<Object>} - The errors of the request
+   * @returns {Promise<[Object, Object]>} - Data, error Tuple
    */
-  async getMoreUserInformationById(id) {
+  async getMoreUserInformationById(id, updateCurrentUser = false) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + "/api/user", {
-      params: { userId: id },
+    const { data, status } = await axios.get(URL + '/api/user', {
+      params: { userId: id }
     });
 
-    if (status >= 201) errors.request = "Bad Request";
+    if (status >= 201) errors.request = 'Bad Request';
     else {
-      sessionStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...this.currentUser(),
-          jobTitle: data.data[0].jobTitle,
-          officeId: data.data[0].officeId,
-          reportsTo: data.data[0].reportsTo,
-          exposure: data.data[0].exposure,
-          covidStatus: data.data[0].covidStatus,
-          scheduleId: data.data[0].scheduleId,
-        })
-      );
+      if (updateCurrentUser) {
+        sessionStorage.setItem(
+          'user',
+          JSON.stringify({
+            ...this.currentUser(),
+            jobTitle: data.data[0].jobTitle,
+            role: data.data[0].jobTitle,
+            officeId: data.data[0].officeId,
+            reportsTo: data.data[0].reportsTo,
+            exposure: data.data[0].exposure,
+            covidStatus: data.data[0].covidStatus,
+            scheduleId: data.data[0].scheduleId
+          })
+        );
+      }
       errors.success = true;
     }
-    return errors;
+    return [data.data, errors];
   }
 
   /**
@@ -156,11 +152,11 @@ export class UserRepository {
    */
   async getUserById(id) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + "/api/user", {
-      params: { userId: id },
+    const { data, status } = await axios.get(URL + '/api/user', {
+      params: { userId: id }
     });
 
-    if (status >= 201) errors.request = "Bad Request";
+    if (status >= 201) errors.request = 'Bad Request';
     else errors.success = true;
 
     return [data, errors];
@@ -168,13 +164,13 @@ export class UserRepository {
 
   /**
    * Get an array of all users
-   * @returns {[Object, Object]} - Data, error tuple
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async getAllUsers() {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + "/getAllUsers", {});
+    const { data, status } = await axios.get(URL + '/api/manager/getAllUsers', {});
 
-    if (status >= 201) errors.request = "Bad Request";
+    if (status >= 201) errors.request = 'Bad Request';
     else errors.success = true;
 
     return [data, errors];
@@ -183,17 +179,29 @@ export class UserRepository {
   /**
    * Change the user status of a given user
    * @param {number} id - The id of the user to get
-   * @param {number} covidStatus - The id of the user to get
+   * @param {number} covidStatus - The status to set
    * @returns {[Object, Object]} - Data, error tuple
    */
 
   async editCovidStatus(id, covidStatus) {
     const errors = { success: false };
-    const { id, covidStatus } = await axios.put(URL + "/editCovidStatus", {});
+    const { data, status } = await axios.put(URL + '/editCovidStatus', {
+      id,
+      covidStatus
+    });
 
-    if (status >= 201) errors.request = "Bad Request";
-    else errors.success = true;
+    if (status >= 201) errors.request = 'Bad Request';
+    else {
+      errors.success = true;
+      sessionStorage.setItem(
+        'user',
+        JSON.stringify({
+          ...this.currentUser(),
+          covidStatus: covidStatus
+        })
+      );
+    }
 
-    return errors;
+    return [data, errors];
   }
 }

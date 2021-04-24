@@ -4,12 +4,13 @@ import { useHistory, Link } from 'react-router-dom';
 import { UserContext } from '../../common/context';
 import Header from '../header';
 import { UserRepository } from '../../api/userRepository';
+import { UserTypes } from '../../utils/constants';
 
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [officeId, setOfficeId] = useState(1);
-  const [jobTitle] = useState('defaultJobTitle');
+  const [jobTitle, setJobTitle] = useState(UserTypes.employee);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -109,6 +110,17 @@ const Register = () => {
                 value={officeId}
                 onChange={(e) => setOfficeId(e.target.value)}
               />
+            </Form.Group>
+            <Form.Group size="lg" controlId="jobTitle">
+              <Form.Label>Office Id</Form.Label>
+              <Form.Control
+                as="select"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+              >
+                <option>{UserTypes.employee}</option>
+                <option>{UserTypes.manager}</option>
+              </Form.Control>
             </Form.Group>
             <Button block size="lg" type="submit" disabled={!validate()}>
               Register
