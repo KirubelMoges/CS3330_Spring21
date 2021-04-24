@@ -53,13 +53,13 @@ clockOut data does not work
 - [ ] Profile Page
 - [ ] Contact Tracing
 - [ ] Custodian View
-- [ ] Manager room controller
+- [x] Manager room controller
 - [ ] Employee delete reservations
 
 # Epic 1
 
 - [x] See all employees \*needs API route - Logan
-- [ ] Schedule an employee \*fix manager view - Nick - not getting done
+- [x] Schedule an employee - Nick
 - [ ] See all schedules for a day \*needs create schedule page
 - [ ] See an employees schedules \*profile page - Blake on profile page
 
