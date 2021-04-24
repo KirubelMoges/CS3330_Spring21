@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import Header from "../header";
+import { UserRepository } from "../../api/userRepository";
 
 const EmployeeList = () => {
-  const [users, setUsers] = useState([
-    { username: "test1", userId: 1, exposure: false, covidStatus: 0 },
-    { username: "test2", userId: 2, exposure: true, covidStatus: 0 },
-    { username: "test3", userId: 3, exposure: true, covidStatus: 0 },
-    { username: "test4", userId: 4, exposure: false, covidStatus: 1 },
-  ]);
+  
+  const [users, setUsers] = useState(undefined);
+
+  useEffect(() => {
+    const userRepository = new UserRepository(); 
+    if (users === undefined) {
+      userRepository.getAllUsers().then((data) => {
+        if(data[1].success === true) {
+          setUsers(data[0].data);
+          console.log(data);
+        } else {
+          setUsers([]);
+        }
+      })
+    }
+  });
 
   return (
     <div>
@@ -23,11 +34,14 @@ const EmployeeList = () => {
           <tbody>
             {users &&
               users.map((user) => {
+                console.log(user)
                 return (
-                  user.covidStatus == 0 &&
-                  user.exposure == false && (
+                  // user.status == 0 &&
+                  // user.exposure == false && 
+                  // Need to reimplement the checks
+                  (
                     <tr key={user.userId}>
-                      <td>{user.username}</td>
+                      <td>{user.userId + ' ' + user.firstName + ' ' + user.lastName}</td>
                     </tr>
                   )
                 );
@@ -45,10 +59,11 @@ const EmployeeList = () => {
             {users &&
               users.map((user) => {
                 return (
-                  user.covidStatus == 0 &&
-                  user.exposure == true && (
+                  // user.covidStatus == 0 &&
+                  // user.exposure == true && 
+                  (
                     <tr key={user.userId}>
-                      <td>{user.username}</td>
+                      <td>{user.userId + ' ' + user.firstName + ' ' + user.lastName}</td>
                     </tr>
                   )
                 );
@@ -66,9 +81,9 @@ const EmployeeList = () => {
             {users &&
               users.map((user) => {
                 return (
-                  user.covidStatus == 1 && (
+                  user.status == 1 && (
                     <tr key={user.userId}>
-                      <td>{user.username}</td>
+                      <td>{user.userId + ' ' + user.firstName + ' ' + user.lastName}</td>
                     </tr>
                   )
                 );
