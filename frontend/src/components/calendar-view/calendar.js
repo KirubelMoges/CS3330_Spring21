@@ -5,7 +5,6 @@ import { Form, Row, Col, Modal } from 'react-bootstrap';
 import { RoomsRepository } from '../../api/roomsRepository';
 import { UserRepository } from '../../api/userRepository';
 import { EmployeeRepository } from '../../api/employeeRepository';
-import { ReservationsRepository } from '../../api/reservationsRepository';
 import { ManagerRepository } from '../../api/managerRepository';
 
 const CalendarHeader = (props) => {
@@ -152,7 +151,8 @@ const CalendarEvent = (props) => {
   return (
     <a
       className="event d-block p-1 pl-2 pr-2 mb-1 rounded text-truncate small bg-success text-white"
-      title="Test Event 3"
+      title={'Event in Room: ' + props.reservation.roomId}
+      style={{ pointerEvents: 'none' }}
     >
       Event in Room: {props.reservation.roomId}
     </a>
@@ -170,14 +170,14 @@ const Calendar = (props) => {
   const [reservations, setReservations] = useState(undefined);
   const [employees, setEmployees] = useState(undefined);
 
+  const manager = props.manager ?? false;
+
   const changeMonth = (m, y) => {
     const newStart = new Date(y, m - 1, 1);
-    console.log('Setting new calendar to start on', newStart);
     const employeeRepo = new EmployeeRepository();
     employeeRepo.getReservations(m, y).then((res) => {
       if (res[1].success) {
         setReservations(res[0].data);
-        console.log('Reservations:', res[0].data);
         setDates(getCalendarDays(newStart));
         setMonth(m);
         setYear(y);
@@ -188,6 +188,7 @@ const Calendar = (props) => {
   };
 
   const [isManagerScheduleShowing, setIsManagerScheduleShowing] = useState(false);
+  const [isEmployeeScheduleShowing, setIsEmployeeScheduleShowing] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const handleManagerOpenSchedule = (date) => {
@@ -196,22 +197,27 @@ const Calendar = (props) => {
   };
   const handleCloseManagerSchedule = () => setIsManagerScheduleShowing(false);
 
-  const handleReserve = (day, room, employee) => {
-    const roomToReserve = rooms.find((rm) => {
-      return rm.roomId == room;
-    });
+  const handleEmployeeOpenSchedule = (date) => {
+    const userRepository = new UserRepository();
+    if (userRepository.currentUser().covidStatus !== 1) {
+      setSelectedDate(date);
+      setIsEmployeeScheduleShowing(true);
+    }
+  };
+  const handleCloseEmployeeSchedule = () => setIsEmployeeScheduleShowing(false);
 
-    const employeeToReserve = employees.find((em) => {
-      return em.firstName + ' ' + em.lastName == employee;
-    });
+  const handleReserve = (day, room, employee) => {
+    const roomToReserve = room;
+    const employeeToReserve = employee;
 
     const managerRepository = new ManagerRepository();
+    const userRepository = new UserRepository();
     managerRepository
       .createReservation(
         roomToReserve.roomId,
         new Date(day),
         new Date(day),
-        employeeToReserve.userId
+        employeeToReserve.userId ?? userRepository.currentUser().userId
       )
       .then((res) => {
         if (res[1].success) {
@@ -223,15 +229,6 @@ const Calendar = (props) => {
               dateIn: new Date(day)
             }
           ]);
-          //TODO: send to API
-          console.log(
-            'Reserving room',
-            roomToReserve,
-            'for ',
-            employeeToReserve,
-            'on ',
-            new Date(day)
-          );
           handleCloseManagerSchedule();
         } else {
           alert('Failed to reserve room');
@@ -247,11 +244,6 @@ const Calendar = (props) => {
     if (!month || !year) {
       setMonth(dates[Math.floor(dates.length / 2)].getMonth() + 1);
       setYear(dates[0].getFullYear() + 1);
-      console.log(
-        'SETTING M/Y',
-        dates[Math.floor(dates.length / 2)].getMonth() + 1,
-        dates[0].getFullYear() + 1
-      );
     }
 
     if (!rooms) {
@@ -274,7 +266,6 @@ const Calendar = (props) => {
       employeeRepo.getSchedules(month, year).then((res) => {
         if (res[1].success) {
           setSchedules(res[0].data);
-          console.log('Schedules:', res[0].data);
         } else {
           setSchedules([]);
         }
@@ -286,7 +277,6 @@ const Calendar = (props) => {
       employeeRepo.getReservations(month, year).then((res) => {
         if (res[1].success) {
           setReservations(res[0].data);
-          console.log('Reservations:', res[0].data);
         } else {
           setReservations([]);
         }
@@ -298,7 +288,6 @@ const Calendar = (props) => {
       userRepository.getAllUsers().then((res) => {
         if (res[1].success) {
           setEmployees(res[0].data);
-          console.log('Employees', res[0].data);
         } else {
           setEmployees([]);
         }
@@ -310,14 +299,24 @@ const Calendar = (props) => {
     <>
       <div className="container mb-4">
         {employees && rooms && (
-          <ScheduleModal
-            show={isManagerScheduleShowing}
-            handleClose={handleCloseManagerSchedule}
-            date={selectedDate}
-            handleReserve={handleReserve}
-            employees={employees}
-            rooms={rooms}
-          />
+          <>
+            <ManagerScheduleModal
+              show={isManagerScheduleShowing}
+              handleClose={handleCloseManagerSchedule}
+              date={selectedDate}
+              handleReserve={handleReserve}
+              employees={employees}
+              rooms={rooms}
+            />
+            <EmployeeScheduleMoal
+              show={isEmployeeScheduleShowing}
+              handleClose={handleCloseEmployeeSchedule}
+              date={selectedDate}
+              handleReserve={handleReserve}
+              employees={employees}
+              rooms={rooms}
+            />
+          </>
         )}
         <CalendarHeader
           month={month}
@@ -339,7 +338,10 @@ const Calendar = (props) => {
                       weekday={weekday}
                       key={index}
                       reservations={reservations}
-                      onOpenDate={() => handleManagerOpenSchedule(date)}
+                      onOpenDate={() => {
+                        if (manager) handleManagerOpenSchedule(date);
+                        else handleEmployeeOpenSchedule(date);
+                      }}
                     />
                   ) : (
                     <CalendarDay
@@ -361,7 +363,10 @@ const Calendar = (props) => {
                     weekday={weekday}
                     key={index}
                     reservations={reservations}
-                    onOpenDate={() => handleManagerOpenSchedule(date)}
+                    onOpenDate={() => {
+                      if (manager) handleManagerOpenSchedule(date);
+                      else handleEmployeeOpenSchedule(date);
+                    }}
                   />
                 );
               } else {
@@ -384,12 +389,59 @@ const Calendar = (props) => {
   );
 };
 
-const ScheduleModal = (props) => {
+const EmployeeScheduleMoal = (props) => {
+  const rooms = [...props.rooms];
+  const [selectedRoom, setSelectedRoom] = useState(rooms[0].roomId);
+  const date = new Date(props.date);
+
+  return (
+    <Modal show={props.show} onHide={props.handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Schedule a Room</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>Selected Date: {date.toDateString()}</p>
+        <Form>
+          <Form.Group controlId="scheduleForm.room">
+            <Form.Label>Room Number</Form.Label>
+            <Form.Control as="select" onChange={(e) => setSelectedRoom(e.target.value)}>
+              {rooms.map((room) => (
+                <option key={room.roomId}>{room.roomId}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+
+      <Modal.Footer>
+        {rooms.length > 0 && (
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              const reservationRoom = rooms.find((rm) => {
+                return rm.roomId == selectedRoom;
+              });
+              const userRepository = new UserRepository();
+              props.handleReserve(props.date, reservationRoom, userRepository.currentUser());
+            }}
+          >
+            Reserve
+          </button>
+        )}
+        <button className="btn btn-danger" onClick={props.handleClose}>
+          Cancel
+        </button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
+const ManagerScheduleModal = (props) => {
   const rooms = [...props.rooms];
   const employees = [...props.employees];
 
   const [selectedEmployee, setSelectedEmployee] = useState(employees[0]);
-  const [selectedRoom, setSelectedRoom] = useState(rooms[0]);
+  const [selectedRoom, setSelectedRoom] = useState(rooms[0].roomId);
 
   const date = new Date(props.date);
 
@@ -422,12 +474,19 @@ const ScheduleModal = (props) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <button
-          className="btn btn-success"
-          onClick={() => props.handleReserve(props.date, selectedRoom, selectedEmployee)}
-        >
-          Reserve
-        </button>
+        {rooms.length > 0 && employees.length > 0 && (
+          <button
+            className="btn btn-success"
+            onClick={() => {
+              const reservationRoom = rooms.find((rm) => {
+                return rm.roomId == selectedRoom;
+              });
+              props.handleReserve(props.date, reservationRoom, selectedEmployee);
+            }}
+          >
+            Reserve
+          </button>
+        )}
         <button className="btn btn-danger" onClick={props.handleClose}>
           Cancel
         </button>
