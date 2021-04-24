@@ -112,6 +112,20 @@ export class EmployeeRepository {
     return [data, errors];
   }
 
+  async setExposure(userId, exposure = 1) {
+    const errors = { success: false };
+    const { data, status } = await axios.put(
+      URL + "/api/manager/editCovidExposure",
+      {},
+      { params: { userId, exposure } }
+    );
+
+    if (status >= 201) errors.request = "Bad Request";
+    else errors.success = true;
+
+    return [data, errors];
+  }
+
   /**
    * Get all people who have come in contact with a person
    * @param {number} userId - The id of the person to get their contact information
