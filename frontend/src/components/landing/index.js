@@ -7,7 +7,7 @@ const LandingPage = () => {
   return (
     <div>
       <Header />
-      <Container>
+      <Container >
         <div className="py-5 my-5">
           <h1 className="text-center">Evolve your Office Management</h1>
           <h4 className="text-center text-muted">
