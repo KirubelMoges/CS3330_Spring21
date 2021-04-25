@@ -16,7 +16,6 @@ const ReportCovidModal = (props) => {
         <button
           className="btn btn-danger"
           onClick={() => {
-            alert("Your manager will be notified.");
             props.reportCovid();
             props.handleClose();
           }}

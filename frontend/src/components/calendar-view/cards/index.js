@@ -35,7 +35,9 @@ export const CovidCard = () => {
     setHasCovid(true);
     userRepository
       .editCovidStatus(userRepository.currentUser().userId, 1)
-      .then();
+      .then((res) => {
+        console.log({ res });
+      });
   };
 
   const contactReported = (reportedUser) => {

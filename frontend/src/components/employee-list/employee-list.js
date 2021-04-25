@@ -2,18 +2,19 @@ import React, { useState, useEffect, Link } from "react";
 import Header from "../header";
 import { UserRepository } from "../../api/userRepository";
 import { useHistory } from "react-router-dom";
+import { UserTypes } from "../../utils/constants";
 
 const EmployeeList = () => {
   const [users, setUsers] = useState(undefined);
   const history = useHistory();
+  const userRepository = new UserRepository();
 
   useEffect(() => {
-    const userRepository = new UserRepository();
     if (users === undefined) {
       userRepository.getAllUsers().then((data) => {
         if (data[1].success === true) {
           setUsers(data[0].data);
-          console.log(data);
+          //console.log(data);
         } else {
           setUsers([]);
         }
@@ -24,7 +25,7 @@ const EmployeeList = () => {
   return (
     <div>
       <Header />
-      <div class="container mb-4">
+      <div className="container mb-4">
         {/* Start of Available Employee Table */}
         <table className=" table table-condensed table-striped border">
           <thead>
@@ -37,11 +38,10 @@ const EmployeeList = () => {
           <tbody>
             {users &&
               users.map((user) => {
-                console.log(user);
+                //console.log(user);
                 return (
                   user.covidStatus != 1 &&
-                  user.exposure == false && (
-                    // Need to reimplement the checks
+                  user.exposure == 0 && (
                     <tr key={user.userId}>
                       <td>
                         <span className="text-muted">{user.userId}</span>
@@ -76,7 +76,7 @@ const EmployeeList = () => {
               users.map((user) => {
                 return (
                   user.covidStatus != 1 &&
-                  user.exposure == true && (
+                  user.exposure == 1 && (
                     <tr key={user.userId}>
                       <td>
                         <span className="text-muted">{user.userId}</span>
@@ -125,6 +125,29 @@ const EmployeeList = () => {
                         >
                           See Profile
                         </a>
+                        {userRepository.currentUser().role ==
+                          UserTypes.manager && (
+                          <button
+                            type="button"
+                            className="btn btn-success float-right"
+                            onClick={() => {
+                              userRepository
+                                .editCovidStatus(user.userId, 0)
+                                .then(() => {
+                                  let newUsers = users;
+                                  newUsers = newUsers.map((newUser) => {
+                                    if (newUser.userId == user.userId) {
+                                      newUser.covidStatus = 0;
+                                    }
+                                    return newUser;
+                                  });
+                                  setUsers(newUsers);
+                                });
+                            }}
+                          >
+                            Tested Negative
+                          </button>
+                        )}
                       </td>
                     </tr>
                   )

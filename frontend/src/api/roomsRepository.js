@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { URL } from '../utils/constants';
+import axios from "axios";
+import { URL } from "../utils/constants";
 
 export class RoomsRepository {
   /**
@@ -10,14 +10,14 @@ export class RoomsRepository {
    */
   async getRooms(email, password) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + '/api/rooms', {
-      params: { userEmail: email, userPassword: password }
+    const { data, status } = await axios.get(URL + "/api/rooms", {
+      params: { userEmail: email, userPassword: password },
     });
 
     if (status >= 201) {
-      errors.reason = 'Bad Request';
-    } else if (data.status && data.status === '1') {
-      errors.reason = 'Not authenticated';
+      errors.reason = "Bad Request";
+    } else if (data.status && data.status === "1") {
+      errors.reason = "Not authenticated";
     } else {
       errors.success = true;
     }
@@ -38,35 +38,24 @@ export class RoomsRepository {
    * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async createRoom(
-    userEmail,
-    userPassword,
-    roomId,
-    roomType,
-    capacity,
-    availability,
-    cleaned,
-    beingCleaned
+    name,
+    capacity = 50,
+    lastCleaned = null,
+    availability = 1,
+    cleaned = 1
   ) {
     const errors = { success: false };
-    const { data, status } = await axios.post(URL + '/api/rooms', {
-      userEmail,
-      userPassword,
-      roomId,
-      roomType,
-      capacity,
-      availability,
-      cleaned,
-      beingCleaned
-    });
+    const { data, status } = await axios.post(
+      URL + "/api/manager/room",
+      {},
+      { params: { name, capacity, lastCleaned, availability, cleaned } }
+    );
 
     if (status >= 201) {
-      errors.reason = 'Bad Request';
-    } else if (data.status && data.status === '1') {
-      errors.reason = 'Not authenticated';
+      errors.reason = "Bad Request";
     } else {
       errors.success = true;
     }
-
     return [data, errors];
   }
 
@@ -78,17 +67,20 @@ export class RoomsRepository {
    */
   async getAvailableConferenceRooms(userEmail, userPassword) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + '/api/availableConferenceRoom', {
-      params: {
-        userEmail,
-        userPassword
+    const { data, status } = await axios.get(
+      URL + "/api/availableConferenceRoom",
+      {
+        params: {
+          userEmail,
+          userPassword,
+        },
       }
-    });
+    );
 
     if (status >= 201) {
-      errors.reason = 'Bad Request';
+      errors.reason = "Bad Request";
     } else if (data.status && data.status === 1) {
-      errors.reason = 'Unauthenticated';
+      errors.reason = "Unauthenticated";
     } else {
       errors.success = true;
     }
@@ -111,19 +103,22 @@ export class RoomsRepository {
     dateTime = new Date()
   ) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + '/api/availableConferencesGivenCapacity', {
-      params: {
-        userEmail,
-        userPassword,
-        capacity,
-        dateTime
+    const { data, status } = await axios.get(
+      URL + "/api/availableConferencesGivenCapacity",
+      {
+        params: {
+          userEmail,
+          userPassword,
+          capacity,
+          dateTime,
+        },
       }
-    });
+    );
 
     if (status >= 201) {
-      errors.reason = 'Bad Request';
+      errors.reason = "Bad Request";
     } else if (data.status && data.status === 1) {
-      errors.reason = 'Unauthenticated';
+      errors.reason = "Unauthenticated";
     } else {
       errors.success = true;
     }

@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { URL } from '../utils/constants';
+import axios from "axios";
+import { URL } from "../utils/constants";
 
 export class ManagerRepository {
   /**
@@ -13,20 +13,42 @@ export class ManagerRepository {
   async createReservation(roomId, dateIn, dateOut, userId) {
     const errors = { success: false };
     const { data, status } = await axios.post(
-      URL + '/api/manager/addReservation',
+      URL + "/api/manager/addReservation",
       {},
       {
         params: {
           roomId,
           dateIn,
           dateOut,
-          userId
-        }
+          userId,
+        },
       }
     );
 
-    if (status >= 201) errors.reason = 'Bad Request';
+    if (status >= 201) errors.reason = "Bad Request";
     else errors.success = true;
+
+    return [data, errors];
+  }
+
+  /**
+   * Delete a specific room
+   * @param {name} name - The name of the room to delete
+   * @param {number} roomId - The id of the room to deletee
+   */
+  async deleteRoom(roomId) {
+    const errors = { success: false };
+    const { data, status } = await axios.delete(URL + "/api/manager/room", {
+      params: { roomId },
+    });
+
+    if (status >= 201) {
+      errors.reason = "Bad Request";
+    } else if (data.status && data.status === 1) {
+      errors.reason = "Unauthenticated";
+    } else {
+      errors.success = true;
+    }
 
     return [data, errors];
   }

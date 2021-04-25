@@ -192,13 +192,12 @@ export class UserRepository {
    * @param {number} covidStatus - The status to set
    * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
-
-  async editCovidStatus(id, covidStatus) {
+  async editCovidStatus(id, covidStatus = 0) {
     const errors = { success: false };
     const { data, status } = await axios.put(
       URL + "/api/manager/editCovidStatus",
       {},
-      { params: { id, covidStatus } }
+      { params: { userId: id, covidStatus } }
     );
 
     if (status >= 201) errors.request = "Bad Request";
