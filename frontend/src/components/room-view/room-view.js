@@ -36,21 +36,34 @@ const RoomView = () => {
   return (
     <>
       <Header />
-      <div className="container mb-4">
+      <div className="container mb-4 mt-3">
         <table className="table table-striped">
-          <thead className="border-top-0">
+          <thead className="border-top-0 bg-light">
             <tr>
               <th>
                 <span className="h3">Rooms</span>
-                <button
-                  className="btn btn-success float-right"
-                  type="button"
-                  onClick={handleCreateRoomOpen}
-                >
-                  New Room
-                </button>
               </th>
-              <th></th>
+              <th>
+                {userRepository.currentUser().role == UserTypes.employee && (
+                  
+                  <button
+                  className="btn btn-success "
+                  type="button"
+                  onClick={handleCreateRoomOpen}>
+                  New Room
+                  </button>
+                )}
+              </th>
+              <th>
+                {userRepository.currentUser().role == UserTypes.manager && (
+                  <button
+                  className="btn btn-success"
+                  type="button"
+                  onClick={handleCreateRoomOpen}>
+                  New Room
+                  </button>
+                )}
+                </th>
             </tr>
           </thead>
           <tbody>
@@ -60,8 +73,8 @@ const RoomView = () => {
                   <tr key={room.roomId}>
                     <td>Room: {room.roomId}</td>
                     <td>Capacity: {room.capacity}</td>
+                    <td>
                     {userRepository.currentUser().role == UserTypes.manager && (
-                      <td>
                         <button
                           type="button"
                           className="btn btn-danger"
@@ -80,8 +93,8 @@ const RoomView = () => {
                         >
                           Delete Room
                         </button>
-                      </td>
                     )}
+                    </td>
                   </tr>
                 );
               })}

@@ -55,12 +55,13 @@ export const CovidCard = () => {
   };
 
   return (
+    <div className='col mt-3'>
     <div className="covidcard shadow">
-      <div className="card clock-card">
+      <div className=" clock-card">
         <div className="card-body">
-          <h5 className="card-title">COVID-19</h5>
+          <h5 className="text-center">COVID-19</h5>
           <p className="card-text">
-            Report Covid, view employees with Covid, and Report Contact.
+            Report Covid, view employees with Covid, and Report Contacts.
           </p>
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
@@ -98,6 +99,7 @@ export const CovidCard = () => {
         reportContact={contactReported}
       />
     </div>
+    </div>
   );
 };
 
@@ -111,10 +113,11 @@ export const RoomCard = () => {
   const handleStatsOpen = () => setIsStatsModalShowing(true);
 
   return (
+    <div className='col mt-3'>
     <div className="roomcard shadow">
-      <div className="card clock-card">
+      <div className=" clock-card">
         <div className="card-body">
-          <h5 className="card-title">Rooms</h5>
+          <h5 className="text-center">Rooms</h5>
           <p className="card-text">
             Create meetings, reserve rooms, and checkout the covid status of the
             office.
@@ -134,6 +137,7 @@ export const RoomCard = () => {
       {/* <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} /> */}
       <StatsModal handleClose={handleStatsClose} show={isStatsModalShowing} />
     </div>
+    </div>
   );
 };
 
@@ -151,10 +155,11 @@ export const TimeCard = () => {
   const handleClockOutOpen = () => setIsClockOutModalShowing(true);
 
   return (
-    <div className="timecard shadow">
-      <div className="card clock-card">
+    <div className="col mt-3">
+    <div className="shadow">
+      <div className="clock-card">
         <div className="card-body">
-          <h5 className="card-title">My Time</h5>
+          <h5 className="text-center">My Time</h5>
           <p className="card-text">
             Manage your time status, and view your time breakdown.
           </p>
@@ -196,6 +201,7 @@ export const TimeCard = () => {
         show={isClockOutModalShowing}
       />
     </div>
+    </div>
   );
 };
 
@@ -209,11 +215,11 @@ export const ManagerControls = (props) => {
   const handleRoomsOpen = () => setIsRoomsModalShowing(true);
 
   return (
-    <div className="roomcard shadow ">
+    <div className="mt-3 roomcard shadow ">
       <div className="card clock-card">
         <div className="card-body">
-          <h5 className="card-title">Manager Controls</h5>
-          <p className="card-text">Manage your workplace and people.</p>
+          <h5 className="text-center">Manager Controls</h5>
+          <p className="card-text text-center">Manage your workplace and people.</p>
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
