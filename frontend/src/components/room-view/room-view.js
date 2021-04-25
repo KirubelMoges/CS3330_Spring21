@@ -37,8 +37,8 @@ const RoomView = () => {
     <>
       <Header />
       <div className="container mb-4 mt-3">
-        <table className="table table-striped">
-          <thead className="border-top-0 bg-light">
+        <table className="table table-striped border border-dark">
+          <thead className="bg-dark text-white">
             <tr>
               <th>
                 <span className="h3">Rooms</span>
