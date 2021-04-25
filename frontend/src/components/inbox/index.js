@@ -19,6 +19,8 @@ const Inbox = () => {
   }, [allEmployeeMessages]);
 
   return (
+    <>
+    <Header />
     <div className="container">
       {/* Use a table here..... */}
       {allEmployeeMessages &&
@@ -27,6 +29,7 @@ const Inbox = () => {
         })}
       {allEmployeeMessages && <Table></Table>}
     </div>
+    </>
   );
 };
 
