@@ -21,7 +21,6 @@ const App = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
-        <Route exact path="/about" component={About} />
         <Route exact path="/inbox" component={Inbox} />
         <Route exact path="/rooms" component={RoomView} />
       </Router>
