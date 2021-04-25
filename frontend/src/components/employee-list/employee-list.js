@@ -1,6 +1,10 @@
 import React, { useState, useEffect, Link } from "react";
 import Header from "../header";
 import { UserRepository } from "../../api/userRepository";
+import {
+  EmployeeRepository,
+  employeeRepository,
+} from "../../api/employeeRepository";
 import { useHistory } from "react-router-dom";
 import { UserTypes } from "../../utils/constants";
 
@@ -8,6 +12,7 @@ const EmployeeList = () => {
   const [users, setUsers] = useState(undefined);
   const history = useHistory();
   const userRepository = new UserRepository();
+  const employeeRepository = new EmployeeRepository();
 
   useEffect(() => {
     if (users === undefined) {
@@ -56,6 +61,29 @@ const EmployeeList = () => {
                         >
                           See Profile
                         </a>
+                        {userRepository.currentUser().role ==
+                          UserTypes.manager && (
+                          <button
+                            type="button"
+                            className="btn btn-danger float-right"
+                            onClick={() => {
+                              userRepository
+                                .editCovidStatus(user.userId, 1)
+                                .then(() => {
+                                  let newUsers = users;
+                                  newUsers = newUsers.map((newUser) => {
+                                    if (newUser.userId == user.userId) {
+                                      newUser.covidStatus = 1;
+                                    }
+                                    return newUser;
+                                  });
+                                  setUsers(newUsers);
+                                });
+                            }}
+                          >
+                            Tested Positive
+                          </button>
+                        )}
                       </td>
                     </tr>
                   )
@@ -91,6 +119,56 @@ const EmployeeList = () => {
                         >
                           See Profile
                         </a>
+                        {userRepository.currentUser().role ==
+                          UserTypes.manager && (
+                          <>
+                            <button
+                              type="button"
+                              className="btn btn-success float-right"
+                              onClick={() => {
+                                userRepository
+                                  .editCovidStatus(user.userId, 0)
+                                  .then(() => {
+                                    employeeRepository
+                                      .setExposure(user.userId, 0)
+                                      .then();
+                                    let newUsers = users;
+                                    newUsers = newUsers.map((newUser) => {
+                                      if (newUser.userId == user.userId) {
+                                        newUser.covidStatus = 0;
+                                        newUser.exposure = 0;
+                                      }
+                                      return newUser;
+                                    });
+                                    setUsers(newUsers);
+                                  });
+                              }}
+                            >
+                              Tested Negative
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger float-right"
+                              onClick={() => {
+                                userRepository
+                                  .editCovidStatus(user.userId, 1)
+                                  .then(() => {
+                                    let newUsers = users;
+                                    newUsers = newUsers.map((newUser) => {
+                                      if (newUser.userId == user.userId) {
+                                        newUser.covidStatus = 1;
+                                      }
+                                      return newUser;
+                                    });
+
+                                    setUsers(newUsers);
+                                  });
+                              }}
+                            >
+                              Tested Positive
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   )
@@ -134,10 +212,14 @@ const EmployeeList = () => {
                               userRepository
                                 .editCovidStatus(user.userId, 0)
                                 .then(() => {
+                                  employeeRepository
+                                    .setExposure(user.userId, 0)
+                                    .then();
                                   let newUsers = users;
                                   newUsers = newUsers.map((newUser) => {
                                     if (newUser.userId == user.userId) {
                                       newUser.covidStatus = 0;
+                                      newUser.exposure = 0;
                                     }
                                     return newUser;
                                   });
