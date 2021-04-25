@@ -60,13 +60,13 @@ clockOut data does not work
 
 - [x] See all employees \*needs API route - Logan
 - [x] Schedule an employee - Nick
-- [ ] See all schedules for a day \*needs create schedule page
-- [ ] See an employees schedules \*profile page - Blake on profile page
+- [ ] See all schedules for a day \*clock in/out log on profile
+- [ ] See an employees schedules \*same as above
 
 # Epic 2
 
 - [x] See my monthly reservations
-- [ ] See monthly schedule - scratched for view each user's individually on profile page - Either on profile or not at all
+- [ ] See monthly schedule - scratched for view each user's individually on profile page - Either on profile or not at all\* same as 1.3
 - [x] View other months
 - [x] View a day's events
 - [x] Create an event
@@ -107,7 +107,7 @@ clockOut data does not work
 - [x] View all positive employees -Eli
 - [ ] Manager view return timeline - NOT HAPPENING
 - [ ] View employee contacts - needs 4.5 - Eli
-- [x] Give others contact tracing powers - NOT HAPPENING
+- [x] Give others contact tracing powers
 
 # Epic 8
 

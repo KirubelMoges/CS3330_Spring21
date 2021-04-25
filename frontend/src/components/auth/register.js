@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Form, Button, Container } from 'react-bootstrap';
-import { useHistory, Link } from 'react-router-dom';
-import { UserContext } from '../../common/context';
-import Header from '../header';
-import { UserRepository } from '../../api/userRepository';
-import { UserTypes } from '../../utils/constants';
+import React, { useState, useEffect, useContext } from "react";
+import { Form, Button, Container } from "react-bootstrap";
+import { useHistory, Link } from "react-router-dom";
+import { UserContext } from "../../common/context";
+import Header from "../header";
+import { UserRepository } from "../../api/userRepository";
+import { UserTypes } from "../../utils/constants";
 
 const Register = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [officeId, setOfficeId] = useState(1);
   const [jobTitle, setJobTitle] = useState(UserTypes.employee);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const history = useHistory();
@@ -45,7 +45,7 @@ const Register = () => {
       setErrors(res);
     } else {
       setUserContext(userRepository.currentUser());
-      history.push('/');
+      history.push("/");
     }
   };
 
@@ -53,7 +53,7 @@ const Register = () => {
     const user = userContext;
     if (user.username) {
       console.log(user);
-      history.push('/');
+      history.push("/");
     }
   });
 
@@ -107,6 +107,7 @@ const Register = () => {
               <Form.Label>Office Id</Form.Label>
               <Form.Control
                 type="number"
+                min={0}
                 value={officeId}
                 onChange={(e) => setOfficeId(e.target.value)}
               />
