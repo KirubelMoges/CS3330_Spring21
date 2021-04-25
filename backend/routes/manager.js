@@ -72,60 +72,73 @@ router.post('/room', async (req,res) => {
     });
   });
 
-router.delete('/room', async (req,res) => {
-  pool.getConnection((err,connection) => {
-      if (err){
-          console.log(connection);
-          // if there is an issue obtaining a connection, release the connection instance and log the error
-          logger.error('Problem obtaining MySQL connection', err)
-          res.status(400).send('Problem obtaining MySQL connection'); 
-        } else
+  router.delete('/room', async (req, res) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        console.log(connection);
+        // if there is an issue obtaining a connection, release the connection instance and log the error
+        logger.error('Problem obtaining MySQL connection', err);
+        res.status(400).send('Problem obtaining MySQL connection');
+      } else {
+        let roomId = req.query['roomId'];
+        // if there is no issue obtaining a connection, execute query
+  
+        if(roomId)
         {
-          let name = req.query['name'];
-          let roomId = req.query['roomId'];
-          // if there is no issue obtaining a connection, execute query
-
-          if(name)
-          {
-            connection.query('DELETE FROM rooms WHERE name = (?)',name, (err, rows, fields) => {
-              connection.release();
-  
-              if (err) {
-                logger.error("Error while deleting room \n", err);
-                res.status(400).json({
-                  "data": [],
-                  "error": "Error obtaining values"
-                })
-              } else {
-                res.status(200).json({
-                  "data": rows
-                });
-              }
-            });
-          }
-          else if(roomId)
-          {
-            connection.query('DELETE FROM rooms WHERE roomId = (?)',roomId, (err, rows, fields) => {
-              connection.release();
-  
-              if (err) {
-                logger.error("Error while deleting room \n", err);
-                res.status(400).json({
-                  "data": [],
-                  "error": "Error obtaining values"
-                })
-              } else {
-                res.status(200).json({
-                  "data": rows
-                });
-              }
-            });
-          }
-          
-        };
-        connection.release();
+          connection.query('DELETE FROM reservations where roomId = (?)', roomId, (err, rows, fields) => {
+            if (err) {
+              logger.error('Error while deleting reservations with given roomId \n', err);
+              res.status(400).json({
+                data: [],
+                error: 'Error obtaining values'
+              });
+            } else 
+            {
+              connection.query('DELETE FROM clocking WHERE roomId = (?)', roomId, (err, rows, fields) => {
+                if (err) {
+                  logger.error('Error while deleting clocking with given roomId \n', err);
+                  res.status(400).json({
+                    data: [],
+                    error: 'Error obtaining values'
+                  });
+                } else 
+                {
+                  connection.query('DELETE FROM schedules WHERE roomId = (?)', roomId, (err, rows, fields) => {
+                    if (err) {
+                      logger.error('Error while deleting schedules with given roomId \n', err);
+                      res.status(400).json({
+                        data: [],
+                        error: 'Error obtaining values'
+                      });
+                    } else 
+                    {
+                      connection.query('DELETE FROM rooms WHERE roomId = (?)', roomId, (err, rows, fields) => {
+                        if (err) {
+                          logger.error('Error while deleting rooms \n', err);
+                          res.status(400).json({
+                            data: [],
+                            error: 'Error obtaining values'
+                          });
+                        } else {
+                          res.status(200).json({
+                            data: rows
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+        else{
+            res.status(400).json({error: 'roomId field is empty or corrupted!'});
+        }
+      }
+      connection.release();
+    });
   });
-});
 
 //EPIC 6.2
 router.get('/allUnreservedRooms', (req,res) => {
