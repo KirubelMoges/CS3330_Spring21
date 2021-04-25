@@ -53,6 +53,10 @@ const EmployeeList = () => {
                         <span className="fs-1">
                           {" " + user.firstName + " " + user.lastName}
                         </span>
+                        <span style={{ fontStyle: "italic" }}>
+                          {" "}
+                          – {user.userEmail}
+                        </span>
                         <a
                           className="btn btn-info float-right"
                           onClick={() =>
@@ -65,7 +69,7 @@ const EmployeeList = () => {
                           UserTypes.manager && (
                           <button
                             type="button"
-                            className="btn btn-danger float-right"
+                            className="btn btn-danger float-right mr-1"
                             onClick={() => {
                               userRepository
                                 .editCovidStatus(user.userId, 1)
@@ -111,8 +115,12 @@ const EmployeeList = () => {
                         <span className="fs-1">
                           {" " + user.firstName + " " + user.lastName}
                         </span>
+                        <span style={{ fontStyle: "italic" }}>
+                          {" "}
+                          – {user.userEmail}
+                        </span>
                         <a
-                          className="btn btn-info float-right"
+                          className="btn btn-info float-right mr-1"
                           onClick={() =>
                             history.push("/profile/" + user.userId)
                           }
@@ -124,7 +132,7 @@ const EmployeeList = () => {
                           <>
                             <button
                               type="button"
-                              className="btn btn-success float-right"
+                              className="btn btn-success float-right mr-1"
                               onClick={() => {
                                 userRepository
                                   .editCovidStatus(user.userId, 0)
@@ -148,7 +156,7 @@ const EmployeeList = () => {
                             </button>
                             <button
                               type="button"
-                              className="btn btn-danger float-right"
+                              className="btn btn-danger float-right mr-1"
                               onClick={() => {
                                 userRepository
                                   .editCovidStatus(user.userId, 1)
@@ -195,8 +203,12 @@ const EmployeeList = () => {
                         <span className="fs-1">
                           {" " + user.firstName + " " + user.lastName}
                         </span>
+                        <span style={{ fontStyle: "italic" }}>
+                          {" "}
+                          – {user.userEmail}
+                        </span>
                         <a
-                          className="btn btn-info float-right"
+                          className="btn btn-info float-right mr-1"
                           onClick={() =>
                             history.push("/profile/" + user.userId)
                           }
@@ -207,7 +219,7 @@ const EmployeeList = () => {
                           UserTypes.manager && (
                           <button
                             type="button"
-                            className="btn btn-success float-right"
+                            className="btn btn-success float-right mr-1"
                             onClick={() => {
                               userRepository
                                 .editCovidStatus(user.userId, 0)
