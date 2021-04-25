@@ -60,7 +60,7 @@ const RoomView = () => {
                   <tr key={room.roomId}>
                     <td>Room: {room.roomId}</td>
                     <td>Capacity: {room.capacity}</td>
-                    {/* {userRepository.currentUser().role == UserTypes.manager && (
+                    {userRepository.currentUser().role == UserTypes.manager && (
                       <td>
                         <button
                           type="button"
@@ -69,7 +69,6 @@ const RoomView = () => {
                             managerRepository
                               .deleteRoom(room.roomId)
                               .then((res) => {
-                                console.log({ res });
                                 let newRooms = rooms;
                                 setRooms(
                                   newRooms.filter(
@@ -82,7 +81,7 @@ const RoomView = () => {
                           Delete Room
                         </button>
                       </td>
-                    )} */}
+                    )}
                   </tr>
                 );
               })}
