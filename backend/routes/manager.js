@@ -82,48 +82,61 @@ router.delete("/room", async (req, res) => {
       logger.error("Problem obtaining MySQL connection", err);
       res.status(400).send("Problem obtaining MySQL connection");
     } else {
-      let name = req.query["name"];
-      let roomId = req.query["roomId"];
+
+      let roomId = req.query['roomId'];
       // if there is no issue obtaining a connection, execute query
 
-      if (name) {
-        connection.query(
-          "DELETE FROM rooms WHERE name = (?)",
-          name,
-          (err, rows, fields) => {
-            connection.release();
-
-            if (err) {
-              logger.error("Error while deleting room \n", err);
-              res.status(400).json({
-                data: [],
-                error: "Error obtaining values",
-              });
-            } else {
-              res.status(200).json({
-                data: rows,
-              });
-            }
+      if(roomId)
+      {
+        connection.query('DELETE FROM reservations where roomId = (?)', roomId, (err, rows, fields) => {
+          if (err) {
+            logger.error('Error while deleting reservations with given roomId \n', err);
+            res.status(400).json({
+              data: [],
+              error: 'Error obtaining values'
+            });
+          } else 
+          {
+            connection.query('DELETE FROM clocking WHERE roomId = (?)', roomId, (err, rows, fields) => {
+              if (err) {
+                logger.error('Error while deleting clocking with given roomId \n', err);
+                res.status(400).json({
+                  data: [],
+                  error: 'Error obtaining values'
+                });
+              } else 
+              {
+                connection.query('DELETE FROM schedules WHERE roomId = (?)', roomId, (err, rows, fields) => {
+                  if (err) {
+                    logger.error('Error while deleting schedules with given roomId \n', err);
+                    res.status(400).json({
+                      data: [],
+                      error: 'Error obtaining values'
+                    });
+                  } else 
+                  {
+                    connection.query('DELETE FROM rooms WHERE roomId = (?)', roomId, (err, rows, fields) => {
+                      if (err) {
+                        logger.error('Error while deleting rooms \n', err);
+                        res.status(400).json({
+                          data: [],
+                          error: 'Error obtaining values'
+                        });
+                      } else {
+                        res.status(200).json({
+                          data: rows
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
           }
         );
-      } else if (roomId) {
-        connection.query(
-          "DELETE FROM rooms WHERE roomId = (?)",
-          roomId,
-          (err, rows, fields) => {
-            if (err) {
-              logger.error("Error while deleting room \n", err);
-              res.status(400).json({
-                data: [],
-                error: "Error obtaining values",
-              });
-            } else {
-              res.status(200).json({
-                data: rows,
-              });
-            }
-          }
-        );
+      }
+      else{
+          res.status(400).json({error: 'roomId field is empty or corrupted!'});
       }
     }
     connection.release();
@@ -576,11 +589,13 @@ router.post("/covidContact", async (req, res) => {
       res.status(400).send("Problem obtaining MySQL connection");
     } else {
       // if there is no issue obtaining a connection, execute query
-      let userIdA = req.query["userIdA"];
-      let userIdB = req.query["userIdB"];
-      let comment = req.query["comment"];
+
+      let userIdA = req.query['userIdA'];
+      let userIdB = req.query['userIdB'];
+      let comment = req.query['comment'];
+      let contactDate = req.query['contactDate'];
       connection.query(
-        "INSERT INTO covidContacts (userIdA,userIdB,comment) values(?,?,?)",
+        'INSERT INTO covidContacts (userIdA,userIdB,comment,contactDate) values(?,?,?,?)',
         [userIdA, userIdB, comment],
         (err, rows, fields) => {
           if (err) {
@@ -799,6 +814,34 @@ router.get("/getAllUsers", (req, res) => {
         } else {
           res.status(200).json({
             data: rows,
+          });
+        }
+      });
+    }
+    connection.release();
+  });
+});
+
+router.get('/getAllEmployees', (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.log(connection);
+      // if there is an issue obtaining a connection, release the connection instance and log the error
+      logger.error('Problem obtaining MySQL connection', err);
+      res.status(400).send('Problem obtaining MySQL connection');
+    } else {
+      // if there is no issue obtaining a connection, execute query
+      let employee = 'employee';
+      connection.query('SELECT * FROM users WHERE jobTitle = (?)', employee,(err, rows, fields) => {
+        if (err) {
+          logger.error('Error while updating covidStatus \n', err);
+          res.status(400).json({
+            data: [],
+            error: 'Error obtaining values'
+          });
+        } else {
+          res.status(200).json({
+            data: rows
           });
         }
       });
