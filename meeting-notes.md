@@ -70,7 +70,7 @@ clockOut data does not work
 - [x] View other months
 - [x] View a day's events
 - [x] Create an event
-- [ ] Cancel an event - maybe have a view details button on the rooms page - Nick
+- [x] Cancel an event - maybe have a view details button on the rooms page - Nick
 
 # Epic 3 -Nick
 
