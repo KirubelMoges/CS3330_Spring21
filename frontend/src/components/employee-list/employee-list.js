@@ -35,7 +35,7 @@ const EmployeeList = () => {
         <table className=" table table-condensed table-striped border">
           <thead>
             <tr>
-              <th className="h3 table-success rounded-top">
+              <th className="h3 table-success">
                 Available Employees
               </th>
             </tr>

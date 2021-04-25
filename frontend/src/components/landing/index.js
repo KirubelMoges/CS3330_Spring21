@@ -5,7 +5,7 @@ import Header from '../header';
 
 const LandingPage = () => {
   return (
-    <div>
+    <div >
       <Header />
       <Container >
         <div className="py-5 my-5">
