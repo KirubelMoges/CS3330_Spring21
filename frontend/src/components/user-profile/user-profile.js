@@ -17,6 +17,8 @@ export const UserProfile = props => {
 
     const currUser = userRepository.currentUser();
 
+    const spacing="card mx-5 my-2";
+
     useEffect(()=>{
         if(!user){
             userRepository.getUserById(userId)
@@ -62,29 +64,29 @@ export const UserProfile = props => {
         <Header/>
         <div className="m-5">
             <h3>User Profile</h3>
-            <div className= "m-5">
-                <h5>Name</h5>
-                <p>{user.firstName} {user.lastName}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header"> Name</h5>
+                <p className= "card-body">{user.firstName} {user.lastName}</p>
             </div>
-            <div className= "m-5">
-                <h5>Email Address</h5>
-                <p>{user.userEmail}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Email Address</h5>
+                <p className= "card-body">{user.userEmail}</p>
             </div>
-            <div className= "m-5">
-                <h5>Role</h5>
-                <p>{user.jobTitle}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Role</h5>
+                <p className= "card-body">{user.jobTitle}</p>
             </div>
-            <div className= "m-5">
-                <h5>User ID</h5>
-                <p>{user.userId}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">User ID</h5>
+                <p className= "card-body">{user.userId}</p>
             </div>
-            <div className= "m-5">
-                <h5>Status</h5>
-                <p>{covidStatus}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Status</h5>
+                <p className= "card-body">{covidStatus}</p>
             </div>
-            <div className= "m-5">
-                <h5>Reservations</h5>
-                <table className=" table table-condensed table-striped border">
+            <div className= {spacing}>
+                <h5 className= "card-header">Reservations</h5>
+                <table className=" card-body table table-condensed table-striped border my-0">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -118,29 +120,29 @@ export const UserProfile = props => {
         <Header/>
         <div className="m-5">
             <h3>User Profile</h3>
-            <div className= "m-5">
-                <h5>Name</h5>
-                <p>{user.firstName} {user.lastName}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Name</h5>
+                <p className= "card-body">{user.firstName} {user.lastName}</p>
             </div>
-            <div className= "m-5">
-                <h5>Email Address</h5>
-                <p>{user.userEmail}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Email Address</h5>
+                <p className= "card-body">{user.userEmail}</p>
             </div>
-            <div className= "m-5">
-                <h5>Role</h5>
-                <p>{user.jobTitle}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Role</h5>
+                <p className= "card-body">{user.jobTitle}</p>
             </div>
-            <div className= "m-5">
-                <h5>User ID</h5>
-                <p>{user.userId}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">User ID</h5>
+                <p className= "card-body">{user.userId}</p>
             </div>
-            <div className= "m-5">
-                <h5>Status</h5>
-                <p>{covidStatus}</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Status</h5>
+                <p className= "card-body">{covidStatus}</p>
             </div>
-            <div className= "m-5">
-                <h5>Reservations</h5>
-                <p>No reservations made.</p>
+            <div className= {spacing}>
+                <h5 className= "card-header">Reservations</h5>
+                <p className= "card-body">No reservations made.</p>
             </div>
         </div>
         </>;
