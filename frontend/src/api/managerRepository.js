@@ -52,4 +52,26 @@ export class ManagerRepository {
 
     return [data, errors];
   }
+
+  /**
+   * Delete a reservation
+   * @param {number} reservationId - The id of the reservation to delete
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
+   */
+  async deleteReservation(reservationId) {
+    const errors = { success: false };
+    const { data, status } = await axios.delete(
+      URL + "/api/manager/deleteReservation",
+      {
+        params: {
+          reservationId,
+        },
+      }
+    );
+
+    if (status >= 201) errors.reason = "Bad Request";
+    else errors.success = true;
+
+    return [data, errors];
+  }
 }

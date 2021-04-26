@@ -70,7 +70,7 @@ clockOut data does not work
 - [x] View other months
 - [x] View a day's events
 - [x] Create an event
-- [ ] Cancel an event - maybe have a view details button on the rooms page - Nick
+- [x] Cancel an event - maybe have a view details button on the rooms page - Nick
 
 # Epic 3 -Nick
 
@@ -92,15 +92,15 @@ clockOut data does not work
 - [x] View list of rooms - Eli
 - [ ] Filter rooms by capacity - NOT HAPPENING
 - [x] Employee book room -Nick
-- [ ] Employee cancel room - Nick
+- [x] Employee cancel reservation - Nick
 
 # Epic 6
 
-- [ ] Manager create and delete rooms -Eli
+- [x] Manager create and delete rooms -Eli
 - [ ] Manager toggle rooms as scheduleable -NOT HAPPENING
 - [ ] View uncleaned rooms as manager - Depends on if we do custodians at all
 - [ ] Manager edit cleaning list - Depends on if we do custodians at all
-- [ ] Manager edit reservations on a room - Eli
+- [x] Manager edit reservations on a room - Nick
 
 # Epic 7
 
@@ -128,7 +128,7 @@ clockOut data does not work
 
 # Epic 10
 
-- [ ] Employee update covid status - needs manager set uncovid On manager employee view - Eli
+- [x] Employee update covid status - needs manager set uncovid On manager employee view - Eli
 - [ ] Employee estimated return timeline - NOT HAPPENING
 - [x] Report contacts - Eli
 
@@ -142,6 +142,7 @@ clockOut data does not work
 - [ ] Manager change user's type - needs manager set uncovid On manager employee view - Eli
 
 Update manager view to show scheduler in the same way the employee does
+Update Scheduler to include username
 
 NEW ROUTES:
 promote users to manager

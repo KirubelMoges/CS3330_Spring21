@@ -58,7 +58,6 @@ const ReportContactModal = (props) => {
         <button
           className="btn btn-danger"
           onClick={() => {
-            alert("Your manager will be notified.");
             let formResponse = selectedUser.split(" ");
             props.reportContact(
               users.find((x) => {
