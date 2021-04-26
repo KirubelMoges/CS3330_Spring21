@@ -47,12 +47,13 @@ const RoomView = () => {
   return (
     <>
       <Header />
-      <div className="container mb-4">
-        <table className="table table-striped">
-          <thead className="border-top-0">
+      <div className="container mb-4 mt-3">
+        <table className="table table-striped border border-dark">
+          <thead className="bg-dark text-white">
             <tr>
               <th>
                 <span className="h3">Rooms</span>
+
               </th>
               {userRepository.currentUser().role == UserTypes.manager && (
                 <th>
@@ -67,6 +68,8 @@ const RoomView = () => {
                   </span>
                 </th>
               )}
+
+
             </tr>
           </thead>
           <tbody>
@@ -77,6 +80,7 @@ const RoomView = () => {
                     <td>Room: {room.roomId}</td>
                     <td>Capacity: {room.capacity}</td>
                     <td>
+
                       <button
                         className="btn btn-info"
                         onClick={() => {
@@ -87,8 +91,8 @@ const RoomView = () => {
                         View Reservations
                       </button>
                     </td>
+
                     {userRepository.currentUser().role == UserTypes.manager && (
-                      <td>
                         <button
                           type="button"
                           className="btn btn-danger"
@@ -107,8 +111,8 @@ const RoomView = () => {
                         >
                           Delete Room
                         </button>
-                      </td>
                     )}
+                    </td>
                   </tr>
                 );
               })}
