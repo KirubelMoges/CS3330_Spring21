@@ -15,12 +15,16 @@ const Header = () => {
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link href="/employees" className="text-white">
-            Employees
-          </Nav.Link>
-          <Nav.Link href="/rooms" className="text-white">
-            Rooms
-          </Nav.Link>
+          {userRepository.loggedIn() && (
+            <Nav.Link href="/employees" className="text-white">
+              Employees
+            </Nav.Link>
+          )}
+          {userRepository.loggedIn() && (
+            <Nav.Link href="/rooms" className="text-white">
+              Rooms
+            </Nav.Link>
+          )}
         </Nav>
         {userRepository.loggedIn() ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>
