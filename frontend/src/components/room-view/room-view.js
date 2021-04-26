@@ -54,17 +54,19 @@ const RoomView = () => {
               <th>
                 <span className="h3">Rooms</span>
               </th>
-              <th>
-                <span className="float-right">
-                  <button
-                    className="btn btn-success float-right"
-                    type="button"
-                    onClick={handleCreateRoomOpen}
-                  >
-                    New Room
-                  </button>
-                </span>
-              </th>
+              {userRepository.currentUser().role == UserTypes.manager && (
+                <th>
+                  <span className="float-right">
+                    <button
+                      className="btn btn-success float-right"
+                      type="button"
+                      onClick={handleCreateRoomOpen}
+                    >
+                      New Room
+                    </button>
+                  </span>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
