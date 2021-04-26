@@ -32,14 +32,15 @@ const HomePage = () => {
     )
       getUser();
     setLoggedIn(isLoggedIn);
-  }, [loggedIn, setLoggedIn, setUserContext]);
+    setIsLoading(false);
+  }, [loggedIn, setLoggedIn, setUserContext, isLoading, setIsLoading]);
 
   if (loggedIn && isLoading) {
     return (
       <div className="row">
         <div className="col">
           <Spinner animation="border" role="status">
-            <span className="sr-only">Loadisng...</span>
+            <span className="sr-only">Loading...</span>
           </Spinner>
         </div>
       </div>
