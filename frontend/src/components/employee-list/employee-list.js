@@ -208,7 +208,7 @@ const EmployeeList = () => {
                         <a
                           className="btn btn-info float-right mr-1"
                           onClick={() =>
-                            history.push("/profile/" + user.userId)
+                            history.push("/userProfile/" + user.userId)
                           }
                         >
                           See Profile

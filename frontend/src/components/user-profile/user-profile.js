@@ -34,6 +34,10 @@ export const UserProfile = props => {
         </>
     }
     else{
+        let covidStatus="Negative";
+        if(user.covidStatus==1){
+            covidStatus="Positive";
+        }
         return<>
         <Header/>
         <div className="m-5">
@@ -56,7 +60,7 @@ export const UserProfile = props => {
             </div>
             <div className= "m-5">
                 <h5>Status</h5>
-                <p>{user.covidStatus}</p>
+                <p>{covidStatus}</p>
             </div>
         </div>
         </>;
