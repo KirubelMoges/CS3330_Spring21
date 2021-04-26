@@ -53,7 +53,7 @@ export const UserProfile = props => {
         <div>Error: Profile userId:{userId} not found </div>
         </>
     }
-    else{
+    else if(reservations.length>0){
         let covidStatus="Negative";
         if(user.covidStatus==1){
             covidStatus="Positive";
@@ -105,6 +105,42 @@ export const UserProfile = props => {
                         }
                     </tbody>
                 </table>
+            </div>
+        </div>
+        </>;
+    }
+    else{
+        let covidStatus="Negative";
+        if(user.covidStatus==1){
+            covidStatus="Positive";
+        }
+        return<>
+        <Header/>
+        <div className="m-5">
+            <h3>User Profile</h3>
+            <div className= "m-5">
+                <h5>Name</h5>
+                <p>{user.firstName} {user.lastName}</p>
+            </div>
+            <div className= "m-5">
+                <h5>Email Address</h5>
+                <p>{user.userEmail}</p>
+            </div>
+            <div className= "m-5">
+                <h5>Role</h5>
+                <p>{user.jobTitle}</p>
+            </div>
+            <div className= "m-5">
+                <h5>User ID</h5>
+                <p>{user.userId}</p>
+            </div>
+            <div className= "m-5">
+                <h5>Status</h5>
+                <p>{covidStatus}</p>
+            </div>
+            <div className= "m-5">
+                <h5>Reservations</h5>
+                <p>No reservations made.</p>
             </div>
         </div>
         </>;
