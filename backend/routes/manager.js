@@ -788,9 +788,9 @@ router.put("/editJobTitle", (req, res) => {
       let userId = req.query["userId"];
       let jobTitle = req.query["jobTitle"];
       if (
-        jobTitle === "employee" ||
-        jobTitle === "manager" ||
-        jobTitle === "custodian"
+        jobTitle === "EMPLOYEE" ||
+        jobTitle === "MANAGER" ||
+        jobTitle === "CUSTODIAN"
       ) {
         connection.query(
           "UPDATE users SET jobTitle = (?) WHERE userId = (?)",

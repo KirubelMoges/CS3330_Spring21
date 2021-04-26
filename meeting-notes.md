@@ -144,10 +144,13 @@ clockOut data does not work
 Update manager view to show scheduler in the same way the employee does
 Update Scheduler to include username
 
-NEW ROUTES:
 promote users to manager
 get all users
 change a user's covid status
 edit user route
+make profile page responsive
+overall styling
+put on the cloud
+no accessing other pages from login
 
 https://drive.google.com/drive/folders/1vX5yv4ZMxSBlR8CVQOSttAND_1fUYQFW

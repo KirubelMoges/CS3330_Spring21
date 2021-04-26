@@ -1,5 +1,5 @@
 import axios from "axios";
-import { URL } from "../utils/constants";
+import { URL, UserTypes } from "../utils/constants";
 
 export class ManagerRepository {
   /**
@@ -65,6 +65,31 @@ export class ManagerRepository {
       {
         params: {
           reservationId,
+        },
+      }
+    );
+
+    if (status >= 201) errors.reason = "Bad Request";
+    else errors.success = true;
+
+    return [data, errors];
+  }
+
+  /**
+   * Update a users role
+   * @param {number} userId - the id of the user to update
+   * @param {string} jobTitle - the title to update to
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
+   */
+  async updateRole(userId, jobTitle = UserTypes.manager) {
+    const errors = { success: true };
+    const { data, status } = await axios.put(
+      URL + "/api/manager/editJobTitle",
+      {},
+      {
+        params: {
+          userId,
+          jobTitle,
         },
       }
     );
