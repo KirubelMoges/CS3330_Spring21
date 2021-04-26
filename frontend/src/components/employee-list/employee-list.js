@@ -35,9 +35,7 @@ const EmployeeList = () => {
         <table className=" table table-condensed table-striped border">
           <thead>
             <tr>
-              <th className="h3 table-success">
-                Available Employees
-              </th>
+              <th className="h3 table-success">Available Employees</th>
             </tr>
           </thead>
           <tbody>
@@ -187,7 +185,7 @@ const EmployeeList = () => {
 
         {/* Start of Employees with Covid-19 Table */}
         <table className="table table-striped border">
-          <thead>
+          <thead className="border-bottom border-dark">
             <tr>
               <th className="h3 table-danger">Employees with COVID-19</th>
             </tr>

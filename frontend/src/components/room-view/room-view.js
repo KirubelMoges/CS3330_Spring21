@@ -51,10 +51,11 @@ const RoomView = () => {
         <table className="table table-striped border border-dark">
           <thead className="bg-dark text-white">
             <tr>
-              <th>
+              <th scope="row">
                 <span className="h3">Rooms</span>
-
               </th>
+              <th></th>
+              <th></th>
               {userRepository.currentUser().role == UserTypes.manager && (
                 <th>
                   <span className="float-right">
@@ -68,8 +69,6 @@ const RoomView = () => {
                   </span>
                 </th>
               )}
-
-
             </tr>
           </thead>
           <tbody>
@@ -80,7 +79,6 @@ const RoomView = () => {
                     <td>Room: {room.roomId}</td>
                     <td>Capacity: {room.capacity}</td>
                     <td>
-
                       <button
                         className="btn btn-info"
                         onClick={() => {
@@ -93,6 +91,7 @@ const RoomView = () => {
                     </td>
 
                     {userRepository.currentUser().role == UserTypes.manager && (
+                      <td>
                         <button
                           type="button"
                           className="btn btn-danger"
@@ -111,8 +110,8 @@ const RoomView = () => {
                         >
                           Delete Room
                         </button>
+                      </td>
                     )}
-                    </td>
                   </tr>
                 );
               })}
