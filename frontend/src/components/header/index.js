@@ -49,6 +49,7 @@ const LoggedInVariant = () => {
   const [, setUserContext] = useContext(UserContext);
   const userRepository = new UserRepository();
   const history = useHistory();
+  console.log("currUser Id "+userRepository.currentUser().userId);
   function logoutButton() {
     userRepository.logout();
     setUserContext({});
@@ -57,6 +58,9 @@ const LoggedInVariant = () => {
 
   return (
     <Nav>
+      <Nav.Item>
+        <Nav.Link href={ "/userProfile/" + userRepository.currentUser().userId}>My Profile</Nav.Link>
+      </Nav.Item>
       <Nav.Item>
         <Nav.Link onClick={logoutButton} className="text-white">
           Logout

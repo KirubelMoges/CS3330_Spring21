@@ -9,6 +9,7 @@ import About from "./components/header/about";
 import { UserRepository } from "./api/userRepository";
 import Inbox from "./components/inbox";
 import RoomView from "./components/room-view/room-view";
+import UserProfile from './components/user-profile/user-profile';
 
 const App = () => {
   const userRepository = new UserRepository();
@@ -22,6 +23,8 @@ const App = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
         <Route exact path="/rooms" component={RoomView} />
+        <Route exact path="/rooms" component={RoomView} />
+        <Route exact path="/userProfile/:userId" component={UserProfile}/>
       </Router>
     </UserContext.Provider>
   );
