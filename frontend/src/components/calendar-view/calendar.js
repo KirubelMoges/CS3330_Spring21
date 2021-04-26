@@ -6,7 +6,7 @@ import { RoomsRepository } from "../../api/roomsRepository";
 import { UserRepository } from "../../api/userRepository";
 import { EmployeeRepository } from "../../api/employeeRepository";
 import { ManagerRepository } from "../../api/managerRepository";
-import { ManagerControls, TimeCard, RoomCard, CovidCard } from "./cards";
+import { ManagerControls, TimeCard, CovidCard } from "./cards";
 import { UserTypes } from "../../utils/constants";
 
 const CalendarHeader = (props) => {
@@ -32,10 +32,10 @@ const CalendarHeader = (props) => {
   return (
     <header>
       <div className="d-flex align-items-center justify-content-between mb-3 mt-6">
-        <h2 className="month font-weight-bold mb-0 text-uppercase display-2">
+        <h2 className="month font-weight-bold mb-0 text-uppercase display-3">
           {labels[props.month - 1]} {props.year}
         </h2>
-        <div>
+        <div className="ml-4 mr-1">
           <Row>
             <Form>
               <Col>
@@ -415,16 +415,11 @@ const Calendar = (props) => {
           })}
         </div>
         {employees && rooms && reservations && manager ? (
-          <ManagerControls
-            employees={employees}
-            rooms={rooms}
-            events={reservations}
-          />
+          <CovidCard />
         ) : (
           <div className="row">
-            <TimeCard className="col-md-4" />
-            <RoomCard className="col-md-4" />
-            <CovidCard className="col-md-4" />
+            <TimeCard className="col-md-4 col-xs-9" />
+            <CovidCard className="col-md-4 col-xs-9" />
           </div>
         )}
       </div>

@@ -55,50 +55,46 @@ export const CovidCard = () => {
   };
 
   return (
-    <div className='col mt-3'>
-    <div className="covidcard shadow">
-      <div className=" clock-card">
-        <div className="card-body">
-          <h5 className="text-center">COVID-19</h5>
-          <p className="card-text">
-            Report Covid, view employees with Covid, and Report Contacts.
-          </p>
-          <div className="d-flex flex-row justify-content-center">
-            <div className="d-flex flex-column">
-              <Link to="/rooms" className="btn btn-primary mb-2">
-                View Covid Cases
-              </Link>
-
-              {hasCovid ? (
-                <button
-                  className="btn btn-warning text-light"
-                  onClick={handleReportContactOpen}
-                >
-                  Report Contact
-                </button>
-              ) : (
-                <button
-                  className="btn btn-danger mb-2"
-                  onClick={handleReportCovidOpen}
-                >
-                  Report Covid
-                </button>
-              )}
+    <div className="col mt-3">
+      <div className="covidcard shadow">
+        <div className=" clock-card">
+          <div className="card-body">
+            <h5 className="text-center">COVID-19</h5>
+            <p className="card-text text-center">
+              Report Covid or Contact Trace.
+            </p>
+            <div className="d-flex flex-row justify-content-center">
+              <div className="d-flex flex-column">
+                {hasCovid ? (
+                  <button
+                    className="btn btn-warning text-light"
+                    onClick={handleReportContactOpen}
+                  >
+                    Report Contact
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-danger mb-2"
+                    onClick={handleReportCovidOpen}
+                  >
+                    Report Covid
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
+        <ReportCovidModal
+          handleClose={handleReportCovidClose}
+          show={isReportCovidModalShowing}
+          reportCovid={covidReported}
+        />
+        <ReportContactModal
+          handleClose={handleReportContactClose}
+          show={isReportContactModalShowing}
+          reportContact={contactReported}
+        />
       </div>
-      <ReportCovidModal
-        handleClose={handleReportCovidClose}
-        show={isReportCovidModalShowing}
-        reportCovid={covidReported}
-      />
-      <ReportContactModal
-        handleClose={handleReportContactClose}
-        show={isReportContactModalShowing}
-        reportContact={contactReported}
-      />
-    </div>
     </div>
   );
 };
@@ -113,30 +109,30 @@ export const RoomCard = () => {
   const handleStatsOpen = () => setIsStatsModalShowing(true);
 
   return (
-    <div className='col mt-3'>
-    <div className="roomcard shadow">
-      <div className=" clock-card">
-        <div className="card-body">
-          <h5 className="text-center">Rooms</h5>
-          <p className="card-text">
-            Create meetings, reserve rooms, and checkout the covid status of the
-            office.
-          </p>
-          <div className="d-flex flex-row justify-content-center">
-            <div className="d-flex flex-column">
-              <Link to="/rooms" className="btn btn-primary mb-2">
-                View Rooms
-              </Link>
-              <button onClick={handleStatsOpen} className="btn btn-info">
-                Covid Stats
-              </button>
+    <div className="col mt-3">
+      <div className="roomcard shadow">
+        <div className=" clock-card">
+          <div className="card-body">
+            <h5 className="text-center">Rooms</h5>
+            <p className="card-text">
+              Create meetings, reserve rooms, and checkout the covid status of
+              the office.
+            </p>
+            <div className="d-flex flex-row justify-content-center">
+              <div className="d-flex flex-column">
+                <Link to="/rooms" className="btn btn-primary mb-2">
+                  View Rooms
+                </Link>
+                <button onClick={handleStatsOpen} className="btn btn-info">
+                  Covid Stats
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        {/* <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} /> */}
+        <StatsModal handleClose={handleStatsClose} show={isStatsModalShowing} />
       </div>
-      {/* <RoomsModal handleClose={handleRoomsClose} show={isRoomsModalShowing} /> */}
-      <StatsModal handleClose={handleStatsClose} show={isStatsModalShowing} />
-    </div>
     </div>
   );
 };
@@ -156,51 +152,49 @@ export const TimeCard = () => {
 
   return (
     <div className="col mt-3">
-    <div className="shadow">
-      <div className="clock-card">
-        <div className="card-body">
-          <h5 className="text-center">My Time</h5>
-          <p className="card-text">
-            Manage your time status, and view your time breakdown.
-          </p>
+      <div className="shadow">
+        <div className="clock-card">
+          <div className="card-body">
+            <h5 className="text-center">My Time</h5>
+            <p className="card-text text-center">Manage your time status</p>
 
-          <div className="d-flex flex-row justify-content-center">
-            <div className="d-flex flex-column">
-              <button
-                onClick={handleClockInOpen}
-                className="btn btn-success mb-2"
-              >
-                Clock In
-              </button>
-              <button
-                onClick={handleClockOutOpen}
-                className="btn btn-danger mb-2"
-              >
-                Clock Out
-              </button>
-              {/* <button onClick={() => alert('Lunch Time!')} className="btn btn-primary mb-2">
+            <div className="d-flex flex-row justify-content-center">
+              <div className="d-flex flex-column">
+                <button
+                  onClick={handleClockInOpen}
+                  className="btn btn-success mb-2"
+                >
+                  Clock In
+                </button>
+                <button
+                  onClick={handleClockOutOpen}
+                  className="btn btn-danger mb-2"
+                >
+                  Clock Out
+                </button>
+                {/* <button onClick={() => alert('Lunch Time!')} className="btn btn-primary mb-2">
                 Lunch Break
               </button> */}
-              <button onClick={handleTimeStatsOpen} className="btn btn-info">
-                View Stats
-              </button>
+                <button onClick={handleTimeStatsOpen} className="btn btn-info">
+                  View Stats
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        <TimeStatsModal
+          handleClose={handleTimeStatsClose}
+          show={isTimeStatsModalShowing}
+        />
+        <ClockInModal
+          handleClose={handleClockInClose}
+          show={isClockInModalShowing}
+        />
+        <ClockOutModal
+          handleClose={handleClockOutClose}
+          show={isClockOutModalShowing}
+        />
       </div>
-      <TimeStatsModal
-        handleClose={handleTimeStatsClose}
-        show={isTimeStatsModalShowing}
-      />
-      <ClockInModal
-        handleClose={handleClockInClose}
-        show={isClockInModalShowing}
-      />
-      <ClockOutModal
-        handleClose={handleClockOutClose}
-        show={isClockOutModalShowing}
-      />
-    </div>
     </div>
   );
 };
@@ -219,7 +213,9 @@ export const ManagerControls = (props) => {
       <div className="card clock-card">
         <div className="card-body">
           <h5 className="text-center">Manager Controls</h5>
-          <p className="card-text text-center">Manage your workplace and people.</p>
+          <p className="card-text text-center">
+            Manage your workplace and people.
+          </p>
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">

@@ -21,7 +21,6 @@ const App = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/employees" component={EmployeeList} />
-        <Route exact path="/inbox" component={Inbox} />
         <Route exact path="/rooms" component={RoomView} />
       </Router>
     </UserContext.Provider>
