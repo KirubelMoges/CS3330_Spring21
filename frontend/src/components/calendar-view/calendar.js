@@ -1,29 +1,29 @@
-import { useState, useEffect } from "react";
-import "./calendar.css";
-import { getCalendarDays } from "./utils";
-import { Form, Row, Col, Modal } from "react-bootstrap";
-import { RoomsRepository } from "../../api/roomsRepository";
-import { UserRepository } from "../../api/userRepository";
-import { EmployeeRepository } from "../../api/employeeRepository";
-import { ManagerRepository } from "../../api/managerRepository";
-import { ManagerControls, TimeCard, CovidCard } from "./cards";
-import { UserTypes } from "../../utils/constants";
+import { useState, useEffect } from 'react';
+import './calendar.css';
+import { getCalendarDays } from './utils';
+import { Form, Row, Col, Modal } from 'react-bootstrap';
+import { RoomsRepository } from '../../api/roomsRepository';
+import { UserRepository } from '../../api/userRepository';
+import { EmployeeRepository } from '../../api/employeeRepository';
+import { ManagerRepository } from '../../api/managerRepository';
+import { ManagerControls, TimeCard, CovidCard } from './cards';
+import { UserTypes } from '../../utils/constants';
 
 const CalendarHeader = (props) => {
   const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const labels = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
   ];
 
   const [formMonth, setFormMonth] = useState(props.month);
@@ -93,27 +93,49 @@ const CalendarHeader = (props) => {
 };
 
 const CalendarDay = (props) => {
-  let { date, weekday, reservations, muted } = props;
-  const today = new Date(date);
+  let { date, weekday, reservations, muted, employees } = props;
+  const userRepository = new UserRepository();
+  const [today] = useState(new Date(date));
 
-  const events = reservations ?? [];
-  const reservationsToday = events.filter((res) => {
-    const d = new Date(res.dateIn);
-    return (
-      d.getDate() === today.getDate() &&
-      d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear()
-    );
-  });
+  const [reservationsToday, setReservationsToday] = useState(undefined);
+
+  useEffect(() => {
+    const events = reservations ?? [];
+
+    if (!employees) console.log('Missing data');
+
+    if (!reservationsToday) {
+      const eventsToday = events.filter((res) => {
+        const d = new Date(res.dateIn);
+
+        console.log('PROPS: ', employees);
+        const emps = employees ?? [];
+        const userIds = emps.map((us) => {
+          if (us.officeId == userRepository.currentUser().officeId) {
+            return us.userId;
+          }
+        });
+
+        console.log('USERIDS', userIds);
+
+        return (
+          d.getDate() === today.getDate() &&
+          d.getMonth() === today.getMonth() &&
+          d.getFullYear() === today.getFullYear() &&
+          userIds.includes(res.userId)
+        );
+      });
+
+      setReservationsToday(eventsToday);
+    }
+  }, [reservationsToday, setReservationsToday, today]);
 
   if (muted)
     return (
       <div className="day col-sm p-2 border border-left-0 border-top-0 text-truncate d-none d-sm-inline-block bg-light text-muted">
         <h5 className="row align-items-center">
           <span className="date col-1">{today.getDate()}</span>
-          <small className="col d-sm-none text-center text-muted">
-            {weekday}
-          </small>
+          <small className="col d-sm-none text-center text-muted">{weekday}</small>
           <span className="col-1"></span>
         </h5>
         <p className="d-sm-none">No events</p>
@@ -127,12 +149,10 @@ const CalendarDay = (props) => {
       >
         <h5 className="row align-items-center">
           <span className="date col-1">{today.getDate()}</span>
-          <small className="col d-sm-none text-center text-muted">
-            {weekday}
-          </small>
+          <small className="col d-sm-none text-center text-muted">{weekday}</small>
           <span className="col-1"></span>
         </h5>
-        {reservationsToday.length === 0 ? (
+        {!reservationsToday || reservationsToday.length === 0 ? (
           <p className="d-sm-none text-muted">No events</p>
         ) : reservationsToday.length > 2 ? (
           <>
@@ -140,7 +160,7 @@ const CalendarDay = (props) => {
             <a
               className="event d-block p-1 pl-2 pr-2 mb-1 rounded text-truncate small bg-success text-white"
               title="Test Event 3"
-              style={{ pointerEvents: "none" }}
+              style={{ pointerEvents: 'none' }}
             >
               And {reservationsToday.length - 1} other(s).
             </a>
@@ -158,8 +178,8 @@ const CalendarEvent = (props) => {
   return (
     <a
       className="event d-block p-1 pl-2 pr-2 mb-1 rounded text-truncate small bg-success text-white"
-      title={"Event in Room: " + props.reservation.roomId}
-      style={{ pointerEvents: "none" }}
+      title={'Event in Room: ' + props.reservation.roomId}
+      style={{ pointerEvents: 'none' }}
     >
       Event in Room: {props.reservation.roomId}
     </a>
@@ -167,15 +187,7 @@ const CalendarEvent = (props) => {
 };
 
 const Calendar = (props) => {
-  const weekdays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [dates, setDates] = useState(getCalendarDays(new Date()));
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
@@ -197,17 +209,13 @@ const Calendar = (props) => {
         setMonth(m);
         setYear(y);
       } else {
-        alert("Failed to get reservations");
+        alert('Failed to get reservations');
       }
     });
   };
 
-  const [isManagerScheduleShowing, setIsManagerScheduleShowing] = useState(
-    false
-  );
-  const [isEmployeeScheduleShowing, setIsEmployeeScheduleShowing] = useState(
-    false
-  );
+  const [isManagerScheduleShowing, setIsManagerScheduleShowing] = useState(false);
+  const [isEmployeeScheduleShowing, setIsEmployeeScheduleShowing] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const handleManagerOpenSchedule = (date) => {
@@ -245,13 +253,22 @@ const Calendar = (props) => {
             {
               roomId: roomToReserve.roomId,
               userId: employeeToReserve.userId,
-              dateIn: new Date(day),
-            },
+              dateIn: new Date(day)
+            }
           ]);
           handleCloseManagerSchedule();
           handleCloseEmployeeSchedule();
+          console.log([
+            ...reservations,
+            {
+              roomId: roomToReserve.roomId,
+              userId: employeeToReserve.userId,
+              dateIn: new Date(day),
+              officeId: userRepository.currentUser().officeId
+            }
+          ]);
         } else {
-          alert("Failed to reserve room");
+          alert('Failed to reserve room');
         }
       });
   };
@@ -259,9 +276,7 @@ const Calendar = (props) => {
   useEffect(() => {
     if (manager === undefined) {
       const userRepository = new UserRepository();
-      setManager(
-        userRepository.currentUser().role === UserTypes.manager ? true : false
-      );
+      setManager(userRepository.currentUser().role === UserTypes.manager ? true : false);
     }
 
     if (!dates) {
@@ -278,13 +293,10 @@ const Calendar = (props) => {
       const userRepository = new UserRepository();
 
       roomsRepository
-        .getRooms(
-          userRepository.currentUser().username,
-          userRepository.currentUser().password
-        )
+        .getRooms(userRepository.currentUser().username, userRepository.currentUser().password)
         .then((res) => {
           if (res[1].success === false) {
-            alert("Failed to get rooms, contact a manager!");
+            alert('Failed to get rooms, contact a manager!');
           } else {
             setRooms(res[0].data);
           }
@@ -356,63 +368,68 @@ const Calendar = (props) => {
           sendMonthChangeRequest={changeMonth}
         />
         <div className="row border border-right-0 border-bottom-0">
-          {dates.map((date, index) => {
-            const weekday = weekdays[index % 7];
-            if (index % 7 === 0 && index !== 0) {
-              return (
-                <>
-                  <div className="w-100" key={"div" + index} />
-                  {date.getMonth() === month - 1 ? (
+          {employees &&
+            dates.map((date, index) => {
+              const weekday = weekdays[index % 7];
+              if (index % 7 === 0 && index !== 0) {
+                return (
+                  <>
+                    <div className="w-100" key={'div' + index} />
+                    {date.getMonth() === month - 1 ? (
+                      <CalendarDay
+                        date={date}
+                        weekday={weekday}
+                        key={index}
+                        reservations={reservations}
+                        onOpenDate={() => {
+                          if (manager) handleManagerOpenSchedule(date);
+                          else handleEmployeeOpenSchedule(date);
+                        }}
+                        employees={employees}
+                      />
+                    ) : (
+                      <CalendarDay
+                        muted
+                        date={date}
+                        weekday={weekday}
+                        key={index}
+                        reservations={reservations}
+                        onOpenDate={() => {}}
+                        employees={employees}
+                      />
+                    )}
+                  </>
+                );
+              } else {
+                if (date.getMonth() === month - 1) {
+                  return (
                     <CalendarDay
                       date={date}
                       weekday={weekday}
                       key={index}
                       reservations={reservations}
+                      employees={employees}
                       onOpenDate={() => {
                         if (manager) handleManagerOpenSchedule(date);
                         else handleEmployeeOpenSchedule(date);
                       }}
                     />
-                  ) : (
+                  );
+                } else {
+                  return (
                     <CalendarDay
-                      muted
                       date={date}
                       weekday={weekday}
                       key={index}
                       reservations={reservations}
+                      muted
                       onOpenDate={() => {}}
+                      employees={employees}
                     />
-                  )}
-                </>
-              );
-            } else {
-              if (date.getMonth() === month - 1) {
-                return (
-                  <CalendarDay
-                    date={date}
-                    weekday={weekday}
-                    key={index}
-                    reservations={reservations}
-                    onOpenDate={() => {
-                      if (manager) handleManagerOpenSchedule(date);
-                      else handleEmployeeOpenSchedule(date);
-                    }}
-                  />
-                );
-              } else {
-                return (
-                  <CalendarDay
-                    date={date}
-                    weekday={weekday}
-                    key={index}
-                    reservations={reservations}
-                    muted
-                    onOpenDate={() => {}}
-                  />
-                );
+                  );
+                }
               }
-            }
-          })}
+            })}
         </div>
         {employees && rooms && reservations && manager ? (
           <CovidCard />
@@ -431,6 +448,7 @@ const EmployeeScheduleMoal = (props) => {
   const rooms = [...props.rooms];
   const [selectedRoom, setSelectedRoom] = useState(rooms[0].roomId);
   const date = new Date(props.date);
+  const userRepository = new UserRepository();
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
@@ -442,13 +460,12 @@ const EmployeeScheduleMoal = (props) => {
         <Form>
           <Form.Group controlId="scheduleForm.room">
             <Form.Label>Room Number</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={(e) => setSelectedRoom(e.target.value)}
-            >
-              {rooms.map((room) => (
-                <option key={room.roomId}>{room.roomId}</option>
-              ))}
+            <Form.Control as="select" onChange={(e) => setSelectedRoom(e.target.value)}>
+              {rooms.map((room) => {
+                return room.officeId === userRepository.currentUser().officeId ? (
+                  <option key={room.roomId}>{room.roomId}</option>
+                ) : null;
+              })}
             </Form.Control>
           </Form.Group>
         </Form>
@@ -463,11 +480,7 @@ const EmployeeScheduleMoal = (props) => {
                 return rm.roomId == selectedRoom;
               });
               const userRepository = new UserRepository();
-              props.handleReserve(
-                props.date,
-                reservationRoom,
-                userRepository.currentUser()
-              );
+              props.handleReserve(props.date, reservationRoom, userRepository.currentUser());
             }}
           >
             Reserve
@@ -489,6 +502,7 @@ const ManagerScheduleModal = (props) => {
   const [selectedRoom, setSelectedRoom] = useState(rooms[0].roomId);
 
   const date = new Date(props.date);
+  const userRepository = new UserRepository();
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
@@ -500,26 +514,24 @@ const ManagerScheduleModal = (props) => {
         <Form>
           <Form.Group controlId="scheduleForm.room">
             <Form.Label>Room Number</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={(e) => setSelectedRoom(e.target.value)}
-            >
-              {rooms.map((room) => (
-                <option key={room.roomId}>{room.roomId}</option>
-              ))}
+            <Form.Control as="select" onChange={(e) => setSelectedRoom(e.target.value)}>
+              {rooms.map((room) => {
+                return room.officeId == userRepository.currentUser().officeId ? (
+                  <option key={room.roomId}>{room.roomId}</option>
+                ) : null;
+              })}
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="scheduleForm.employee">
             <Form.Label>Employee</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-            >
-              {employees.map((employee) => (
-                <option key={employee.userId}>
-                  {employee.firstName} {employee.lastName}
-                </option>
-              ))}
+            <Form.Control as="select" onChange={(e) => setSelectedEmployee(e.target.value)}>
+              {employees.map((employee) => {
+                return employee.officeId == userRepository.currentUser().officeId ? (
+                  <option key={employee.userId}>
+                    {employee.firstName} {employee.lastName}
+                  </option>
+                ) : null;
+              })}
             </Form.Control>
           </Form.Group>
         </Form>
@@ -532,11 +544,7 @@ const ManagerScheduleModal = (props) => {
               const reservationRoom = rooms.find((rm) => {
                 return rm.roomId == selectedRoom;
               });
-              props.handleReserve(
-                props.date,
-                reservationRoom,
-                selectedEmployee
-              );
+              props.handleReserve(props.date, reservationRoom, selectedEmployee);
             }}
           >
             Reserve
