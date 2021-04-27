@@ -1,0 +1,9 @@
+.bg-image {
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.5),
+      rgba(255, 254, 254, 0.5)
+    ),
+    url("../../assets/Landing_Page_Background.jpeg");
+  height: 100vh;
+  margin-top: -50px;
+}
