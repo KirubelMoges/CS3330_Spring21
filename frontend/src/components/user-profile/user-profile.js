@@ -81,74 +81,80 @@ const UserProfile = (props) => {
     return (
       <>
         <Header />
-        <div className="m-5">
+        <div className="container mt-4">
           <h3>User Profile</h3>
-          <div className="m-5">
-            <h5>Name</h5>
-            <p>
-              {user.firstName} {user.lastName}
-            </p>
+          <div className="mt-4 ml-3">
+            <div className="flex-row d-flex border-bottom border-dark">
+              <p className="h5">Name: </p>
+              <p className="ml-3">
+                {user.firstName} {user.lastName}
+              </p>
+            </div>
           </div>
-          <div className="m-5">
-            <h5>Email Address</h5>
-            <p>{user.userEmail}</p>
+          <div className="mt-3 ml-3 flex-row d-flex border-bottom border-dark">
+            <p className="h5">Email Address: </p>
+            <p className="ml-3">{user.userEmail}</p>
           </div>
-          <div className="m-5">
-            <h5>Role</h5>
-            <p>{user.jobTitle}</p>
-            {canChangeStatus ? (
-              isManager ? (
-                <button
-                  className="btn btn-danger"
-                  onClick={() => {
-                    let updUser = user;
-                    managerRepository
-                      .updateRole(user.userId, UserTypes.employee)
-                      .then((res) => {
-                        updUser.jobTitle = UserTypes.employee;
-                        setUser(updUser);
-                        setCanChangeStatus(false);
-                        setIsManager(false);
-                      });
-                  }}
-                >
-                  Demote
-                </button>
-              ) : (
-                <button
-                  className="btn btn-success"
-                  onClick={() => {
-                    let updUser = user;
-                    managerRepository
-                      .updateRole(userId, UserTypes.manager)
-                      .then((res) => {
-                        updUser.jobTitle = UserTypes.manager;
-                        setUser(updUser);
-                        setCanChangeStatus(true);
-                        setIsManager(true);
-                      });
-                  }}
-                >
-                  Promote to Manager
-                </button>
-              )
-            ) : null}
+          <div className="mt-3 ml-3 flex-row d-flex border-bottom border-dark">
+            <p className="h5">Role: </p>
+            <p className="text-capitalize ml-3">{user.jobTitle}</p>
+
+            <div style={{ marginTop: -6 }} className="ml-3">
+              {canChangeStatus ? (
+                isManager ? (
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => {
+                      let updUser = user;
+                      managerRepository
+                        .updateRole(user.userId, UserTypes.employee)
+                        .then((res) => {
+                          updUser.jobTitle = UserTypes.employee;
+                          setUser(updUser);
+                          setCanChangeStatus(false);
+                          setIsManager(false);
+                        });
+                    }}
+                  >
+                    Demote
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-success"
+                    onClick={() => {
+                      let updUser = user;
+                      managerRepository
+                        .updateRole(userId, UserTypes.manager)
+                        .then((res) => {
+                          updUser.jobTitle = UserTypes.manager;
+                          setUser(updUser);
+                          setCanChangeStatus(true);
+                          setIsManager(true);
+                        });
+                    }}
+                  >
+                    Promote to Manager
+                  </button>
+                )
+              ) : null}
+            </div>
           </div>
-          <div className="m-5">
-            <h5>User ID</h5>
-            <p>{user.userId}</p>
+
+          <div className="mt-3 ml-3 flex-row d-flex border-bottom border-dark">
+            <p className="h5">User ID: </p>
+            <p className="ml-3">{user.userId}</p>
           </div>
-          <div className="m-5">
-            <h5>Status</h5>
-            <p>{covidStatus}</p>
+          <div className="mt-3 ml-3 flex-row d-flex border-bottom border-dark">
+            <p className="h5">Covid Status: </p>
+            <p className="ml-3">{covidStatus}</p>
           </div>
-          <div className="m-5">
-            <h5>Reservations</h5>
+          <div className="mt-3 ml-3">
+            <h5 className="mb-3">Reservations</h5>
             {user.covidStatus != 1 &&
             reservations &&
             reservations.length > 0 ? (
-              <table className=" table table-condensed table-striped border">
-                <thead>
+              <table className="table table-condensed table-striped border border-dark">
+                <thead className="table-dark">
                   <tr>
                     <th>Date</th>
                     <th>Room Number</th>

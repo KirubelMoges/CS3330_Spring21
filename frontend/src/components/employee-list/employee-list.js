@@ -121,15 +121,19 @@ const EmployeeList = () => {
                                     });
                                     setUsers(newUsers);
                                   });
-                                }}
-                              >
-                                Tested Negative
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-danger float-right mr-1"
-                                onClick={() => {
-                                  userRepository.editCovidStatus(user.userId, 1).then(() => {
+
+                              }}
+                            >
+                              Negative
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger float-right mr-1"
+                              onClick={() => {
+                                userRepository
+                                  .editCovidStatus(user.userId, 1)
+                                  .then(() => {
+
                                     let newUsers = users;
                                     newUsers = newUsers.map((newUser) => {
                                       if (newUser.userId == user.userId) {
@@ -140,9 +144,10 @@ const EmployeeList = () => {
 
                                     setUsers(newUsers);
                                   });
+
                                 }}
                               >
-                                Tested Positive
+                                Positive
                               </button>
                             </>
                           )}
