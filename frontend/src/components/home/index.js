@@ -1,9 +1,9 @@
-import { useEffect, useState, useContext } from "react";
-import { Spinner } from "react-bootstrap";
-import LandingPage from "../landing";
-import CalendarView from "../calendar-view";
-import { UserRepository } from "../../api/userRepository";
-import { UserContext } from "../../common/context";
+import { useEffect, useState, useContext } from 'react';
+import { Spinner } from 'react-bootstrap';
+import LandingPage from '../landing';
+import CalendarView from '../calendar-view';
+import { UserRepository } from '../../api/userRepository';
+import { UserContext } from '../../common/context';
 
 const LoggedInView = () => {
   return <CalendarView />;
@@ -20,7 +20,6 @@ const HomePage = () => {
         .getMoreUserInformationById(userRepository.currentUser().userId, true)
         .then(() => {
           setUserContext(userRepository.currentUser());
-          setIsLoading(false);
         });
     };
     const isLoggedIn = userRepository.loggedIn();

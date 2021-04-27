@@ -144,7 +144,6 @@ clockOut data does not work
 Update manager view to show scheduler in the same way the employee does
 Update Scheduler to include username
 
-promote users to manager
 get all users
 change a user's covid status
 edit user route
