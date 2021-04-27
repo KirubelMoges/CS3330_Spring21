@@ -435,7 +435,7 @@ const Calendar = (props) => {
           <CovidCard />
         ) : (
           <div className="row">
-            <TimeCard className="col-md-4 col-xs-9" />
+            {/* <TimeCard className="col-md-4 col-xs-9" /> */}
             <CovidCard className="col-md-4 col-xs-9" />
           </div>
         )}
