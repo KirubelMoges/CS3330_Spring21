@@ -150,7 +150,7 @@ const EmployeeList = () => {
                                   });
                               }}
                             >
-                              Tested Negative
+                              Negative
                             </button>
                             <button
                               type="button"
@@ -171,7 +171,7 @@ const EmployeeList = () => {
                                   });
                               }}
                             >
-                              Tested Positive
+                              Positive
                             </button>
                           </>
                         )}

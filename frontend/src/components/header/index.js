@@ -59,7 +59,10 @@ const LoggedInVariant = () => {
   return (
     <Nav>
       <Nav.Item>
-        <Nav.Link href={"/userProfile/" + userRepository.currentUser().userId}>
+        <Nav.Link
+          href={"/userProfile/" + userRepository.currentUser().userId}
+          className="text-white"
+        >
           My Profile
         </Nav.Link>
       </Nav.Item>
