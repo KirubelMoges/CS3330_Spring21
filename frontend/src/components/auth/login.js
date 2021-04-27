@@ -35,7 +35,6 @@ const Login = () => {
   useEffect(() => {
     const user = userContext;
     if (user.username) {
-      console.log(user);
       history.push("/");
     }
   });

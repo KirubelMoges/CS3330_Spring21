@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
-import { Modal, Form } from 'react-bootstrap';
-import { UserRepository } from '../../../../api/userRepository';
+import { useState, useEffect } from "react";
+import { Modal, Form } from "react-bootstrap";
+import { UserRepository } from "../../../../api/userRepository";
 
 const ReportContactModal = (props) => {
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [users, setUsers] = useState(undefined);
+  const userRepository = new UserRepository();
 
   useEffect(() => {
-    const userRepository = new UserRepository();
     if (users === undefined) {
       userRepository.getAllUsers().then((data) => {
         if (data[1].success === true) {
           setSelectedUser(
             data[0].data[0].firstName +
-              ' ' +
+              " " +
               data[0].data[0].lastName +
-              ' ' +
-              '-' +
-              ' ' +
+              " " +
+              "-" +
+              " " +
               data[0].data[0].userEmail
           );
           setUsers(data[0].data);
@@ -39,12 +39,21 @@ const ReportContactModal = (props) => {
           <Form>
             <Form.Group controlId="scheduleForm.room">
               <Form.Label>Employees:</Form.Label>
-              <Form.Control as="select" onChange={(e) => setSelectedUser(e.target.value)}>
-                {users.map((user) => (
-                  <option key={user.userId}>
-                    {user.firstName} {user.lastName} - {user.userEmail}
-                  </option>
-                ))}
+              <Form.Control
+                as="select"
+                onChange={(e) => setSelectedUser(e.target.value)}
+              >
+                {users.map((user) => {
+                  if (user.officeId == userRepository.currentUser().officeId) {
+                    return (
+                      <option key={user.userId}>
+                        {user.firstName} {user.lastName} - {user.userEmail}
+                      </option>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
               </Form.Control>
             </Form.Group>
           </Form>
@@ -54,7 +63,7 @@ const ReportContactModal = (props) => {
         <button
           className="btn btn-danger"
           onClick={() => {
-            let formResponse = selectedUser.split(' ');
+            let formResponse = selectedUser.split(" ");
             props.reportContact(
               users.find((x) => {
                 return x.userEmail == formResponse[3];
