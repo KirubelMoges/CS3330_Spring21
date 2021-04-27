@@ -16,6 +16,7 @@ const UserProfile = (props) => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [canChangeStatus, setCanChangeStatus] = useState(false);
   const [isManager, setIsManager] = useState(false);
+  const [contacts, setContacts] = useState(undefined);
 
   const userId = props.match.params.userId;
 
@@ -28,7 +29,6 @@ const UserProfile = (props) => {
           setUser(response[0].data[0]);
           setIsManager(response[0].data[0].jobTitle == UserTypes.manager);
         } else {
-          console.log("error fetching profile " + userId);
         }
       });
     } else {
@@ -48,13 +48,16 @@ const UserProfile = (props) => {
           });
           setReservations(resArr);
         } else {
-          console.log(
-            "error fetching reservations for " +
-              new Date().getMonth() +
-              " " +
-              new Date().getFullYear()
-          );
           setReservations([]);
+        }
+      });
+    }
+    if (!contacts) {
+      userRepository.getAllPeopleInContactWithUserId(userId).then((res) => {
+        if (res[1].success) {
+          setContacts(res[0].data);
+        } else {
+          setContacts([]);
         }
       });
     }
@@ -65,6 +68,8 @@ const UserProfile = (props) => {
     setReservations,
     canChangeStatus,
     setCanChangeStatus,
+    contacts,
+    setContacts,
   ]);
 
   if (!user || !reservations) {
@@ -147,6 +152,33 @@ const UserProfile = (props) => {
           <div className="mt-3 ml-3 flex-row d-flex border-bottom border-dark">
             <p className="h5">Covid Status: </p>
             <p className="ml-3">{covidStatus}</p>
+          </div>
+          <div className="mt-3 ml-3 border-bottom border-dark">
+            <h5 className="mb-3">Contact Tracing History</h5>
+            {contacts && contacts.length > 0 ? (
+              <table className="table table-condensed table-striped border border-dark">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contacts.map((contact, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>
+                          {contact.firstName} {contact.lastName}
+                        </td>
+                        <td>{contact.userEmail}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <p>This user has never been contact traced</p>
+            )}
           </div>
           <div className="mt-3 ml-3">
             <h5 className="mb-3">Reservations</h5>

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Table } from 'react-bootstrap';
-import { MessageRepository } from '../../api/messageRepository';
-import Header from "../header"; 
+import { useState, useEffect } from "react";
+import { Table } from "react-bootstrap";
+import { MessageRepository } from "../../api/messageRepository";
+import Header from "../header";
 
 const Inbox = () => {
   const messagesRepository = new MessageRepository();
@@ -11,7 +11,6 @@ const Inbox = () => {
   useEffect(() => {
     if (!allEmployeeMessages) {
       messagesRepository.getAllEmployeeMessages().then((res) => {
-        console.log('MESSAGES', res);
         if (res[1].success === true) {
           setAllEmployeeMessages(res[0].data);
         } else setAllEmployeeMessages([]);
@@ -21,15 +20,15 @@ const Inbox = () => {
 
   return (
     <>
-    <Header />
-    <div className="container">
-      {/* Use a table here..... */}
-      {allEmployeeMessages &&
-        allEmployeeMessages.map((message, index) => {
-          return <div key={index}>{message.message}</div>;
-        })}
-      {allEmployeeMessages && <Table></Table>}
-    </div>
+      <Header />
+      <div className="container">
+        {/* Use a table here..... */}
+        {allEmployeeMessages &&
+          allEmployeeMessages.map((message, index) => {
+            return <div key={index}>{message.message}</div>;
+          })}
+        {allEmployeeMessages && <Table></Table>}
+      </div>
     </>
   );
 };

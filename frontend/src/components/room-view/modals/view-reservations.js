@@ -16,8 +16,6 @@ const UserInReservation = (props) => {
     if (!user && props.userId) {
       userRepository.getMoreUserInformationById(props.userId).then((res) => {
         if (res[1].success) {
-          console.log("USER", res);
-          console.log(res[0][0]);
           setUser(res[0][0]);
         }
       });
@@ -41,7 +39,6 @@ const ViewReservationsModal = (props) => {
         .then((data) => {
           if (data[1].success === true) {
             setReservations(data[0].data);
-            console.log(data);
           } else {
             setReservations([]);
           }
@@ -67,13 +64,11 @@ const ViewReservationsModal = (props) => {
                 .getReservations(d.getMonth() + 1, d.getFullYear())
                 .then((res) => {
                   if (res[1].success) {
-                    console.log(res[0].data);
                     setReservations(res[0].data);
                   }
                 });
             }
             setDate(d);
-            console.log({ d });
           }}
         />
         {reservations && (

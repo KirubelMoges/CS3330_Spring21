@@ -35,18 +35,15 @@ export const CovidCard = () => {
     setHasCovid(true);
     userRepository
       .editCovidStatus(userRepository.currentUser().userId, 1)
-      .then((res) => {
-        console.log({ res });
-      });
+      .then((res) => {});
   };
 
   const contactReported = (reportedUser) => {
     const employeeRepository = new EmployeeRepository();
-    console.log({ reportedUser });
     employeeRepository
       .reportContact(
-        userRepository.currentUser().userId,
         reportedUser.userId,
+        userRepository.currentUser().userId,
         ""
       )
       .then(() => {

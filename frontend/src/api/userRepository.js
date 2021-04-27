@@ -214,4 +214,23 @@ export class UserRepository {
 
     return [data, errors];
   }
+
+  /**
+   * Get all people who have contact traced an employee
+   * @param {number} id - The id of the user to get
+   * @returns {Promise<[Object, Object]>} - Data, error tuple
+   */
+  async getAllPeopleInContactWithUserId(id) {
+    const errors = { success: false };
+    const { data, status } = await axios.get(
+      URL + "/api/employee/getAllPeopleInContactWithUserId",
+      { params: { userId: id } }
+    );
+
+    if (status >= 201) errors.request = "Bad Request";
+    else {
+      errors.success = true;
+    }
+    return [data, errors];
+  }
 }

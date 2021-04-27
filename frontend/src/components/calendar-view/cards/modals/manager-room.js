@@ -1,5 +1,5 @@
-import { Modal } from 'react-bootstrap';
-import { useState } from 'react';
+import { Modal } from "react-bootstrap";
+import { useState } from "react";
 
 const ManagerRoomsModal = (props) => {
   const rooms = [...props.rooms];
@@ -20,12 +20,20 @@ const ManagerRoomsModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex flex-column">
-          <p>As a manager you control what rooms are available for scheduling.</p>
+          <p>
+            As a manager you control what rooms are available for scheduling.
+          </p>
           {rooms.map((room, idx) => {
             return (
-              <div className="d-flex flex-row justify-content-between py-1" key={idx}>
+              <div
+                className="d-flex flex-row justify-content-between py-1"
+                key={idx}
+              >
                 <p>Room - {room}</p>
-                <button className="btn btn-info" onClick={() => handleEventsOpen(room)}>
+                <button
+                  className="btn btn-info"
+                  onClick={() => handleEventsOpen(room)}
+                >
                   Manage Events
                 </button>
                 <button className="btn btn-danger">Remove from office</button>
@@ -51,7 +59,6 @@ const ManagerRoomsModal = (props) => {
 
 const ManageEventsModal = (props) => {
   const events = [...props.events];
-  console.log('Room', props.room);
   return (
     <Modal show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
@@ -61,10 +68,12 @@ const ManageEventsModal = (props) => {
         <div className="d-flex flex-column">
           <p>As a manager you control what events can happen.</p>
           {events.map((event, idx) => {
-            console.log('Event Room', event.room);
             if (event.room === props.room) {
               return (
-                <div className="d-flex flex-row justify-content-between py-1" key={idx}>
+                <div
+                  className="d-flex flex-row justify-content-between py-1"
+                  key={idx}
+                >
                   <p>
                     Event - {event.employee} - {event.day.toDateString()}
                   </p>
