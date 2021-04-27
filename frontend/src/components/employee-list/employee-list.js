@@ -1,12 +1,9 @@
-import React, { useState, useEffect, Link } from "react";
-import Header from "../header";
-import { UserRepository } from "../../api/userRepository";
-import {
-  EmployeeRepository,
-  employeeRepository,
-} from "../../api/employeeRepository";
-import { useHistory } from "react-router-dom";
-import { UserTypes } from "../../utils/constants";
+import React, { useState, useEffect, Link } from 'react';
+import Header from '../header';
+import { UserRepository } from '../../api/userRepository';
+import { EmployeeRepository, employeeRepository } from '../../api/employeeRepository';
+import { useHistory } from 'react-router-dom';
+import { UserTypes } from '../../utils/constants';
 
 const EmployeeList = () => {
   const [users, setUsers] = useState(undefined);
@@ -42,36 +39,25 @@ const EmployeeList = () => {
             {users &&
               users.map((user) => {
                 //console.log(user);
-                return (
-                  user.covidStatus != 1 &&
-                  user.exposure == 0 && (
-                    <tr key={user.userId}>
-                      <td>
-                        <span className="text-muted">{user.userId}</span>
-                        <span className="fs-1">
-                          {" " + user.firstName + " " + user.lastName}
-                        </span>
-                        <span style={{ fontStyle: "italic" }}>
-                          {" "}
-                          – {user.userEmail}
-                        </span>
-                        <a
-                          className="btn btn-info float-right"
-                          onClick={() =>
-                            history.push("/userProfile/" + user.userId)
-                          }
-                        >
-                          See Profile
-                        </a>
-                        {userRepository.currentUser().role ==
-                          UserTypes.manager && (
-                          <button
-                            type="button"
-                            className="btn btn-danger float-right mr-1"
-                            onClick={() => {
-                              userRepository
-                                .editCovidStatus(user.userId, 1)
-                                .then(() => {
+                return user.officeId == userRepository.currentUser().officeId
+                  ? user.covidStatus != 1 && user.exposure == 0 && (
+                      <tr key={user.userId}>
+                        <td>
+                          <span className="text-muted">{user.userId}</span>
+                          <span className="fs-1">{' ' + user.firstName + ' ' + user.lastName}</span>
+                          <span style={{ fontStyle: 'italic' }}> – {user.userEmail}</span>
+                          <a
+                            className="btn btn-info float-right"
+                            onClick={() => history.push('/userProfile/' + user.userId)}
+                          >
+                            See Profile
+                          </a>
+                          {userRepository.currentUser().role == UserTypes.manager && (
+                            <button
+                              type="button"
+                              className="btn btn-danger float-right mr-1"
+                              onClick={() => {
+                                userRepository.editCovidStatus(user.userId, 1).then(() => {
                                   let newUsers = users;
                                   newUsers = newUsers.map((newUser) => {
                                     if (newUser.userId == user.userId) {
@@ -81,15 +67,15 @@ const EmployeeList = () => {
                                   });
                                   setUsers(newUsers);
                                 });
-                            }}
-                          >
-                            Tested Positive
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                );
+                              }}
+                            >
+                              Tested Positive
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  : null;
               })}
           </tbody>
         </table>
@@ -104,40 +90,27 @@ const EmployeeList = () => {
           <tbody>
             {users &&
               users.map((user) => {
-                return (
-                  user.covidStatus != 1 &&
-                  user.exposure == 1 && (
-                    <tr key={user.userId}>
-                      <td>
-                        <span className="text-muted">{user.userId}</span>
-                        <span className="fs-1">
-                          {" " + user.firstName + " " + user.lastName}
-                        </span>
-                        <span style={{ fontStyle: "italic" }}>
-                          {" "}
-                          – {user.userEmail}
-                        </span>
-                        <a
-                          className="btn btn-info float-right mr-1"
-                          onClick={() =>
-                            history.push("/userProfile/" + user.userId)
-                          }
-                        >
-                          See Profile
-                        </a>
-                        {userRepository.currentUser().role ==
-                          UserTypes.manager && (
-                          <>
-                            <button
-                              type="button"
-                              className="btn btn-success float-right mr-1"
-                              onClick={() => {
-                                userRepository
-                                  .editCovidStatus(user.userId, 0)
-                                  .then(() => {
-                                    employeeRepository
-                                      .setExposure(user.userId, 0)
-                                      .then();
+                return user.officeId == userRepository.currentUser().officeId
+                  ? user.covidStatus != 1 && user.exposure == 1 && (
+                      <tr key={user.userId}>
+                        <td>
+                          <span className="text-muted">{user.userId}</span>
+                          <span className="fs-1">{' ' + user.firstName + ' ' + user.lastName}</span>
+                          <span style={{ fontStyle: 'italic' }}> – {user.userEmail}</span>
+                          <a
+                            className="btn btn-info float-right mr-1"
+                            onClick={() => history.push('/userProfile/' + user.userId)}
+                          >
+                            See Profile
+                          </a>
+                          {userRepository.currentUser().role == UserTypes.manager && (
+                            <>
+                              <button
+                                type="button"
+                                className="btn btn-success float-right mr-1"
+                                onClick={() => {
+                                  userRepository.editCovidStatus(user.userId, 0).then(() => {
+                                    employeeRepository.setExposure(user.userId, 0).then();
                                     let newUsers = users;
                                     newUsers = newUsers.map((newUser) => {
                                       if (newUser.userId == user.userId) {
@@ -148,6 +121,7 @@ const EmployeeList = () => {
                                     });
                                     setUsers(newUsers);
                                   });
+
                               }}
                             >
                               Negative
@@ -159,6 +133,7 @@ const EmployeeList = () => {
                                 userRepository
                                   .editCovidStatus(user.userId, 1)
                                   .then(() => {
+
                                     let newUsers = users;
                                     newUsers = newUsers.map((newUser) => {
                                       if (newUser.userId == user.userId) {
@@ -169,16 +144,17 @@ const EmployeeList = () => {
 
                                     setUsers(newUsers);
                                   });
-                              }}
-                            >
-                              Positive
-                            </button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                );
+
+                                }}
+                              >
+                                Positive
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  : null;
               })}
           </tbody>
         </table>
@@ -193,38 +169,26 @@ const EmployeeList = () => {
           <tbody>
             {users &&
               users.map((user) => {
-                return (
-                  user.covidStatus == 1 && (
-                    <tr key={user.userId}>
-                      <td>
-                        <span className="text-muted">{user.userId}</span>
-                        <span className="fs-1">
-                          {" " + user.firstName + " " + user.lastName}
-                        </span>
-                        <span style={{ fontStyle: "italic" }}>
-                          {" "}
-                          – {user.userEmail}
-                        </span>
-                        <a
-                          className="btn btn-info float-right mr-1"
-                          onClick={() =>
-                            history.push("/userProfile/" + user.userId)
-                          }
-                        >
-                          See Profile
-                        </a>
-                        {userRepository.currentUser().role ==
-                          UserTypes.manager && (
-                          <button
-                            type="button"
-                            className="btn btn-success float-right mr-1"
-                            onClick={() => {
-                              userRepository
-                                .editCovidStatus(user.userId, 0)
-                                .then(() => {
-                                  employeeRepository
-                                    .setExposure(user.userId, 0)
-                                    .then();
+                return user.officeId == userRepository.currentUser().officeId
+                  ? user.covidStatus == 1 && (
+                      <tr key={user.userId}>
+                        <td>
+                          <span className="text-muted">{user.userId}</span>
+                          <span className="fs-1">{' ' + user.firstName + ' ' + user.lastName}</span>
+                          <span style={{ fontStyle: 'italic' }}> – {user.userEmail}</span>
+                          <a
+                            className="btn btn-info float-right mr-1"
+                            onClick={() => history.push('/userProfile/' + user.userId)}
+                          >
+                            See Profile
+                          </a>
+                          {userRepository.currentUser().role == UserTypes.manager && (
+                            <button
+                              type="button"
+                              className="btn btn-success float-right mr-1"
+                              onClick={() => {
+                                userRepository.editCovidStatus(user.userId, 0).then(() => {
+                                  employeeRepository.setExposure(user.userId, 0).then();
                                   let newUsers = users;
                                   newUsers = newUsers.map((newUser) => {
                                     if (newUser.userId == user.userId) {
@@ -235,15 +199,15 @@ const EmployeeList = () => {
                                   });
                                   setUsers(newUsers);
                                 });
-                            }}
-                          >
-                            Tested Negative
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                );
+                              }}
+                            >
+                              Tested Negative
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  : null;
               })}
           </tbody>
         </table>

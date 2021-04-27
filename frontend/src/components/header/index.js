@@ -1,8 +1,8 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { useContext } from "react";
-import { UserContext } from "../../common/context";
-import { UserRepository } from "../../api/userRepository";
-import { useHistory } from "react-router";
+import { Navbar, Nav } from 'react-bootstrap';
+import { useContext } from 'react';
+import { UserContext } from '../../common/context';
+import { UserRepository } from '../../api/userRepository';
+import { useHistory } from 'react-router';
 
 const Header = () => {
   const userRepository = new UserRepository();
@@ -15,12 +15,16 @@ const Header = () => {
       <Navbar.Toggle aria-controls="navbar-nav" />
       <Navbar.Collapse id="navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link href="/employees" className="text-white">
-            Employees
-          </Nav.Link>
-          <Nav.Link href="/rooms" className="text-white">
-            Rooms
-          </Nav.Link>
+          {userRepository.loggedIn() && (
+            <Nav.Link href="/employees" className="text-white">
+              Employees
+            </Nav.Link>
+          )}
+          {userRepository.loggedIn() && (
+            <Nav.Link href="/rooms" className="text-white">
+              Rooms
+            </Nav.Link>
+          )}
         </Nav>
         {userRepository.loggedIn() ? <LoggedInVariant /> : <LoggedOutVariant />}
       </Navbar.Collapse>
@@ -49,18 +53,19 @@ const LoggedInVariant = () => {
   const [, setUserContext] = useContext(UserContext);
   const userRepository = new UserRepository();
   const history = useHistory();
-  console.log("currUser Id " + userRepository.currentUser().userId);
   function logoutButton() {
     userRepository.logout();
     setUserContext({});
-    history.push("/login");
+    history.push('/login');
   }
 
   return (
     <Nav>
       <Nav.Item>
         <Nav.Link
-          href={"/userProfile/" + userRepository.currentUser().userId}
+
+          href={'/userProfile/' + userRepository.currentUser().userId}
+
           className="text-white"
         >
           My Profile
