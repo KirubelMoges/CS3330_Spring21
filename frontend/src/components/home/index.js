@@ -13,6 +13,15 @@ const HomePage = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [, setUserContext] = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const userRepository = new UserRepository();
+    const isLoggedIn = userRepository.loggedIn();
+
+    if (isLoggedIn && !loggedIn) setLoggedIn(true);
+    if (loggedIn && !isLoggedIn) setLoggedIn(false);
+  });
+
   useEffect(() => {
     const userRepository = new UserRepository();
     const getUser = () => {
@@ -22,16 +31,21 @@ const HomePage = () => {
           setUserContext(userRepository.currentUser());
         });
     };
-    const isLoggedIn = userRepository.loggedIn();
-    if (
-      (isLoggedIn && !userRepository.currentUser().officeId) ||
-      !userRepository.currentUser().covidStatus ||
-      !userRepository.currentUser().role ||
-      userRepository.currentUser().covidStatus == null
-    )
-      getUser();
-    setLoggedIn(isLoggedIn);
-    setIsLoading(false);
+
+    if (loggedIn) {
+      if (
+        !userRepository.currentUser().officeId ||
+        !userRepository.currentUser().covidStatus ||
+        !userRepository.currentUser().role ||
+        userRepository.currentUser().covidStatus == null
+      ) {
+        getUser();
+        setLoggedIn(true);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
+    }
   }, [loggedIn, setLoggedIn, setUserContext, isLoading, setIsLoading]);
 
   if (loggedIn && isLoading) {
@@ -44,6 +58,8 @@ const HomePage = () => {
         </div>
       </div>
     );
+
+    if (loggedIn) console.log('Logged in');
   }
 
   return loggedIn ? <LoggedInView /> : <LandingPage />;

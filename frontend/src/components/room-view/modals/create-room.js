@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Modal, Form } from "react-bootstrap";
-import { RoomsRepository } from "../../../api/roomsRepository";
-import { UserRepository } from "../../../api/userRepository";
+import { useState } from 'react';
+import { Modal, Form } from 'react-bootstrap';
+import { RoomsRepository } from '../../../api/roomsRepository';
+import { UserRepository } from '../../../api/userRepository';
 
 const CreateRoomModal = (props) => {
   const roomsRepository = new RoomsRepository();
   const userRepository = new UserRepository();
   const [capacity, setCapacity] = useState(50);
-  const [roomName, setRoomName] = useState("");
+  const [roomName, setRoomName] = useState('');
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
@@ -19,10 +19,7 @@ const CreateRoomModal = (props) => {
         <Form>
           <Form.Group controlId="scheduleForm.room">
             <Form.Label>Room Name:</Form.Label>
-            <Form.Control
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-            />
+            <Form.Control value={roomName} onChange={(e) => setRoomName(e.target.value)} />
           </Form.Group>
           <Form.Group controlId="scheduleForm.room">
             <Form.Label>Capacity:</Form.Label>
@@ -39,16 +36,18 @@ const CreateRoomModal = (props) => {
         <button
           className="btn btn-success"
           onClick={() => {
-            roomsRepository.createRoom(roomName, capacity).then((res) => {
-              const newRoom = {
-                roomId: res[0].data.insertId,
-                name: roomName,
-                capacity: capacity,
-                officeId: userRepository.currentUser().officeId,
-              };
-              props.setRooms([...props.rooms, newRoom]);
-              props.handleClose();
-            });
+            roomsRepository
+              .createRoom(roomName, capacity, userRepository.currentUser().officeId)
+              .then((res) => {
+                const newRoom = {
+                  roomId: res[0].data.insertId,
+                  name: roomName,
+                  capacity: capacity,
+                  officeId: userRepository.currentUser().officeId
+                };
+                props.setRooms([...props.rooms, newRoom]);
+                props.handleClose();
+              });
           }}
         >
           Create Room
