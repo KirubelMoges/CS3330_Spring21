@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import { Modal, Form } from "react-bootstrap";
-import { UserRepository } from "../../../../api/userRepository";
+import { useState, useEffect } from 'react';
+import { Modal, Form } from 'react-bootstrap';
+import { UserRepository } from '../../../../api/userRepository';
 
 const ReportContactModal = (props) => {
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [users, setUsers] = useState(undefined);
-  const userRepository = new UserRepository();
+  // const userRepository = new UserRepository();
+  const [userRepository] = useState(() => new UserRepository());
 
   useEffect(() => {
     if (users === undefined) {
@@ -13,11 +14,11 @@ const ReportContactModal = (props) => {
         if (data[1].success === true) {
           setSelectedUser(
             data[0].data[0].firstName +
-              " " +
+              ' ' +
               data[0].data[0].lastName +
-              " " +
-              "-" +
-              " " +
+              ' ' +
+              '-' +
+              ' ' +
               data[0].data[0].userEmail
           );
           setUsers(data[0].data);
@@ -26,7 +27,7 @@ const ReportContactModal = (props) => {
         }
       });
     }
-  }, [users, setUsers, selectedUser, setSelectedUser]);
+  }, [users, setUsers, selectedUser, setSelectedUser, userRepository]);
 
   return (
     <Modal show={props.show} onHide={props.handleClose}>
@@ -39,12 +40,9 @@ const ReportContactModal = (props) => {
           <Form>
             <Form.Group controlId="scheduleForm.room">
               <Form.Label>Employees:</Form.Label>
-              <Form.Control
-                as="select"
-                onChange={(e) => setSelectedUser(e.target.value)}
-              >
+              <Form.Control as="select" onChange={(e) => setSelectedUser(e.target.value)}>
                 {users.map((user) => {
-                  if (user.officeId == userRepository.currentUser().officeId) {
+                  if (user.officeId === userRepository.currentUser().officeId) {
                     return (
                       <option key={user.userId}>
                         {user.firstName} {user.lastName} - {user.userEmail}
@@ -63,10 +61,10 @@ const ReportContactModal = (props) => {
         <button
           className="btn btn-danger"
           onClick={() => {
-            let formResponse = selectedUser.split(" ");
+            let formResponse = selectedUser.split(' ');
             props.reportContact(
               users.find((x) => {
-                return x.userEmail == formResponse[3];
+                return x.userEmail === formResponse[3];
               })
             );
             props.handleClose();

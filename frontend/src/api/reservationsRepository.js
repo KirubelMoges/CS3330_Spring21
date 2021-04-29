@@ -33,6 +33,8 @@ export class ReservationsRepository {
       sendDate
     });
 
+    console.log(data);
+
     if (status >= 201) {
       errors.reason = 'Bad Request';
     }

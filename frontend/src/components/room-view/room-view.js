@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from "react";
-import Header from "../header";
-import { RoomsRepository } from "../../api/roomsRepository";
-import { UserRepository } from "../../api/userRepository";
-import { ManagerRepository } from "../../api/managerRepository";
-import { UserTypes } from "../../utils/constants";
-import CreateRoomModal from "./modals/create-room";
-import ViewReservationsModal from "./modals/view-reservations";
+import React, { useState, useEffect } from 'react';
+import Header from '../header';
+import { RoomsRepository } from '../../api/roomsRepository';
+import { UserRepository } from '../../api/userRepository';
+import { ManagerRepository } from '../../api/managerRepository';
+import { UserTypes } from '../../utils/constants';
+import CreateRoomModal from './modals/create-room';
+import ViewReservationsModal from './modals/view-reservations';
 
 const RoomView = () => {
-  const [isCreateRoomModalShowing, setIsCreateRoomModalShowing] = useState(
-    false
-  );
+  const [isCreateRoomModalShowing, setIsCreateRoomModalShowing] = useState(false);
   const handleCreateRoomClose = () => setIsCreateRoomModalShowing(false);
   const handleCreateRoomOpen = () => setIsCreateRoomModalShowing(true);
 
-  const [
-    isViewReservationsModalShowing,
-    setIsViewReservationsModalShowing,
-  ] = useState(false);
-  const handleViewReservationsClose = () =>
-    setIsViewReservationsModalShowing(false);
-  const handleViewReservationsOpen = () =>
-    setIsViewReservationsModalShowing(true);
+  const [isViewReservationsModalShowing, setIsViewReservationsModalShowing] = useState(false);
+  const handleViewReservationsClose = () => setIsViewReservationsModalShowing(false);
+  const handleViewReservationsOpen = () => setIsViewReservationsModalShowing(true);
 
   const userRepository = new UserRepository();
   const managerRepository = new ManagerRepository();
@@ -32,15 +25,14 @@ const RoomView = () => {
 
   useEffect(() => {
     if (rooms === undefined) {
-      roomsRepository
-        .getRooms(currUser.username, currUser.password)
-        .then((data) => {
-          if (data[1].success === true) {
-            setRooms(data[0].data);
-          } else {
-            setRooms([]);
-          }
-        });
+      roomsRepository.getRooms(currUser.username, currUser.password).then((data) => {
+        if (data[1].success === true) {
+          setRooms(data[0].data);
+          console.log(data[0].data);
+        } else {
+          setRooms([]);
+        }
+      });
     }
   }, [rooms]);
 
@@ -76,7 +68,10 @@ const RoomView = () => {
               rooms.map((room) => {
                 return (
                   <tr key={room.roomId}>
-                    <td>Room: {room.roomId}</td>
+                    <td>
+                      Room: {room.roomId} - {room.name}
+                    </td>
+                    {/* <td>{room.roomName}</td> */}
                     <td>Capacity: {room.capacity}</td>
                     <td>
                       <button
@@ -96,16 +91,10 @@ const RoomView = () => {
                           type="button"
                           className="btn btn-danger"
                           onClick={() => {
-                            managerRepository
-                              .deleteRoom(room.roomId)
-                              .then((res) => {
-                                let newRooms = rooms;
-                                setRooms(
-                                  newRooms.filter(
-                                    (newRoom) => newRoom.roomId != room.roomId
-                                  )
-                                );
-                              });
+                            managerRepository.deleteRoom(room.roomId).then((res) => {
+                              let newRooms = rooms;
+                              setRooms(newRooms.filter((newRoom) => newRoom.roomId != room.roomId));
+                            });
                           }}
                         >
                           Delete Room

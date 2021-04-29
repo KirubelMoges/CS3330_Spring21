@@ -1,5 +1,5 @@
-import axios from "axios";
-import { URL } from "../utils/constants";
+import axios from 'axios';
+import { URL } from '../utils/constants';
 
 export class RoomsRepository {
   /**
@@ -10,14 +10,14 @@ export class RoomsRepository {
    */
   async getRooms(email, password) {
     const errors = { success: false };
-    const { data, status } = await axios.get(URL + "/api/rooms", {
-      params: { userEmail: email, userPassword: password },
+    const { data, status } = await axios.get(URL + '/api/rooms', {
+      params: { userEmail: email, userPassword: password }
     });
 
     if (status >= 201) {
-      errors.reason = "Bad Request";
-    } else if (data.status && data.status === "1") {
-      errors.reason = "Not authenticated";
+      errors.reason = 'Bad Request';
+    } else if (data.status && data.status === '1') {
+      errors.reason = 'Not authenticated';
     } else {
       errors.success = true;
     }
@@ -27,32 +27,28 @@ export class RoomsRepository {
 
   /**
    * Attempt to create a new room
-   * @param {string} userEmail - The email of the manager creating aroom
-   * @param {string} userPassword - The password of the manager creating a room
-   * @param {number} roomId - The id of the room to create
-   * @param {string} roomType - The type of room
-   * @param {number} capacity - The max occupancy of the room
-   * @param {number} availability - Is the room available or nott
-   * @param {number} cleaned - Whether the room is cleaned or not
-   * @param {number} beingCleaned - Wheter the room is being cleaned at the moment or not
+   * @param {string} name - The email of the manager creating aroom
+   * @param {string} capacity - The password of the manager creating a room
+   * @param {number} officeId - The id of the office for room to create
    * @returns {Promise<[Object, Object]>} - Data, error tuple
    */
   async createRoom(
     name,
     capacity = 50,
+    officeId = 1,
     lastCleaned = null,
     availability = 1,
     cleaned = 1
   ) {
     const errors = { success: false };
     const { data, status } = await axios.post(
-      URL + "/api/manager/room",
+      URL + '/api/manager/room',
       {},
-      { params: { name, capacity, lastCleaned, availability, cleaned } }
+      { params: { name, capacity, lastCleaned, availability, cleaned, officeId } }
     );
 
     if (status >= 201) {
-      errors.reason = "Bad Request";
+      errors.reason = 'Bad Request';
     } else {
       errors.success = true;
     }
@@ -67,20 +63,17 @@ export class RoomsRepository {
    */
   async getAvailableConferenceRooms(userEmail, userPassword) {
     const errors = { success: false };
-    const { data, status } = await axios.get(
-      URL + "/api/availableConferenceRoom",
-      {
-        params: {
-          userEmail,
-          userPassword,
-        },
+    const { data, status } = await axios.get(URL + '/api/availableConferenceRoom', {
+      params: {
+        userEmail,
+        userPassword
       }
-    );
+    });
 
     if (status >= 201) {
-      errors.reason = "Bad Request";
+      errors.reason = 'Bad Request';
     } else if (data.status && data.status === 1) {
-      errors.reason = "Unauthenticated";
+      errors.reason = 'Unauthenticated';
     } else {
       errors.success = true;
     }
@@ -103,22 +96,19 @@ export class RoomsRepository {
     dateTime = new Date()
   ) {
     const errors = { success: false };
-    const { data, status } = await axios.get(
-      URL + "/api/availableConferencesGivenCapacity",
-      {
-        params: {
-          userEmail,
-          userPassword,
-          capacity,
-          dateTime,
-        },
+    const { data, status } = await axios.get(URL + '/api/availableConferencesGivenCapacity', {
+      params: {
+        userEmail,
+        userPassword,
+        capacity,
+        dateTime
       }
-    );
+    });
 
     if (status >= 201) {
-      errors.reason = "Bad Request";
+      errors.reason = 'Bad Request';
     } else if (data.status && data.status === 1) {
-      errors.reason = "Unauthenticated";
+      errors.reason = 'Unauthenticated';
     } else {
       errors.success = true;
     }

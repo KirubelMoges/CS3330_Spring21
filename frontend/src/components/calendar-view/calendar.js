@@ -1,29 +1,29 @@
-import { useState, useEffect } from "react";
-import "./calendar.css";
-import { getCalendarDays } from "./utils";
-import { Form, Row, Col, Modal } from "react-bootstrap";
-import { RoomsRepository } from "../../api/roomsRepository";
-import { UserRepository } from "../../api/userRepository";
-import { EmployeeRepository } from "../../api/employeeRepository";
-import { ManagerRepository } from "../../api/managerRepository";
-import { ManagerControls, TimeCard, CovidCard } from "./cards";
-import { UserTypes } from "../../utils/constants";
+import { useState, useEffect, useRef } from 'react';
+import './calendar.css';
+import { getCalendarDays } from './utils';
+import { Form, Row, Col, Modal } from 'react-bootstrap';
+import { RoomsRepository } from '../../api/roomsRepository';
+import { UserRepository } from '../../api/userRepository';
+import { EmployeeRepository } from '../../api/employeeRepository';
+import { ManagerRepository } from '../../api/managerRepository';
+import { CovidCard } from './cards';
+import { UserTypes } from '../../utils/constants';
 
 const CalendarHeader = (props) => {
   const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const labels = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
   ];
 
   const [formMonth, setFormMonth] = useState(props.month);
@@ -94,45 +94,56 @@ const CalendarHeader = (props) => {
 
 const CalendarDay = (props) => {
   let { date, weekday, reservations, muted, employees } = props;
-  const userRepository = new UserRepository();
-  const [today] = useState(new Date(date));
-
-  const [reservationsToday, setReservationsToday] = useState(undefined);
+  const [today, setToday] = useState(new Date(date));
+  const [reservationsToday, setReservationsToday] = useState([]);
+  const [events, setEvents] = useState(reservations ?? []);
+  const [emps] = useState(employees ?? []);
 
   useEffect(() => {
-    const events = reservations ?? [];
+    const l = JSON.stringify(events);
+    const r = JSON.stringify(reservations);
 
-    if (!reservationsToday) {
-      const eventsToday = events.filter((res) => {
-        const d = new Date(res.dateIn);
+    if (l !== r) {
+      setEvents(reservations);
+    }
+  }, [reservations]);
 
-        const emps = employees ?? [];
-        const userIds = emps.map((us) => {
-          if (us.officeId == userRepository.currentUser().officeId) {
-            return us.userId;
-          }
-        });
+  useEffect(() => {
+    const newDate = new Date(date);
 
-        return (
-          d.getDate() === today.getDate() &&
-          d.getMonth() === today.getMonth() &&
-          d.getFullYear() === today.getFullYear() &&
-          userIds.includes(res.userId)
-        );
+    if (newDate !== today) {
+      setToday(newDate);
+    }
+  }, [date]);
+
+  useEffect(() => {
+    const userRepository = new UserRepository();
+    const eventsToday = events.filter((res) => {
+      const d = new Date(res.dateIn);
+
+      const userIds = emps.map((us) => {
+        if (us.officeId === userRepository.currentUser().officeId) {
+          return us.userId;
+        }
       });
 
-      setReservationsToday(eventsToday);
-    }
-  }, [reservationsToday, setReservationsToday, today]);
+      return (
+        d.getDate() === today.getDate() &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear() &&
+        userIds.includes(res.userId)
+      );
+    });
+
+    if (eventsToday.length !== reservationsToday.length) setReservationsToday(eventsToday);
+  }, [events]);
 
   if (muted)
     return (
       <div className="day col-sm p-2 border border-left-0 border-top-0 text-truncate d-none d-sm-inline-block bg-light text-muted">
         <h5 className="row align-items-center">
           <span className="date col-1">{today.getDate()}</span>
-          <small className="col d-sm-none text-center text-muted">
-            {weekday}
-          </small>
+          <small className="col d-sm-none text-center text-muted">{weekday}</small>
           <span className="col-1"></span>
         </h5>
         <p className="d-sm-none">No events</p>
@@ -146,9 +157,7 @@ const CalendarDay = (props) => {
       >
         <h5 className="row align-items-center">
           <span className="date col-1">{today.getDate()}</span>
-          <small className="col d-sm-none text-center text-muted">
-            {weekday}
-          </small>
+          <small className="col d-sm-none text-center text-muted">{weekday}</small>
           <span className="col-1"></span>
         </h5>
         {!reservationsToday || reservationsToday.length === 0 ? (
@@ -159,7 +168,7 @@ const CalendarDay = (props) => {
             <a
               className="event d-block p-1 pl-2 pr-2 mb-1 rounded text-truncate small bg-success text-white"
               title="Test Event 3"
-              style={{ pointerEvents: "none" }}
+              style={{ pointerEvents: 'none' }}
             >
               And {reservationsToday.length - 1} other(s).
             </a>
@@ -177,8 +186,8 @@ const CalendarEvent = (props) => {
   return (
     <a
       className="event d-block p-1 pl-2 pr-2 mb-1 rounded text-truncate small bg-success text-white"
-      title={"Event in Room: " + props.reservation.roomId}
-      style={{ pointerEvents: "none" }}
+      title={'Event in Room: ' + props.reservation.roomId}
+      style={{ pointerEvents: 'none' }}
     >
       Event in Room: {props.reservation.roomId}
     </a>
@@ -186,15 +195,7 @@ const CalendarEvent = (props) => {
 };
 
 const Calendar = (props) => {
-  const weekdays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [dates, setDates] = useState(getCalendarDays(new Date()));
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
@@ -206,27 +207,27 @@ const Calendar = (props) => {
 
   const [manager, setManager] = useState(props.manager);
 
+  const [newMonthReservations, setNewMonthReservations] = useState([]);
+
   const changeMonth = (m, y) => {
     const newStart = new Date(y, m - 1, 1);
     const employeeRepo = new EmployeeRepository();
     employeeRepo.getReservations(m, y).then((res) => {
       if (res[1].success) {
-        setReservations(res[0].data);
-        setDates(getCalendarDays(newStart));
+        const newDates = [...getCalendarDays(newStart)];
+        const newRes = [...res[0].data];
+        setNewMonthReservations([...newRes]);
+        setDates([...newDates]);
         setMonth(m);
         setYear(y);
       } else {
-        alert("Failed to get reservations");
+        alert('Failed to get reservations');
       }
     });
   };
 
-  const [isManagerScheduleShowing, setIsManagerScheduleShowing] = useState(
-    false
-  );
-  const [isEmployeeScheduleShowing, setIsEmployeeScheduleShowing] = useState(
-    false
-  );
+  const [isManagerScheduleShowing, setIsManagerScheduleShowing] = useState(false);
+  const [isEmployeeScheduleShowing, setIsEmployeeScheduleShowing] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const handleManagerOpenSchedule = (date) => {
@@ -246,10 +247,17 @@ const Calendar = (props) => {
 
   const handleReserve = (day, room, employee) => {
     const roomToReserve = room;
-    const employeeToReserve = employee;
+    let employeeToReserve = employee;
 
     const managerRepository = new ManagerRepository();
     const userRepository = new UserRepository();
+
+    if (typeof employeeToReserve == 'string') {
+      employeeToReserve = employees.find((emp) => {
+        return emp.firstName + ' ' + emp.lastName == employeeToReserve;
+      });
+    }
+
     managerRepository
       .createReservation(
         roomToReserve.roomId,
@@ -259,28 +267,39 @@ const Calendar = (props) => {
       )
       .then((res) => {
         if (res[1].success) {
-          setReservations([
-            ...reservations,
-            {
-              roomId: roomToReserve.roomId,
-              userId: employeeToReserve.userId,
-              dateIn: new Date(day),
-            },
-          ]);
-          handleCloseManagerSchedule();
-          handleCloseEmployeeSchedule();
+          const newReservations = [...reservations];
+          newReservations.push({
+            roomId: roomToReserve.roomId,
+            userId: employeeToReserve.userId,
+            dateIn: new Date(day)
+          });
+          setReservations([...newReservations]);
         } else {
-          alert("Failed to reserve room");
+          alert('Failed to reserve room');
+        }
+      })
+      .then(() => {
+        if (manager) {
+          handleCloseManagerSchedule();
+        } else {
+          handleCloseEmployeeSchedule();
         }
       });
   };
 
   useEffect(() => {
+    const l = JSON.stringify(newMonthReservations);
+    const r = JSON.stringify(reservations);
+
+    if (l !== r) {
+      setReservations([...newMonthReservations]);
+    }
+  }, [newMonthReservations]);
+
+  useEffect(() => {
     if (manager === undefined) {
       const userRepository = new UserRepository();
-      setManager(
-        userRepository.currentUser().role === UserTypes.manager ? true : false
-      );
+      setManager(userRepository.currentUser().role === UserTypes.manager ? true : false);
     }
 
     if (!dates) {
@@ -297,13 +316,10 @@ const Calendar = (props) => {
       const userRepository = new UserRepository();
 
       roomsRepository
-        .getRooms(
-          userRepository.currentUser().username,
-          userRepository.currentUser().password
-        )
+        .getRooms(userRepository.currentUser().username, userRepository.currentUser().password)
         .then((res) => {
           if (res[1].success === false) {
-            alert("Failed to get rooms, contact a manager!");
+            alert('Failed to get rooms, contact a manager!');
           } else {
             setRooms(res[0].data);
           }
@@ -342,12 +358,12 @@ const Calendar = (props) => {
         }
       });
     }
-  }, [month, year, dates, rooms, schedules, reservations, employees]);
+  }, [month, year, dates, rooms, schedules, reservations, employees, manager]);
 
   return (
     <>
       <div className="container mb-4">
-        {employees && rooms && (
+        {employees && rooms && reservations && (
           <>
             <ManagerScheduleModal
               show={isManagerScheduleShowing}
@@ -376,12 +392,14 @@ const Calendar = (props) => {
         />
         <div className="row border border-right-0 border-bottom-0">
           {employees &&
+            reservations &&
+            dates &&
             dates.map((date, index) => {
               const weekday = weekdays[index % 7];
               if (index % 7 === 0 && index !== 0) {
                 return (
                   <>
-                    <div className="w-100" key={"div" + index} />
+                    <div className="w-100" key={'div' + index} />
                     {date.getMonth() === month - 1 ? (
                       <CalendarDay
                         date={date}
@@ -467,14 +485,10 @@ const EmployeeScheduleMoal = (props) => {
         <Form>
           <Form.Group controlId="scheduleForm.room">
             <Form.Label>Room Number</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={(e) => setSelectedRoom(e.target.value)}
-            >
-              {rooms.map((room) => {
-                return room.officeId ===
-                  userRepository.currentUser().officeId ? (
-                  <option key={room.roomId}>{room.roomId}</option>
+            <Form.Control as="select" onChange={(e) => setSelectedRoom(e.target.value)}>
+              {rooms.map((room, index) => {
+                return room.officeId === userRepository.currentUser().officeId ? (
+                  <option key={index}>{room.roomId}</option>
                 ) : null;
               })}
             </Form.Control>
@@ -491,11 +505,7 @@ const EmployeeScheduleMoal = (props) => {
                 return rm.roomId == selectedRoom;
               });
               const userRepository = new UserRepository();
-              props.handleReserve(
-                props.date,
-                reservationRoom,
-                userRepository.currentUser()
-              );
+              props.handleReserve(props.date, reservationRoom, userRepository.currentUser());
             }}
           >
             Reserve
@@ -529,28 +539,20 @@ const ManagerScheduleModal = (props) => {
         <Form>
           <Form.Group controlId="scheduleForm.room">
             <Form.Label>Room Number</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={(e) => setSelectedRoom(e.target.value)}
-            >
-              {rooms.map((room) => {
-                return room.officeId ==
-                  userRepository.currentUser().officeId ? (
-                  <option key={room.roomId}>{room.roomId}</option>
+            <Form.Control as="select" onChange={(e) => setSelectedRoom(e.target.value)}>
+              {rooms.map((room, index) => {
+                return room.officeId == userRepository.currentUser().officeId ? (
+                  <option key={index}>{room.roomId}</option>
                 ) : null;
               })}
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="scheduleForm.employee">
             <Form.Label>Employee</Form.Label>
-            <Form.Control
-              as="select"
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-            >
-              {employees.map((employee) => {
-                return employee.officeId ==
-                  userRepository.currentUser().officeId ? (
-                  <option key={employee.userId}>
+            <Form.Control as="select" onChange={(e) => setSelectedEmployee(e.target.value)}>
+              {employees.map((employee, index) => {
+                return employee.officeId == userRepository.currentUser().officeId ? (
+                  <option key={index}>
                     {employee.firstName} {employee.lastName}
                   </option>
                 ) : null;
@@ -567,11 +569,7 @@ const ManagerScheduleModal = (props) => {
               const reservationRoom = rooms.find((rm) => {
                 return rm.roomId == selectedRoom;
               });
-              props.handleReserve(
-                props.date,
-                reservationRoom,
-                selectedEmployee
-              );
+              props.handleReserve(props.date, reservationRoom, selectedEmployee);
             }}
           >
             Reserve

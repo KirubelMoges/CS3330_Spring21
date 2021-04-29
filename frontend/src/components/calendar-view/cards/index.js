@@ -1,51 +1,39 @@
-import React, { useState } from "react";
-import EmployeesModal from "./modals/employees";
-import ManagerRoomsModal from "./modals/manager-room";
-import { Link, Redirect } from "react-router-dom";
-import RoomsModal from "./modals/rooms";
-import ReportCovidModal from "./modals/report-covid";
-import ReportContactModal from "./modals/report-contact";
-import StatsModal from "./modals/stats";
-import TimeStatsModal from "./modals/time-stats";
-import { ClockInModal, ClockOutModal } from "./modals/clock-in";
-import { UserRepository } from "../../../api/userRepository";
-import { EmployeeRepository } from "../../../api/employeeRepository";
+import React, { useState } from 'react';
+import EmployeesModal from './modals/employees';
+import ManagerRoomsModal from './modals/manager-room';
+import { Link } from 'react-router-dom';
+import ReportCovidModal from './modals/report-covid';
+import ReportContactModal from './modals/report-contact';
+import StatsModal from './modals/stats';
+import TimeStatsModal from './modals/time-stats';
+import { ClockInModal, ClockOutModal } from './modals/clock-in';
+import { UserRepository } from '../../../api/userRepository';
+import { EmployeeRepository } from '../../../api/employeeRepository';
 
 export const CovidCard = () => {
-  const [isReportCovidModalShowing, setIsReportCovidModalShowing] = useState(
-    false
-  );
+  const [isReportCovidModalShowing, setIsReportCovidModalShowing] = useState(false);
   const handleReportCovidClose = () => setIsReportCovidModalShowing(false);
   const handleReportCovidOpen = () => setIsReportCovidModalShowing(true);
 
-  const [
-    isReportContactModalShowing,
-    setIsReportContactModalShowing,
-  ] = useState(false);
+  const [isReportContactModalShowing, setIsReportContactModalShowing] = useState(false);
   const handleReportContactClose = () => setIsReportContactModalShowing(false);
   const handleReportContactOpen = () => setIsReportContactModalShowing(true);
 
   const userRepository = new UserRepository();
 
   const [hasCovid, setHasCovid] = useState(
-    userRepository.currentUser().covidStatus == 1 ? true : false
+    userRepository.currentUser().covidStatus === 1 ? true : false
   );
 
   const covidReported = () => {
     setHasCovid(true);
-    userRepository
-      .editCovidStatus(userRepository.currentUser().userId, 1)
-      .then((res) => {});
+    userRepository.editCovidStatus(userRepository.currentUser().userId, 1).then(() => {});
   };
 
   const contactReported = (reportedUser) => {
     const employeeRepository = new EmployeeRepository();
     employeeRepository
-      .reportContact(
-        reportedUser.userId,
-        userRepository.currentUser().userId,
-        ""
-      )
+      .reportContact(reportedUser.userId, userRepository.currentUser().userId, '')
       .then(() => {
         employeeRepository.setExposure(reportedUser.userId).then();
       });
@@ -57,23 +45,15 @@ export const CovidCard = () => {
         <div className=" clock-card">
           <div className="card-body">
             <h5 className="text-center">COVID-19</h5>
-            <p className="card-text text-center">
-              Report Covid or Contact Trace.
-            </p>
+            <p className="card-text text-center">Report Covid or Contact Trace.</p>
             <div className="d-flex flex-row justify-content-center">
               <div className="d-flex flex-column">
                 {hasCovid ? (
-                  <button
-                    className="btn btn-warning text-light"
-                    onClick={handleReportContactOpen}
-                  >
+                  <button className="btn btn-warning text-light" onClick={handleReportContactOpen}>
                     Report Contact
                   </button>
                 ) : (
-                  <button
-                    className="btn btn-danger mb-2"
-                    onClick={handleReportCovidOpen}
-                  >
+                  <button className="btn btn-danger mb-2" onClick={handleReportCovidOpen}>
                     Report Covid
                   </button>
                 )}
@@ -97,9 +77,9 @@ export const CovidCard = () => {
 };
 
 export const RoomCard = () => {
-  const [isRoomsModalShowing, setIsRoomsModalShowing] = useState(false);
-  const handleRoomsClose = () => setIsRoomsModalShowing(false);
-  const handleRoomsOpen = () => setIsRoomsModalShowing(true);
+  // const [, setIsRoomsModalShowing] = useState(false);
+  // const handleRoomsClose = () => setIsRoomsModalShowing(false);
+  // const handleRoomsOpen = () => setIsRoomsModalShowing(true);
 
   const [isStatsModalShowing, setIsStatsModalShowing] = useState(false);
   const handleStatsClose = () => setIsStatsModalShowing(false);
@@ -112,8 +92,7 @@ export const RoomCard = () => {
           <div className="card-body">
             <h5 className="text-center">Rooms</h5>
             <p className="card-text">
-              Create meetings, reserve rooms, and checkout the covid status of
-              the office.
+              Create meetings, reserve rooms, and checkout the covid status of the office.
             </p>
             <div className="d-flex flex-row justify-content-center">
               <div className="d-flex flex-column">
@@ -157,16 +136,10 @@ export const TimeCard = () => {
 
             <div className="d-flex flex-row justify-content-center">
               <div className="d-flex flex-column">
-                <button
-                  onClick={handleClockInOpen}
-                  className="btn btn-success mb-2"
-                >
+                <button onClick={handleClockInOpen} className="btn btn-success mb-2">
                   Clock In
                 </button>
-                <button
-                  onClick={handleClockOutOpen}
-                  className="btn btn-danger mb-2"
-                >
+                <button onClick={handleClockOutOpen} className="btn btn-danger mb-2">
                   Clock Out
                 </button>
                 {/* <button onClick={() => alert('Lunch Time!')} className="btn btn-primary mb-2">
@@ -179,18 +152,9 @@ export const TimeCard = () => {
             </div>
           </div>
         </div>
-        <TimeStatsModal
-          handleClose={handleTimeStatsClose}
-          show={isTimeStatsModalShowing}
-        />
-        <ClockInModal
-          handleClose={handleClockInClose}
-          show={isClockInModalShowing}
-        />
-        <ClockOutModal
-          handleClose={handleClockOutClose}
-          show={isClockOutModalShowing}
-        />
+        <TimeStatsModal handleClose={handleTimeStatsClose} show={isTimeStatsModalShowing} />
+        <ClockInModal handleClose={handleClockInClose} show={isClockInModalShowing} />
+        <ClockOutModal handleClose={handleClockOutClose} show={isClockOutModalShowing} />
       </div>
     </div>
   );
@@ -210,22 +174,14 @@ export const ManagerControls = (props) => {
       <div className="card clock-card">
         <div className="card-body">
           <h5 className="text-center">Manager Controls</h5>
-          <p className="card-text text-center">
-            Manage your workplace and people.
-          </p>
+          <p className="card-text text-center">Manage your workplace and people.</p>
 
           <div className="d-flex flex-row justify-content-center">
             <div className="d-flex flex-column">
-              <button
-                onClick={handleRoomsOpen}
-                className="btn btn-success mb-2"
-              >
+              <button onClick={handleRoomsOpen} className="btn btn-success mb-2">
                 View Rooms
               </button>
-              <button
-                onClick={handleEmployeesOpen}
-                className="btn btn-danger mb-2"
-              >
+              <button onClick={handleEmployeesOpen} className="btn btn-danger mb-2">
                 View Employees
               </button>
             </div>
