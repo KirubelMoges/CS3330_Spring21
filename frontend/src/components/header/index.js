@@ -1,8 +1,8 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { useContext } from "react";
-import { UserContext } from "../../common/context";
-import { UserRepository } from "../../api/userRepository";
-import { useHistory } from "react-router";
+import { Navbar, Nav } from 'react-bootstrap';
+import { useContext } from 'react';
+import { UserContext } from '../../utils/context';
+import { UserRepository } from '../../api/userRepository';
+import { useHistory } from 'react-router';
 
 const Header = () => {
   const userRepository = new UserRepository();
@@ -56,14 +56,14 @@ const LoggedInVariant = () => {
   function logoutButton() {
     userRepository.logout();
     setUserContext({});
-    history.push("/login");
+    history.push('/login');
   }
 
   return (
     <Nav>
       <Nav.Item>
         <Nav.Link
-          href={"/userProfile/" + userRepository.currentUser().userId}
+          href={'/userProfile/' + userRepository.currentUser().userId}
           className="text-white"
         >
           My Profile

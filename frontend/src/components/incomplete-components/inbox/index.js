@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Table } from "react-bootstrap";
-import { MessageRepository } from "../../api/messageRepository";
-import Header from "../header";
+import { useState, useEffect } from 'react';
+import { Table } from 'react-bootstrap';
+import { MessageRepository } from '../../../api/messageRepository';
+import Header from '../../header';
 
 const Inbox = () => {
   const messagesRepository = new MessageRepository();

@@ -1,8 +1,8 @@
 import { Modal, Form } from 'react-bootstrap';
-import { ClockRepository } from '../../../../api/clockingRepository';
-import { UserRepository } from '../../../../api/userRepository';
+import { ClockRepository } from '../../../api/clockingRepository';
+import { UserRepository } from '../../../api/userRepository';
 import { useState } from 'react';
-import { UserTypes } from '../../../../utils/constants';
+import { UserTypes } from '../../../utils/constants';
 
 export const ClockInModal = (props) => {
   const clockRepository = new ClockRepository();

@@ -1,13 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Form, Button, Container } from "react-bootstrap";
-import { useHistory, Link } from "react-router-dom";
-import { UserContext } from "../../common/context";
-import Header from "../header";
-import { UserRepository } from "../../api/userRepository";
+import React, { useContext, useState, useEffect } from 'react';
+import { Form, Button, Container } from 'react-bootstrap';
+import { useHistory, Link } from 'react-router-dom';
+import { UserContext } from '../../utils/context';
+import Header from '../header';
+import { UserRepository } from '../../api/userRepository';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const history = useHistory();
   const [userContext, setUserContext] = useContext(UserContext);
@@ -28,14 +28,14 @@ const Login = () => {
       setErrors(res);
     } else {
       setUserContext(userRepository.currentUser());
-      history.push("/");
+      history.push('/');
     }
   };
 
   useEffect(() => {
     const user = userContext;
     if (user.username) {
-      history.push("/");
+      history.push('/');
     }
   });
 
@@ -49,9 +49,7 @@ const Login = () => {
             Don't have an account? <Link to="/register">Register</Link>
           </p>
           <Form onSubmit={login}>
-            <Form.Control.Feedback type="invalid">
-              {errors.email}
-            </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
             <Form.Group size="md" controlId="email">
               <Form.Label>Email</Form.Label>
               <Form.Control

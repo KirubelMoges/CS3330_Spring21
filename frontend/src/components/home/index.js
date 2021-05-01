@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext } from 'react';
 import { Spinner } from 'react-bootstrap';
 import LandingPage from '../landing';
-import CalendarView from '../calendar-view';
+import CalendarView from '../main-view';
 import { UserRepository } from '../../api/userRepository';
-import { UserContext } from '../../common/context';
+import { UserContext } from '../../utils/context';
 
 const LoggedInView = () => {
   return <CalendarView />;
@@ -58,8 +58,6 @@ const HomePage = () => {
         </div>
       </div>
     );
-
-    if (loggedIn) console.log('Logged in');
   }
 
   return loggedIn ? <LoggedInView /> : <LandingPage />;

@@ -89,5 +89,3 @@
 # Epic 12
 
 - [x] Manager change user's type - needs manager set uncovid On manager employee view - Eli
-
-https://drive.google.com/drive/folders/1vX5yv4ZMxSBlR8CVQOSttAND_1fUYQFW
