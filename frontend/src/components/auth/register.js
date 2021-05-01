@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Form, Button, Container } from "react-bootstrap";
-import { useHistory, Link } from "react-router-dom";
-import { UserContext } from "../../common/context";
-import Header from "../header";
-import { UserRepository } from "../../api/userRepository";
-import { UserTypes } from "../../utils/constants";
+import React, { useState, useEffect, useContext } from 'react';
+import { Form, Button, Container } from 'react-bootstrap';
+import { useHistory, Link } from 'react-router-dom';
+import { UserContext } from '../../utils/context';
+import Header from '../header';
+import { UserRepository } from '../../api/userRepository';
+import { UserTypes } from '../../utils/constants';
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [officeId, setOfficeId] = useState(1);
   const [jobTitle, setJobTitle] = useState(UserTypes.employee);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const history = useHistory();
@@ -45,14 +45,14 @@ const Register = () => {
       setErrors(res);
     } else {
       setUserContext(userRepository.currentUser());
-      history.push("/");
+      history.push('/');
     }
   };
 
   useEffect(() => {
     const user = userContext;
     if (user.username) {
-      history.push("/");
+      history.push('/');
     }
   });
 

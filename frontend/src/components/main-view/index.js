@@ -1,9 +1,20 @@
 import React, { useContext } from 'react';
-import EmployeeView from './employee-view';
-import ManagerView from './manager-view';
 import Header from '../header';
-import { UserContext } from '../../common/context';
+import { UserContext } from '../../utils/context';
 import { UserTypes } from '../../utils/constants';
+import Calendar from './calendar/index';
+
+const ManagerView = () => {
+  return (
+    <>
+      <Calendar manager={true} />
+    </>
+  );
+};
+
+const EmployeeView = () => {
+  return <Calendar manager={false} />;
+};
 
 const CalendarView = () => {
   const [userContext] = useContext(UserContext);

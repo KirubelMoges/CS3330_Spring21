@@ -1,40 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { UserRepository } from "../../api/userRepository";
-import { EmployeeRepository } from "../../api/employeeRepository";
-import Header from "../header";
-import { UserTypes } from "../../utils/constants";
-import { ManagerRepository } from "../../api/managerRepository";
+import React, { useEffect, useState } from 'react';
+import { UserRepository } from '../../api/userRepository';
+import { EmployeeRepository } from '../../api/employeeRepository';
+import Header from '../header';
+import { UserTypes } from '../../utils/constants';
+import { ManagerRepository } from '../../api/managerRepository';
 
 const UserProfile = (props) => {
-  const userRepository = new UserRepository();
-  const employeeRepository = new EmployeeRepository();
-  const managerRepository = new ManagerRepository();
+  const [userRepository] = useState(new UserRepository());
+  const [employeeRepository] = useState(new EmployeeRepository());
+  const [managerRepository] = useState(new ManagerRepository());
 
   const [user, setUser] = useState(undefined);
   const [reservations, setReservations] = useState(undefined);
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [month] = useState(new Date().getMonth() + 1);
+  const [year] = useState(new Date().getFullYear());
   const [canChangeStatus, setCanChangeStatus] = useState(false);
   const [isManager, setIsManager] = useState(false);
   const [contacts, setContacts] = useState(undefined);
 
-  const userId = props.match.params.userId;
-
-  const currUser = userRepository.currentUser();
+  const [userId] = useState(props.match.params.userId);
 
   useEffect(() => {
     if (!user) {
       userRepository.getUserById(userId).then((response) => {
         if (response[1].success) {
           setUser(response[0].data[0]);
-          setIsManager(response[0].data[0].jobTitle == UserTypes.manager);
+          setIsManager(response[0].data[0].jobTitle === UserTypes.manager);
         } else {
         }
       });
     } else {
       setCanChangeStatus(
-        userRepository.currentUser().role == UserTypes.manager &&
-          user.userId != userRepository.currentUser().userId
+        userRepository.currentUser().role === UserTypes.manager &&
+          user.userId !== userRepository.currentUser().userId
       );
     }
     if (!reservations) {
@@ -42,7 +40,7 @@ const UserProfile = (props) => {
         if (res[1].success) {
           let resArr = [];
           res[0].data.forEach((element) => {
-            if (element.userId == userId) {
+            if (element.userId === userId) {
               resArr.push(element);
             }
           });
@@ -64,12 +62,13 @@ const UserProfile = (props) => {
   }, [
     user,
     reservations,
-    setUser,
-    setReservations,
     canChangeStatus,
-    setCanChangeStatus,
     contacts,
-    setContacts,
+    month,
+    year,
+    userId,
+    employeeRepository,
+    userRepository
   ]);
 
   if (!user || !reservations) {
@@ -79,9 +78,9 @@ const UserProfile = (props) => {
       </>
     );
   } else {
-    let covidStatus = "Negative";
-    if (user.covidStatus == 1) {
-      covidStatus = "Positive";
+    let covidStatus = 'Negative';
+    if (user.covidStatus === 1) {
+      covidStatus = 'Positive';
     }
     return (
       <>
@@ -111,14 +110,12 @@ const UserProfile = (props) => {
                     className="btn btn-danger"
                     onClick={() => {
                       let updUser = user;
-                      managerRepository
-                        .updateRole(user.userId, UserTypes.employee)
-                        .then((res) => {
-                          updUser.jobTitle = UserTypes.employee;
-                          setUser(updUser);
-                          setCanChangeStatus(false);
-                          setIsManager(false);
-                        });
+                      managerRepository.updateRole(user.userId, UserTypes.employee).then((res) => {
+                        updUser.jobTitle = UserTypes.employee;
+                        setUser(updUser);
+                        setCanChangeStatus(false);
+                        setIsManager(false);
+                      });
                     }}
                   >
                     Demote
@@ -128,14 +125,12 @@ const UserProfile = (props) => {
                     className="btn btn-success"
                     onClick={() => {
                       let updUser = user;
-                      managerRepository
-                        .updateRole(userId, UserTypes.manager)
-                        .then((res) => {
-                          updUser.jobTitle = UserTypes.manager;
-                          setUser(updUser);
-                          setCanChangeStatus(true);
-                          setIsManager(true);
-                        });
+                      managerRepository.updateRole(userId, UserTypes.manager).then((res) => {
+                        updUser.jobTitle = UserTypes.manager;
+                        setUser(updUser);
+                        setCanChangeStatus(true);
+                        setIsManager(true);
+                      });
                     }}
                   >
                     Promote to Manager
@@ -182,9 +177,7 @@ const UserProfile = (props) => {
           </div>
           <div className="mt-3 ml-3">
             <h5 className="mb-3">Reservations</h5>
-            {user.covidStatus != 1 &&
-            reservations &&
-            reservations.length > 0 ? (
+            {user.covidStatus !== 1 && reservations && reservations.length > 0 ? (
               <table className="table table-condensed table-striped border border-dark">
                 <thead className="table-dark">
                   <tr>

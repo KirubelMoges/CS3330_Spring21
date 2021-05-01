@@ -3,12 +3,12 @@ import Login from './components/auth/login';
 import Register from './components/auth/register';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import React, { useState } from 'react';
-import { UserContext } from './common/context';
+import { UserContext } from './utils/context';
 import EmployeeList from './components/employee-list/employee-list';
 import { UserRepository } from './api/userRepository';
 import RoomView from './components/room-view/room-view';
 import UserProfile from './components/user-profile/user-profile';
-import RouteGuard from './components/routeGuard';
+import RouteGuard from './utils/routeGuard';
 
 const App = () => {
   const userRepository = new UserRepository();

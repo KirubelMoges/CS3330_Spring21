@@ -1,8 +1,8 @@
-import React from "react";
-import { Container, Card, CardGroup } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import Header from "../header";
-import "./landing.css";
+import React from 'react';
+import { Container } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import Header from '../header';
+import './landing.css';
 
 const LandingPage = () => {
   return (
@@ -13,8 +13,7 @@ const LandingPage = () => {
           <div className="py-5 my-5">
             <h1 className="text-center ">Evolve your Office Management</h1>
             <h4 className="text-center text-dark font-weight-bold">
-              Organize your employees and workplace with our revolutionary
-              managment platform.
+              Organize your employees and workplace with our revolutionary managment platform.
             </h4>
           </div>
           <div className="py-5 my-5">

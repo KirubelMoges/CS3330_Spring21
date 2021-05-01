@@ -18,12 +18,13 @@ const RoomView = () => {
 
   const userRepository = new UserRepository();
   const managerRepository = new ManagerRepository();
-  const currUser = userRepository.currentUser();
+
   const [rooms, setRooms] = useState(undefined);
   const roomsRepository = new RoomsRepository();
   const [roomId, setRoomId] = useState(undefined);
 
   useEffect(() => {
+    const currUser = userRepository.currentUser();
     if (rooms === undefined) {
       roomsRepository.getRooms(currUser.username, currUser.password).then((data) => {
         if (data[1].success === true) {
@@ -48,7 +49,7 @@ const RoomView = () => {
               </th>
               <th></th>
               <th></th>
-              {userRepository.currentUser().role == UserTypes.manager && (
+              {userRepository.currentUser().role === UserTypes.manager && (
                 <th>
                   <span className="float-right">
                     <button
@@ -71,7 +72,6 @@ const RoomView = () => {
                     <td>
                       Room: {room.roomId} - {room.name}
                     </td>
-                    {/* <td>{room.roomName}</td> */}
                     <td>Capacity: {room.capacity}</td>
                     <td>
                       <button
@@ -85,7 +85,7 @@ const RoomView = () => {
                       </button>
                     </td>
 
-                    {userRepository.currentUser().role == UserTypes.manager && (
+                    {userRepository.currentUser().role === UserTypes.manager && (
                       <td>
                         <button
                           type="button"
@@ -93,7 +93,9 @@ const RoomView = () => {
                           onClick={() => {
                             managerRepository.deleteRoom(room.roomId).then((res) => {
                               let newRooms = rooms;
-                              setRooms(newRooms.filter((newRoom) => newRoom.roomId != room.roomId));
+                              setRooms(
+                                newRooms.filter((newRoom) => newRoom.roomId !== room.roomId)
+                              );
                             });
                           }}
                         >
