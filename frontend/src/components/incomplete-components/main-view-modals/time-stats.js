@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Form, Modal } from 'react-bootstrap';
-import { ClockRepository } from '../../../../api/clockingRepository';
-import { UserRepository } from '../../../../api/userRepository';
-import { UserTypes } from '../../../../utils/constants';
+import { ClockRepository } from '../../../api/clockingRepository';
+import { UserRepository } from '../../../api/userRepository';
+import { UserTypes } from '../../../utils/constants';
 
 const TimeStatsModal = (props) => {
   const [timeData, setTimeData] = useState(undefined);
